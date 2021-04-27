@@ -20,7 +20,7 @@ interface Props {
   };
 }
 
-export const closeOrOpenCard = ({
+export const onScrollRequestCloseOrOpenCard = ({
   isAnimationRunning,
   isScrollingDown,
   isScrollingUp,

@@ -7,7 +7,7 @@ import Animated, {
   cancelAnimation,
   useAnimatedReaction,
 } from 'react-native-reanimated';
-import { LayoutChangeEvent } from 'react-native';
+import { LayoutChangeEvent, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Card from '../Card';
@@ -17,24 +17,13 @@ import {
   DEFAULT_TIMING_CONFIG,
   DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM,
 } from '../../constants/animations';
-import { closeOrOpenCard } from '../../worklets/closeOrOpenCard';
 import {
   CARD_BOTTOM_OFFSET,
-  CARD_TOP_DRAG_OFFSET,
   CLOSE_CARD_BUTTON_HEIGHT,
   CLOSE_CARD_TOP_POSITION,
 } from '../../constants/styles';
+import { onScrollRequestCloseOrOpenCard } from '../../worklets/onScrollRequestCloseOrOpenCard';
 
-interface WindowProp {
-  windowHeight: number;
-}
-
-const Wrapper = styled.View<WindowProp>`
-  display: flex;
-  height: ${({ windowHeight }): number => windowHeight}px;
-  width: 100%;
-  justify-content: flex-end;
-`;
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -65,6 +54,17 @@ interface Props {
   bottomActions?: React.ReactNode;
   onAnimationDoneRequest?: void;
 }
+
+interface WindowProp {
+  windowHeight: number;
+}
+
+const Wrapper = styled.View<WindowProp>`
+  display: flex;
+  height: ${({ windowHeight }): number => windowHeight}px;
+  width: 100%;
+  justify-content: flex-end;
+`;
 
 const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   windowHeight,
@@ -107,7 +107,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
           ) {
             translation.y.value = result;
           } else {
-            closeOrOpenCard({
+            onScrollRequestCloseOrOpenCard({
               isAnimationRunning,
               isScrollingDown,
               isScrollingUp,
@@ -135,15 +135,17 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
     AnimatedGHContext
   >({
     onStart: (_, ctx) => {
-      cancelAnimation(translation.y);
       ctx.startY = translation.y.value;
-      isPanning.value = 1;
+      if (isPanGestureAnimationRunning.value === 1) {
+        cancelAnimation(translation.y);
+        isPanGestureAnimationRunning.value = 0;
+      }
     },
     onActive: (event, ctx) => {
-      if (translation.y.value >= -CARD_TOP_DRAG_OFFSET) {
-        translation.prevY.value = translation.y.value;
-        translation.y.value = ctx.startY + event.translationY;
-      }
+      isPanning.value = 1;
+      translation.prevY.value = translation.y.value;
+      translation.y.value =
+        ctx.startY + event.translationY < 0 ? 0 : ctx.startY + event.translationY;
     },
     onEnd: _ => {
       isPanningDown.value = translation.y.value > translation.prevY.value ? 1 : 0;
@@ -161,13 +163,28 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
     },
   });
 
-  const gestureAnimation = useAnimatedStyle(() => ({
-    transform: [{ translateY: translation.y.value }],
-  }));
+  const panGestureStyle = useAnimatedStyle(() =>
+    Platform.OS === 'ios'
+      ? {
+          borderTopRightRadius: 16,
+          borderTopLeftRadius: 16,
+          backgroundColor: 'lightgrey',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 5,
+          transform: [{ translateY: translation.y.value }],
+        }
+      : {
+          borderTopRightRadius: 16,
+          borderTopLeftRadius: 16,
+          backgroundColor: 'lightgrey',
+          elevation: 10,
+          transform: [{ translateY: translation.y.value }],
+        },
+  );
 
   const onLayout = (e: LayoutChangeEvent): void => {
-    'worklet';
-
     cardHeight.value = e.nativeEvent.layout.height;
     translation.bottomY.value =
       cardHeight.value - (CARD_BOTTOM_OFFSET + CLOSE_CARD_BUTTON_HEIGHT + CLOSE_CARD_TOP_POSITION);
@@ -176,7 +193,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   return (
     <Wrapper windowHeight={windowHeight}>
       <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View style={gestureAnimation} onLayout={onLayout}>
+        <Animated.View style={panGestureStyle} onLayout={onLayout}>
           <Card
             borderTopRadius={borderTopRadius}
             translation={translation}

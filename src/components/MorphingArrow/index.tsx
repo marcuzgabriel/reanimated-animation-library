@@ -5,7 +5,6 @@ import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import { createPath, addCurve, interpolatePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
 import { DEFAULT_SNAP_POINT_BOTTOM } from '../../constants/animations';
-import { ARROW_TOP_OFFSET } from '../../constants/styles';
 
 const START_Y = 30;
 const X_OFFSET = 25;
@@ -14,7 +13,6 @@ const EDGE_OFFSET = 5;
 
 const Wrapper = styled.View`
   position: relative;
-  top: ${ARROW_TOP_OFFSET}px;
   width: 100%;
   height: 100%;
 `;

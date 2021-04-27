@@ -2,28 +2,42 @@ import React, { useCallback } from 'react';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {
-  CARD_BOTTOM_OFFSET,
   DEFAULT_CARD_HEIGHT,
   CLOSE_CARD_BUTTON_HEIGHT,
-  CLOSE_CARD_TOP_POSITION,
+  CLOSE_OPEN_CARD_BUTTON_HITSLOP,
   HIT_SLOP,
 } from '../../constants/styles';
 import MorphingArrow from '../MorphingArrow';
-import { getCardOnPressRequest } from '../../helpers/getCardOnPressRequest';
+import { onPressRequestCloseOrOpenCard } from '../../worklets/onPressRequestCloseOrOpenCard';
 
 const Wrapper = styled.View`
   position: relative;
   width: 100%;
   height: ${DEFAULT_CARD_HEIGHT}px;
-  bottom: -${CARD_BOTTOM_OFFSET}px;
-  background: black;
 `;
 
+/* TouchableWithoutFeedback is not possible to use when it has
+multiple childrens. A workaround is therefore TouchableOpacity
+where activeOpacity is set to 1 while at the same time having
+a little offset fix that eliminates white space. */
 const TouchableOpacity = styled.TouchableOpacity`
-  top: -${CLOSE_CARD_TOP_POSITION}px;
-  height: ${CLOSE_CARD_BUTTON_HEIGHT}px;
+  display: flex;
+  background: transparent;
+`;
+
+const HitSlopAreaWrapper = styled.View`
+  background: transparent;
+  top: -${CLOSE_OPEN_CARD_BUTTON_HITSLOP}px;
+  height: ${CLOSE_OPEN_CARD_BUTTON_HITSLOP}px;
   width: 100%;
 `;
+
+const MorphingArrowWrapper = styled.View`
+  width: 100%;
+  height: ${CLOSE_CARD_BUTTON_HEIGHT}px;
+  top: -${CLOSE_OPEN_CARD_BUTTON_HITSLOP}px;
+`;
+
 interface Props {
   borderTopRadius?: number;
   isScrollingDown: Animated.SharedValue<number>;
@@ -46,22 +60,27 @@ const Card: React.FC<Props> = ({
   translation,
   isPanGestureAnimationRunning,
 }) => {
-  const latestPanValue = useDerivedValue(() => isPanning.value);
+  const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
+
   const onCardPressRequest = useCallback(() => {
-    getCardOnPressRequest({
-      latestPanValue,
+    onPressRequestCloseOrOpenCard({
       translation,
       isPanGestureAnimationRunning,
+      derivedIsCollapsed,
       isCardCollapsed,
     });
-  }, [isCardCollapsed, isPanGestureAnimationRunning, translation, latestPanValue]);
+  }, [isCardCollapsed, isPanGestureAnimationRunning, translation, derivedIsCollapsed]);
 
   return (
-    <Wrapper>
+    <>
       <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onCardPressRequest}>
-        <MorphingArrow scrollY={scrollY} translation={translation} />
+        <HitSlopAreaWrapper />
+        <MorphingArrowWrapper>
+          <MorphingArrow scrollY={scrollY} translation={translation} />
+        </MorphingArrowWrapper>
       </TouchableOpacity>
-    </Wrapper>
+      <Wrapper />
+    </>
   );
 };
 
