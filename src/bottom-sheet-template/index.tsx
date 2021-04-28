@@ -16,7 +16,6 @@ import {
   PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
-import { LoremIpsum } from '../common';
 import { USE_NATIVE_DRIVER } from '../config';
 
 interface BottomSheetState {
@@ -155,11 +154,7 @@ export class BottomSheet extends Component<Record<string, unknown>, BottomSheetS
                     bounces={false}
                     onScrollBeginDrag={this.onRegisterLastScroll}
                     scrollEventThrottle={1}
-                  >
-                    <LoremIpsum />
-                    <LoremIpsum />
-                    <LoremIpsum />
-                  </Animated.ScrollView>
+                  />
                 </NativeViewGestureHandler>
               </Animated.View>
             </PanGestureHandler>

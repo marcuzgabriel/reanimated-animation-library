@@ -40,6 +40,7 @@ const MorphingArrowWrapper = styled.View`
 
 interface Props {
   borderTopRadius?: number;
+  snapPointBottom: Animated.SharedValue<number>;
   isScrollingDown: Animated.SharedValue<number>;
   isScrollingUp: Animated.SharedValue<number>;
   isPanning: Animated.SharedValue<number>;
@@ -52,10 +53,8 @@ interface Props {
 }
 
 const Card: React.FC<Props> = ({
-  isPanning,
+  snapPointBottom,
   isCardCollapsed,
-  isScrollingDown,
-  isScrollingUp,
   scrollY,
   translation,
   isPanGestureAnimationRunning,
@@ -68,15 +67,26 @@ const Card: React.FC<Props> = ({
       isPanGestureAnimationRunning,
       derivedIsCollapsed,
       isCardCollapsed,
+      snapPointBottom,
     });
-  }, [isCardCollapsed, isPanGestureAnimationRunning, translation, derivedIsCollapsed]);
+  }, [
+    isCardCollapsed,
+    isPanGestureAnimationRunning,
+    snapPointBottom,
+    translation,
+    derivedIsCollapsed,
+  ]);
 
   return (
     <>
       <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onCardPressRequest}>
         <HitSlopAreaWrapper />
         <MorphingArrowWrapper>
-          <MorphingArrow scrollY={scrollY} translation={translation} />
+          <MorphingArrow
+            snapPointBottom={snapPointBottom}
+            scrollY={scrollY}
+            translation={translation}
+          />
         </MorphingArrowWrapper>
       </TouchableOpacity>
       <Wrapper />

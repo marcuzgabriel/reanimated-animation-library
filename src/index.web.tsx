@@ -1,10 +1,11 @@
 import { AppRegistry } from 'react-native';
-import App from './App.tsx';
+import App from './App';
 
-const rootTag = global.document.getElementById('root');
+const globalAny: any = global;
+const rootTag = globalAny.document.getElementById('root');
 
-const mount = tag => {
-  global.__webappRootTag = tag;
+const mount = (tag: any): void => {
+  globalAny.__webappRootTag = tag;
   AppRegistry.registerComponent('react-native-ultimate-bottom-sheet', () => App);
   AppRegistry.runApplication('react-native-ultimate-bottom-sheet', {
     rootTag: tag,

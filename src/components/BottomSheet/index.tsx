@@ -6,24 +6,20 @@ import Animated, {
   useAnimatedGestureHandler,
   cancelAnimation,
   useAnimatedReaction,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import { LayoutChangeEvent, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Card from '../Card';
 import {
-  DEFAULT_SNAP_POINT_BOTTOM,
+  DEFAULT_SNAP_POINT_BOTTOM_RATIO,
   DEFAULT_SNAP_POINT_TOP,
   DEFAULT_TIMING_CONFIG,
   DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM,
 } from '../../constants/animations';
-import {
-  CARD_BOTTOM_OFFSET,
-  CLOSE_CARD_BUTTON_HEIGHT,
-  CLOSE_CARD_TOP_POSITION,
-} from '../../constants/styles';
+import { CARD_BOTTOM_OFFSET } from '../../constants/styles';
 import { onScrollRequestCloseOrOpenCard } from '../../worklets/onScrollRequestCloseOrOpenCard';
-
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -71,8 +67,6 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   borderTopRadius = 7,
   scrollY,
 }) => {
-  const shouldCardCollapse = useSharedValue(0);
-  const shouldCardOpen = useSharedValue(0);
   const isAnimationRunning = useSharedValue(0);
   const isScrollingUp = useSharedValue(0);
   const isScrollingDown = useSharedValue(0);
@@ -82,10 +76,13 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   const isCardCollapsed = useSharedValue(0);
   const cardHeight = useSharedValue(0);
   const translation = {
-    bottomY: useSharedValue(0),
     prevY: useSharedValue(0),
     y: useSharedValue(0),
   };
+
+  const snapPointBottom = useDerivedValue(() =>
+    cardHeight.value > 0 ? cardHeight.value * DEFAULT_SNAP_POINT_BOTTOM_RATIO : 0,
+  );
 
   useAnimatedReaction(
     () => scrollY?.value,
@@ -112,10 +109,9 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
               isScrollingDown,
               isScrollingUp,
               isCardCollapsed,
-              shouldCardOpen,
-              shouldCardCollapse,
               result,
               translation,
+              snapPointBottom,
             });
           }
         }
@@ -154,7 +150,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
       isPanning.value = 0;
 
       translation.y.value = withSpring(
-        isPanningDown.value ? DEFAULT_SNAP_POINT_BOTTOM : DEFAULT_SNAP_POINT_TOP,
+        isPanningDown.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
         DEFAULT_TIMING_CONFIG,
         () => {
           isPanGestureAnimationRunning.value = 0;
@@ -166,6 +162,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   const panGestureStyle = useAnimatedStyle(() =>
     Platform.OS === 'ios'
       ? {
+          bottom: -CARD_BOTTOM_OFFSET,
           borderTopRightRadius: 16,
           borderTopLeftRadius: 16,
           backgroundColor: 'lightgrey',
@@ -176,6 +173,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
           transform: [{ translateY: translation.y.value }],
         }
       : {
+          bottom: -CARD_BOTTOM_OFFSET,
           borderTopRightRadius: 16,
           borderTopLeftRadius: 16,
           backgroundColor: 'lightgrey',
@@ -186,8 +184,6 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
 
   const onLayout = (e: LayoutChangeEvent): void => {
     cardHeight.value = e.nativeEvent.layout.height;
-    translation.bottomY.value =
-      cardHeight.value - (CARD_BOTTOM_OFFSET + CLOSE_CARD_BUTTON_HEIGHT + CLOSE_CARD_TOP_POSITION);
   };
 
   return (
@@ -203,6 +199,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
             isScrollingUp={isScrollingUp}
             isCardCollapsed={isCardCollapsed}
             isPanGestureAnimationRunning={isPanGestureAnimationRunning}
+            snapPointBottom={snapPointBottom}
           />
         </Animated.View>
       </PanGestureHandler>

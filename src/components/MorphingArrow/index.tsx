@@ -4,7 +4,6 @@ import styled from 'styled-components/native';
 import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import { createPath, addCurve, interpolatePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
-import { DEFAULT_SNAP_POINT_BOTTOM } from '../../constants/animations';
 
 const START_Y = 30;
 const X_OFFSET = 25;
@@ -19,6 +18,7 @@ const Wrapper = styled.View`
 
 interface Props {
   scrollY?: Animated.SharedValue<number>;
+  snapPointBottom: Animated.SharedValue<number>;
   translation: {
     y: Animated.SharedValue<number>;
   };
@@ -26,7 +26,7 @@ interface Props {
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-const MorphingArrow: React.FC<Props> = ({ translation }) => {
+const MorphingArrow: React.FC<Props> = ({ translation, snapPointBottom }) => {
   const windowWidth = useWindowDimensions().width;
 
   const animatedProps = useAnimatedProps(() => {
@@ -47,11 +47,7 @@ const MorphingArrow: React.FC<Props> = ({ translation }) => {
     });
 
     return {
-      d: interpolatePath(
-        translation.y.value,
-        [0, DEFAULT_SNAP_POINT_BOTTOM],
-        [straightArrow, upArrow],
-      ),
+      d: interpolatePath(translation.y.value, [0, snapPointBottom.value], [straightArrow, upArrow]),
     };
   }, [windowWidth]);
 
@@ -60,6 +56,7 @@ const MorphingArrow: React.FC<Props> = ({ translation }) => {
       <Svg>
         <AnimatedPath
           animatedProps={animatedProps}
+          fill="none"
           fillRule="evenodd"
           stroke="white"
           strokeWidth="5"
