@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { Platform } from 'react-native';
 import Animated, {
@@ -8,10 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import BottomSheet from '../BottomSheet';
 
-const isWeb = Platform.OS === 'web';
-
 const SCROLL_EVENT_THROTTHLE = 16;
-
 interface Props {
   windowHeight: number;
   children: React.ReactNode;
@@ -23,6 +20,20 @@ const Wrapper = styled.View`
   height: 100%;
 `;
 
+const OuterWrapper = styled.View`
+  ${(): string => {
+    if (Platform.OS === 'web') {
+      return `
+        position: relative;
+        height: 100vh;
+        width: 100%;
+      `;
+    } else {
+      return ``;
+    }
+  }}
+`;
+
 const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const previousScrollY = useSharedValue(0);
@@ -32,36 +43,38 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
-      previousScrollY.value = scrollY.value;
-      scrollY.value = e.contentOffset.y;
-      contentSize.value = e.contentSize.height;
-      layoutHeight.value = e.layoutMeasurement.height;
+      if (e.contentOffset.y >= 0) {
+        previousScrollY.value = scrollY.value;
+        scrollY.value = e.contentOffset.y;
+        contentSize.value = e.contentSize.height;
+        layoutHeight.value = e.layoutMeasurement.height;
+      }
     },
   });
 
-  const contentContainerStyle = { marginTop: isWeb ? -windowHeight : 0 };
-  const childWrapperStyle = { marginTop: isWeb ? 0 : -windowHeight };
+  const childWrapperStyle = { marginTop: -windowHeight };
 
   return (
-    <Animated.ScrollView
-      ref={scrollViewRef}
-      bounces={false}
-      alwaysBounceVertical={false}
-      onScroll={onScrollHandler}
-      scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
-      contentContainerStyle={contentContainerStyle}
-      stickyHeaderIndices={[0]}
-    >
-      <BottomSheet
-        windowHeight={windowHeight}
-        scrollViewRef={scrollViewRef}
-        previousScrollY={previousScrollY}
-        scrollY={scrollY}
-        contentSize={contentSize}
-        layoutHeight={layoutHeight}
-      />
-      <Wrapper style={childWrapperStyle}>{children}</Wrapper>
-    </Animated.ScrollView>
+    <OuterWrapper>
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        bounces={false}
+        alwaysBounceVertical={false}
+        onScroll={onScrollHandler}
+        scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
+        stickyHeaderIndices={[0]}
+      >
+        <BottomSheet
+          windowHeight={windowHeight}
+          scrollViewRef={scrollViewRef}
+          previousScrollY={previousScrollY}
+          scrollY={scrollY}
+          contentSize={contentSize}
+          layoutHeight={layoutHeight}
+        />
+        <Wrapper style={childWrapperStyle}>{children}</Wrapper>
+      </Animated.ScrollView>
+    </OuterWrapper>
   );
 };
 
