@@ -57,6 +57,7 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
           scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
         >
           <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
+          <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
         </Animated.ScrollView>
       </BackgroundContent>
       <BottomSheet windowHeight={windowHeight} scrollY={scrollY} />

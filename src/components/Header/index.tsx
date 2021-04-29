@@ -21,10 +21,10 @@ interface Props {
 
 const TouchableOpacity = styled.TouchableOpacity`
   display: flex;
-  border-top-right-radius: 16;
-  border-top-left-radius: 16;
+  border-top-right-radius: 16px;
+  border-top-left-radius: 16px;
   elevation: 10;
-  background: black;
+  background: transparent;
 `;
 
 const HitSlopAreaWrapper = styled.View`

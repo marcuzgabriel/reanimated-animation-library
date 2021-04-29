@@ -21,7 +21,7 @@ import {
   DEFAULT_TIMING_CONFIG,
   DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM,
 } from '../../constants/animations';
-import { CARD_STYLE_ANDROID_AND_WEB, CARD_STYLE_IOS } from '../../constants/styles';
+import { CARD_BOTTOM_OFFSET } from '../../constants/styles';
 import { onScrollRequestCloseOrOpenCard } from '../../worklets/onScrollRequestCloseOrOpenCard';
 
 interface Props {
@@ -160,11 +160,28 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   const panGestureStyle = useAnimatedStyle((): any =>
     Platform.OS === 'ios'
       ? {
-          ...CARD_STYLE_IOS,
+          position: 'absolute',
+          zIndex: 2,
+          width: '100%',
+          borderTopRightRadius: 16,
+          borderTopLeftRadius: 16,
+          bottom: -CARD_BOTTOM_OFFSET,
+          backgroundColor: 'lightgrey',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 5,
           transform: [{ translateY: translation.y.value }],
         }
       : {
-          ...CARD_STYLE_ANDROID_AND_WEB,
+          position: 'absolute',
+          zIndex: 2,
+          width: '100%',
+          borderTopRightRadius: 16,
+          borderTopLeftRadius: 16,
+          bottom: 0,
+          backgroundColor: 'lightgrey',
+          elevation: 10,
           transform: [{ translateY: translation.y.value }],
         },
   );
