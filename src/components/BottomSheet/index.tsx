@@ -51,22 +51,7 @@ interface Props {
   onAnimationDoneRequest?: void;
 }
 
-interface WindowProp {
-  windowHeight: number;
-}
-
-const Wrapper = styled.View<WindowProp>`
-  display: flex;
-  height: ${({ windowHeight }): number => windowHeight}px;
-  width: 100%;
-  justify-content: flex-end;
-`;
-
-const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
-  windowHeight,
-  borderTopRadius = 7,
-  scrollY,
-}) => {
+const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ borderTopRadius = 7, scrollY }) => {
   const isAnimationRunning = useSharedValue(0);
   const isScrollingUp = useSharedValue(0);
   const isScrollingDown = useSharedValue(0);
@@ -132,25 +117,18 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   >({
     onStart: (_, ctx) => {
       ctx.startY = translation.y.value;
-      if (isPanGestureAnimationRunning.value === 1) {
-        cancelAnimation(translation.y);
-        isPanGestureAnimationRunning.value = 0;
-      }
     },
     onActive: (event, ctx) => {
-      isPanning.value = 1;
       translation.prevY.value = translation.y.value;
-      translation.y.value =
-        ctx.startY + event.translationY < 0 ? 0 : ctx.startY + event.translationY;
+      translation.y.value = ctx.startY + event.translationY;
     },
-    onEnd: _ => {
-      isPanningDown.value = translation.y.value > translation.prevY.value ? 1 : 0;
-      isCardCollapsed.value = isPanningDown.value === 1 ? 1 : 0;
+    onEnd: (event, ctx) => {
+      isPanningDown.value = ctx.startY + event.translationY > translation.prevY.value ? 1 : 0;
       isPanGestureAnimationRunning.value = 1;
       isPanning.value = 0;
 
       translation.y.value = withSpring(
-        isPanningDown.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+        isPanningDown.value === 1 ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
         DEFAULT_TIMING_CONFIG,
         () => {
           isPanGestureAnimationRunning.value = 0;
@@ -162,6 +140,9 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   const panGestureStyle = useAnimatedStyle(() =>
     Platform.OS === 'ios'
       ? {
+          position: 'absolute',
+          zIndex: 2,
+          width: '100%',
           bottom: -CARD_BOTTOM_OFFSET,
           borderTopRightRadius: 16,
           borderTopLeftRadius: 16,
@@ -173,6 +154,9 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
           transform: [{ translateY: translation.y.value }],
         }
       : {
+          position: 'absolute',
+          zIndex: 2,
+          width: '100%',
           bottom: -CARD_BOTTOM_OFFSET,
           borderTopRightRadius: 16,
           borderTopLeftRadius: 16,
@@ -187,23 +171,21 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   };
 
   return (
-    <Wrapper windowHeight={windowHeight}>
-      <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View style={panGestureStyle} onLayout={onLayout}>
-          <Card
-            borderTopRadius={borderTopRadius}
-            translation={translation}
-            scrollY={scrollY}
-            isPanning={isPanning}
-            isScrollingDown={isScrollingDown}
-            isScrollingUp={isScrollingUp}
-            isCardCollapsed={isCardCollapsed}
-            isPanGestureAnimationRunning={isPanGestureAnimationRunning}
-            snapPointBottom={snapPointBottom}
-          />
-        </Animated.View>
-      </PanGestureHandler>
-    </Wrapper>
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View style={panGestureStyle} onLayout={onLayout}>
+        <Card
+          borderTopRadius={borderTopRadius}
+          translation={translation}
+          scrollY={scrollY}
+          isPanning={isPanning}
+          isScrollingDown={isScrollingDown}
+          isScrollingUp={isScrollingUp}
+          isCardCollapsed={isCardCollapsed}
+          isPanGestureAnimationRunning={isPanGestureAnimationRunning}
+          snapPointBottom={snapPointBottom}
+        />
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 

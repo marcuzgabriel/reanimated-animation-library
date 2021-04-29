@@ -9,6 +9,7 @@ import {
 } from '../../constants/styles';
 import MorphingArrow from '../MorphingArrow';
 import { onPressRequestCloseOrOpenCard } from '../../worklets/onPressRequestCloseOrOpenCard';
+import Content from '../Content';
 
 const Wrapper = styled.View`
   position: relative;
@@ -89,7 +90,9 @@ const Card: React.FC<Props> = ({
           />
         </MorphingArrowWrapper>
       </TouchableOpacity>
-      <Wrapper />
+      <Wrapper>
+        <Content />
+      </Wrapper>
     </>
   );
 };

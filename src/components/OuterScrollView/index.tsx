@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
-import { Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -14,24 +13,19 @@ interface Props {
   children: React.ReactNode;
 }
 
-const Wrapper = styled.View`
+const Wrapper = styled.View<{ windowHeight: number }>`
   position: relative;
+  height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
-  height: 100%;
 `;
 
-const OuterWrapper = styled.View`
-  ${(): string => {
-    if (Platform.OS === 'web') {
-      return `
-        position: relative;
-        height: 100vh;
-        width: 100%;
-      `;
-    } else {
-      return ``;
-    }
-  }}
+const BackgroundContent = styled.View`
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 1;
 `;
 
 const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
@@ -52,29 +46,28 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
     },
   });
 
-  const childWrapperStyle = { marginTop: -windowHeight };
-
   return (
-    <OuterWrapper>
-      <Animated.ScrollView
-        ref={scrollViewRef}
-        bounces={false}
-        alwaysBounceVertical={false}
-        onScroll={onScrollHandler}
-        scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
-        stickyHeaderIndices={[0]}
-      >
-        <BottomSheet
-          windowHeight={windowHeight}
-          scrollViewRef={scrollViewRef}
-          previousScrollY={previousScrollY}
-          scrollY={scrollY}
-          contentSize={contentSize}
-          layoutHeight={layoutHeight}
-        />
-        <Wrapper style={childWrapperStyle}>{children}</Wrapper>
-      </Animated.ScrollView>
-    </OuterWrapper>
+    <Wrapper windowHeight={windowHeight}>
+      <BackgroundContent>
+        <Animated.ScrollView
+          ref={scrollViewRef}
+          bounces={false}
+          alwaysBounceVertical={false}
+          onScroll={onScrollHandler}
+          scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
+        >
+          <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
+        </Animated.ScrollView>
+      </BackgroundContent>
+      <BottomSheet
+        windowHeight={windowHeight}
+        scrollViewRef={scrollViewRef}
+        previousScrollY={previousScrollY}
+        scrollY={scrollY}
+        contentSize={contentSize}
+        layoutHeight={layoutHeight}
+      />
+    </Wrapper>
   );
 };
 
