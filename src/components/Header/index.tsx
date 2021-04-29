@@ -23,7 +23,6 @@ const TouchableOpacity = styled.TouchableOpacity`
   display: flex;
   border-top-right-radius: 16px;
   border-top-left-radius: 16px;
-  elevation: 10;
   background: transparent;
 `;
 
