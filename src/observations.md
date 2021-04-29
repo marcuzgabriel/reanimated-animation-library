@@ -15,3 +15,10 @@ located outside and other component as a build-on-top approach.
 
 [web] react-native-gesture-handler onEnd state doesn't recognize translation.y.value. I have had to use the original props ctx.startY +
 event.translationY instead of just translation.y.value which is identical. For some reason it does not read the translation.y.value properly on web.
+
+[web] react-native-gesture-handler and the props waitFor and simoustanously use other refs don't work. I have tried
+the same approach as bottom-sheet-template from the react-native-animation library.
+
+[allplatforms] The oldschool approach with react-native-animated have a global scope for animations
+also known as the <Animation.Code> scope. It is rather difficult to achieve the same flexibility with the
+hooks only. There is a useAnimatedReaction scope that is sort of simular

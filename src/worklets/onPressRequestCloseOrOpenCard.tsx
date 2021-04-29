@@ -2,10 +2,10 @@ import Animated, { cancelAnimation, withSpring } from 'react-native-reanimated';
 import { DEFAULT_SNAP_POINT_TOP, DEFAULT_TIMING_CONFIG } from '../constants/animations';
 
 interface Props {
-  derivedIsCollapsed: Animated.SharedValue<number>;
-  isPanGestureAnimationRunning: Animated.SharedValue<number>;
-  isCardCollapsed: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
+  isAnimationRunning: Animated.SharedValue<boolean>;
+  derivedIsCollapsed: Animated.SharedValue<boolean>;
+  isCardCollapsed: Animated.SharedValue<boolean>;
   translation: {
     y: Animated.SharedValue<number>;
   };
@@ -13,7 +13,7 @@ interface Props {
 
 export const onPressRequestCloseOrOpenCard = ({
   translation,
-  isPanGestureAnimationRunning,
+  isAnimationRunning,
   derivedIsCollapsed,
   snapPointBottom,
   isCardCollapsed,
@@ -21,14 +21,14 @@ export const onPressRequestCloseOrOpenCard = ({
   'worklet';
 
   cancelAnimation(translation.y);
-  isPanGestureAnimationRunning.value = 1;
-  isCardCollapsed.value = isCardCollapsed.value === 0 ? 1 : 0;
+  isAnimationRunning.value = true;
+  isCardCollapsed.value = !isCardCollapsed.value;
 
   translation.y.value = withSpring(
-    derivedIsCollapsed.value === 0 ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+    derivedIsCollapsed.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
     DEFAULT_TIMING_CONFIG,
     () => {
-      isPanGestureAnimationRunning.value = 0;
+      isAnimationRunning.value = false;
     },
   );
 };

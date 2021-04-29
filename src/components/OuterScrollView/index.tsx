@@ -59,14 +59,7 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
           <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
         </Animated.ScrollView>
       </BackgroundContent>
-      <BottomSheet
-        windowHeight={windowHeight}
-        scrollViewRef={scrollViewRef}
-        previousScrollY={previousScrollY}
-        scrollY={scrollY}
-        contentSize={contentSize}
-        layoutHeight={layoutHeight}
-      />
+      <BottomSheet windowHeight={windowHeight} scrollY={scrollY} />
     </Wrapper>
   );
 };

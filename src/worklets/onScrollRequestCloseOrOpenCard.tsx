@@ -7,10 +7,10 @@ import {
 
 interface Props {
   result: number;
-  isAnimationRunning: Animated.SharedValue<number>;
-  isScrollingDown: Animated.SharedValue<number>;
-  isScrollingUp: Animated.SharedValue<number>;
-  isCardCollapsed: Animated.SharedValue<number>;
+  isAnimationRunning: Animated.SharedValue<boolean>;
+  isScrollingDown: Animated.SharedValue<boolean>;
+  isScrollingUp: Animated.SharedValue<boolean>;
+  isCardCollapsed: Animated.SharedValue<boolean>;
   snapPointBottom: Animated.SharedValue<number>;
   translation: {
     y: Animated.SharedValue<number>;
@@ -29,21 +29,26 @@ export const onScrollRequestCloseOrOpenCard = ({
   'worklet';
 
   const shouldCardCollapse =
-    isScrollingDown.value === 1 && result >= DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM ? 1 : 0;
+    isScrollingDown.value &&
+    result >= DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM &&
+    !isCardCollapsed.value;
+
   const shouldCardOpen =
-    isScrollingUp.value === 1 && result < DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM ? 1 : 0;
+    isScrollingUp.value &&
+    result < DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM &&
+    isCardCollapsed.value;
 
   if (shouldCardCollapse || shouldCardOpen) {
-    isAnimationRunning.value === 1;
-    isCardCollapsed.value = shouldCardCollapse ? 1 : 0;
+    isAnimationRunning.value = true;
+    isCardCollapsed.value = shouldCardCollapse;
     translation.y.value = withSpring(
       shouldCardCollapse ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
       DEFAULT_TIMING_CONFIG,
       isAnimationComplete => {
         if (isAnimationComplete) {
-          isAnimationRunning.value = 0;
-          isScrollingDown.value = 0;
-          isScrollingUp.value = 0;
+          isAnimationRunning.value = false;
+          isScrollingDown.value = false;
+          isScrollingUp.value = false;
         }
       },
     );

@@ -7,8 +7,19 @@ const Wrapper = styled.View`
   background: yellow;
 `;
 
+const BottomWrapper = styled.View`
+  height: 100px;
+  width: 100%;
+  background: black;
+`;
+
 const Content: React.FC = () => {
-  return <Wrapper />;
+  return (
+    <>
+      <Wrapper />
+      <BottomWrapper />
+    </>
+  );
 };
 
 export default Content;
