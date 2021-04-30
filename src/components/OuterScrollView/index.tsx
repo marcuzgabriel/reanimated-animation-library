@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
@@ -34,6 +34,7 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
   const scrollY = useSharedValue(0);
   const contentSize = useSharedValue(0);
   const layoutHeight = useSharedValue(0);
+  const scrollYOldSchool = useRef(new Animated.Value<number>(0)).current;
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -42,6 +43,7 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
         scrollY.value = e.contentOffset.y;
         contentSize.value = e.contentSize.height;
         layoutHeight.value = e.layoutMeasurement.height;
+        scrollYOldSchool.setValue(e.contentOffset.y);
       }
     },
   });
@@ -60,7 +62,11 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
           <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
         </Animated.ScrollView>
       </BackgroundContent>
-      <BottomSheet windowHeight={windowHeight} scrollY={scrollY} />
+      <BottomSheet
+        windowHeight={windowHeight}
+        scrollY={scrollY}
+        scrollYOldSchool={scrollYOldSchool}
+      />
     </Wrapper>
   );
 };

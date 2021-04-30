@@ -23,7 +23,10 @@ const TouchableOpacity = styled.TouchableOpacity`
   display: flex;
   border-top-right-radius: 16px;
   border-top-left-radius: 16px;
+  z-index: 2;
   background: transparent;
+  border-bottom-color: white;
+  border-bottom-width: 1;
 `;
 
 const HitSlopAreaWrapper = styled.View`
