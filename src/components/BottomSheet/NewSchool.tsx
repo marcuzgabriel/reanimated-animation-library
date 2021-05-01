@@ -1,21 +1,15 @@
 import React, { useRef } from 'react';
 import Animated, {
   useSharedValue,
-  useAnimatedRef,
   withSpring,
   useAnimatedStyle,
   useAnimatedReaction,
   useDerivedValue,
-  useAnimatedScrollHandler,
   useAnimatedGestureHandler,
 } from 'react-native-reanimated';
-import { LayoutChangeEvent, Platform, StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, LayoutChangeEvent, ViewStyle, useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
-import {
-  PanGestureHandlerGestureEvent,
-  PanGestureHandler,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
 
 import Card from '../Card';
 import Header from '../Header';
@@ -27,7 +21,7 @@ import {
 } from '../../constants/animations';
 import { CARD_BOTTOM_OFFSET } from '../../constants/styles';
 import { onScrollRequestCloseOrOpenCard } from '../../worklets/onScrollRequestCloseOrOpenCard';
-
+import { AnimatedStyles } from '../../types/index';
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -218,33 +212,34 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
     transform: [{ translateY: translationYInner.value }],
   }));
 
-  const panGestureStyle = useAnimatedStyle((): any =>
-    Platform.OS === 'ios'
-      ? {
-          position: 'absolute',
-          zIndex: 2,
-          width: '100%',
-          borderTopRightRadius: 16,
-          borderTopLeftRadius: 16,
-          bottom: -CARD_BOTTOM_OFFSET,
-          backgroundColor: 'lightgrey',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 5,
-          transform: [{ translateY: translation.y.value }],
-        }
-      : {
-          position: 'absolute',
-          zIndex: 2,
-          width: '100%',
-          borderTopRightRadius: 16,
-          borderTopLeftRadius: 16,
-          bottom: 0,
-          backgroundColor: 'lightgrey',
-          elevation: 10,
-          transform: [{ translateY: translation.y.value }],
-        },
+  const panGestureStyle = useAnimatedStyle(
+    (): AnimatedStyles<ViewStyle> =>
+      Platform.OS === 'ios'
+        ? {
+            position: 'absolute',
+            zIndex: 2,
+            width: '100%',
+            borderTopRightRadius: 16,
+            borderTopLeftRadius: 16,
+            bottom: -CARD_BOTTOM_OFFSET,
+            backgroundColor: 'lightgrey',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 5,
+            transform: [{ translateY: translation.y.value }],
+          }
+        : {
+            position: 'absolute',
+            zIndex: 2,
+            width: '100%',
+            borderTopRightRadius: 16,
+            borderTopLeftRadius: 16,
+            bottom: 0,
+            backgroundColor: 'lightgrey',
+            elevation: 10,
+            transform: [{ translateY: translation.y.value }],
+          },
   );
 
   const onLayout = (e: LayoutChangeEvent): void => {
