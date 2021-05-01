@@ -213,7 +213,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   }));
 
   const panGestureStyle = useAnimatedStyle(
-    (): AnimatedStyles<ViewStyle> =>
+    (): Animated.AnimatedStyleProp<ViewStyle> =>
       Platform.OS === 'ios'
         ? {
             position: 'absolute',
