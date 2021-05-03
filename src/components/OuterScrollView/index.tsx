@@ -1,3 +1,6 @@
+/* Example on how to implement the BottomSheet to a ScrollView
+and attach the scrollY as a controller to it */
+
 import React, { useRef } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
