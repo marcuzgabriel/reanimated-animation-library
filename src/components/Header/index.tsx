@@ -2,27 +2,27 @@ import React, { useCallback } from 'react';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {
+  DEFAULT_BORDER_RADIUS,
   CLOSE_CARD_BUTTON_HEIGHT,
   CLOSE_OPEN_CARD_BUTTON_HITSLOP,
   HIT_SLOP,
-} from '../../constants/styles';
-import MorphingArrow from '../MorphingArrow';
-import { onPressRequestCloseOrOpenCard } from '../../worklets/onPressRequestCloseOrOpenCard';
+} from 'constants/styles';
+import MorphingArrow from 'components/MorphingArrow';
+import { onPressRequestCloseOrOpenCard } from 'worklets';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
   scrollY: Animated.SharedValue<number>;
   isAnimationRunning: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
-  translation: {
-    y: Animated.SharedValue<number>;
-  };
+  isPanning: Animated.SharedValue<boolean>;
+  translationY: Animated.SharedValue<number>;
 }
 
 const TouchableOpacity = styled.TouchableOpacity`
   display: flex;
-  border-top-right-radius: 16px;
-  border-top-left-radius: 16px;
+  border-top-right-radius: ${DEFAULT_BORDER_RADIUS}px;
+  border-top-left-radius: ${DEFAULT_BORDER_RADIUS}px;
   z-index: 2;
   background: transparent;
   border-bottom-color: white;
@@ -45,21 +45,31 @@ const MorphingArrowWrapper = styled.View`
 const Header: React.FC<Props> = ({
   snapPointBottom,
   scrollY,
-  translation,
+  translationY,
   isAnimationRunning,
   isCardCollapsed,
+  isPanning,
 }) => {
   const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
+  const derivedIsPanning = useDerivedValue(() => isPanning.value);
 
   const onCardPressRequest = useCallback(() => {
     onPressRequestCloseOrOpenCard({
-      translation,
+      translationY,
       isAnimationRunning,
       derivedIsCollapsed,
+      derivedIsPanning,
       isCardCollapsed,
       snapPointBottom,
     });
-  }, [isCardCollapsed, isAnimationRunning, snapPointBottom, translation, derivedIsCollapsed]);
+  }, [
+    isCardCollapsed,
+    isAnimationRunning,
+    snapPointBottom,
+    translationY,
+    derivedIsPanning,
+    derivedIsCollapsed,
+  ]);
 
   return (
     <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onCardPressRequest}>
@@ -68,7 +78,7 @@ const Header: React.FC<Props> = ({
         <MorphingArrow
           snapPointBottom={snapPointBottom}
           scrollY={scrollY}
-          translation={translation}
+          translationY={translationY}
         />
       </MorphingArrowWrapper>
     </TouchableOpacity>

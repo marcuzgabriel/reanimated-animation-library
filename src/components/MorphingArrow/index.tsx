@@ -19,14 +19,12 @@ const Wrapper = styled.View`
 interface Props {
   scrollY?: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
-  translation: {
-    y: Animated.SharedValue<number>;
-  };
+  translationY: Animated.SharedValue<number>;
 }
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-const MorphingArrow: React.FC<Props> = ({ translation, snapPointBottom }) => {
+const MorphingArrow: React.FC<Props> = ({ translationY, snapPointBottom }) => {
   const windowWidth = useWindowDimensions().width;
 
   const animatedProps = useAnimatedProps(() => {
@@ -47,7 +45,7 @@ const MorphingArrow: React.FC<Props> = ({ translation, snapPointBottom }) => {
     });
 
     return {
-      d: interpolatePath(translation.y.value, [0, snapPointBottom.value], [straightArrow, upArrow]),
+      d: interpolatePath(translationY.value, [0, snapPointBottom.value], [straightArrow, upArrow]),
     };
   }, [windowWidth]);
 

@@ -12,9 +12,7 @@ interface Props {
   isScrollingUp: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
   snapPointBottom: Animated.SharedValue<number>;
-  translation: {
-    y: Animated.SharedValue<number>;
-  };
+  translationY: Animated.SharedValue<number>;
 }
 
 export const onScrollRequestCloseOrOpenCard = ({
@@ -24,7 +22,7 @@ export const onScrollRequestCloseOrOpenCard = ({
   isCardCollapsed,
   snapPointBottom,
   result,
-  translation,
+  translationY,
 }: Props): void => {
   'worklet';
 
@@ -41,7 +39,7 @@ export const onScrollRequestCloseOrOpenCard = ({
   if (shouldCardCollapse || shouldCardOpen) {
     isAnimationRunning.value = true;
     isCardCollapsed.value = shouldCardCollapse;
-    translation.y.value = withSpring(
+    translationY.value = withSpring(
       shouldCardCollapse ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
       DEFAULT_TIMING_CONFIG,
       isAnimationComplete => {
