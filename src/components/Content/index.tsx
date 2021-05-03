@@ -14,7 +14,6 @@ const Text = styled.Text``;
 const WrapperOne = styled.View`
   width: 100%;
   padding: 32px 16px;
-  justify-content: top;
   align-items: center;
   height: 600px;
   background: rgba(0, 0, 0, 0.25);

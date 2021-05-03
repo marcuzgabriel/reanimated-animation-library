@@ -26,7 +26,7 @@ const TouchableOpacity = styled.TouchableOpacity`
   z-index: 2;
   background: transparent;
   border-bottom-color: white;
-  border-bottom-width: 1;
+  border-bottom-width: 1px;
 `;
 
 const HitSlopAreaWrapper = styled.View`

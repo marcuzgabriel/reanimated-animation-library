@@ -46,7 +46,6 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
         scrollY.value = e.contentOffset.y;
         contentSize.value = e.contentSize.height;
         layoutHeight.value = e.layoutMeasurement.height;
-        scrollYOldSchool.setValue(e.contentOffset.y);
       }
     },
   });

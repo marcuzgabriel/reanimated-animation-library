@@ -1,12 +1,12 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
-  withSpring,
   useAnimatedStyle,
   useAnimatedReaction,
   useDerivedValue,
   useAnimatedGestureHandler,
+  useAnimatedScrollHandler,
 } from 'react-native-reanimated';
 import { Platform, LayoutChangeEvent, ViewStyle, useWindowDimensions } from 'react-native';
 import {
@@ -16,13 +16,9 @@ import {
 } from 'react-native-gesture-handler';
 import Card from 'components/Card';
 import Header from 'components/Header';
-import {
-  DEFAULT_SNAP_POINT_BOTTOM_RATIO,
-  DEFAULT_SNAP_POINT_TOP,
-  DEFAULT_TIMING_CONFIG,
-} from 'constants/animations';
+import { DEFAULT_SNAP_POINT_BOTTOM_RATIO } from 'constants/animations';
 import { MAX_HEIGHT_RATIO } from 'constants/styles';
-import { onScrollReaction, gestureHandlerCard, getAnimatedCardStyles } from 'worklets';
+import { onScrollReaction, getAnimatedCardStyles, gestureHandlerCard } from 'worklets';
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -68,9 +64,7 @@ const View = styled.View`
   z-index: 2;
 `;
 
-const ContentWrapper = styled.View`
-  overflow: hidden;
-`;
+const ContentWrapper = styled.View``;
 
 const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   const panGestureInnerRef = useRef<PanGestureHandler>();
@@ -82,14 +76,17 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   const isAnimationRunning = useSharedValue(false);
   const isScrollingUp = useSharedValue(false);
   const isScrollingDown = useSharedValue(false);
+  const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
+  const isScrollingEnabled = useSharedValue(true);
 
+  const panGestureType = useSharedValue(0);
+
+  const innerScrollY = useSharedValue(0);
   const translationY = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
-
-  const translationYInner = useSharedValue(0);
 
   const snapPointBottom = useDerivedValue(() =>
     cardHeight.value > 0 ? cardHeight.value * DEFAULT_SNAP_POINT_BOTTOM_RATIO : 0,
@@ -97,6 +94,14 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
 
   const windowHeight = useWindowDimensions().height;
   const maxHeight = useMemo(() => windowHeight * MAX_HEIGHT_RATIO, [windowHeight]);
+
+  const onScrollHandler = useAnimatedScrollHandler({
+    onScroll: e => {
+      if (e.contentOffset.y >= 0) {
+        innerScrollY.value = e.contentOffset.y;
+      }
+    },
+  });
 
   const gestureHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
@@ -107,10 +112,13 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
       isPanningDown,
       isCardCollapsed,
       isAnimationRunning,
+      isScrollingEnabled,
       prevDragY,
       dragY,
       translationY,
       snapPointBottom,
+      panGestureType,
+      innerScrollY,
     }),
   );
 
@@ -131,22 +139,16 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
     [scrollY],
   );
 
-  const scrollViewStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      maxHeight,
-      transform: [{ translateY: translationYInner.value }],
-    }),
-  );
-
   const panGestureStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => {
-      return getAnimatedCardStyles(translationY.value);
-    },
+    (): Animated.AnimatedStyleProp<ViewStyle> => getAnimatedCardStyles(translationY.value),
   );
 
-  const onLayout = (e: LayoutChangeEvent): void => {
-    cardHeight.value = e.nativeEvent.layout.height;
-  };
+  const onLayout = useCallback(
+    (e: LayoutChangeEvent): void => {
+      cardHeight.value = e.nativeEvent.layout.height;
+    },
+    [cardHeight],
+  );
 
   return (
     <View pointerEvents="box-none">
@@ -155,6 +157,11 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
           ref={panGestureOuterRef}
           simultaneousHandlers={panGestureInnerRef}
           onGestureEvent={gestureHandler}
+          onHandlerStateChange={(): void => {
+            if (panGestureType.value !== 0) {
+              panGestureType.value = 0;
+            }
+          }}
         >
           <Animated.View>
             <Header
@@ -169,17 +176,33 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
         </PanGestureHandler>
         <ContentWrapper>
           <PanGestureHandler
-            enabled={Platform.OS !== 'web'}
+            enabled={Platform.OS === 'ios'}
             ref={panGestureInnerRef}
             simultaneousHandlers={nativeViewGestureRef}
             onGestureEvent={gestureHandler}
+            onHandlerStateChange={(): void => {
+              if (panGestureType.value !== 1) {
+                panGestureType.value = 1;
+              }
+            }}
           >
-            <Animated.View style={scrollViewStyle}>
+            <Animated.View style={{ maxHeight }}>
               <NativeViewGestureHandler
                 ref={nativeViewGestureRef}
                 simultaneousHandlers={panGestureInnerRef}
               >
-                <Animated.ScrollView>
+                <Animated.ScrollView
+                  bounces={false}
+                  alwaysBounceVertical={false}
+                  onScroll={onScrollHandler}
+                  onTouchMove={(): void => {
+                    isScrollingCard.value = true;
+                  }}
+                  onTouchEnd={(): void => {
+                    isScrollingCard.value = false;
+                  }}
+                  scrollEventThrottle={16}
+                >
                   <Card />
                 </Animated.ScrollView>
               </NativeViewGestureHandler>
