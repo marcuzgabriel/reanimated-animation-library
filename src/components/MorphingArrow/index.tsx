@@ -17,7 +17,7 @@ const Wrapper = styled.View`
 `;
 
 interface Props {
-  scrollY?: Animated.SharedValue<number>;
+  scrollY: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
 }

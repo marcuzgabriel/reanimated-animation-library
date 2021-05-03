@@ -20,7 +20,7 @@ import { DEFAULT_SNAP_POINT_BOTTOM_RATIO } from '../../constants/animations';
 import { CARD_BOTTOM_OFFSET } from '../../constants/styles';
 
 interface BottomSheetState {
-  scrollY?: Animated.SharedValue<number>;
+  scrollY: Animated.SharedValue<number>;
   scrollYOldSchool?: Animated.Value<number>;
   isScrollable: boolean;
 }

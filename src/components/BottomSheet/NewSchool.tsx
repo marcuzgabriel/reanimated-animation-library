@@ -22,8 +22,7 @@ import {
   DEFAULT_TIMING_CONFIG,
 } from 'constants/animations';
 import { MAX_HEIGHT_RATIO } from 'constants/styles';
-import { onScrollReaction, getAnimatedCardStyles } from 'worklets';
-
+import { onScrollReaction, gestureHandlerCard, getAnimatedCardStyles } from 'worklets';
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -52,6 +51,12 @@ interface Props {
   children?: React.ReactNode;
   bottomActions?: React.ReactNode;
   onAnimationDoneRequest?: void;
+}
+
+interface AnimatedGHContext {
+  [key: string]: number;
+  startX: number;
+  startY: number;
 }
 
 const View = styled.View`
@@ -93,41 +98,21 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   const windowHeight = useWindowDimensions().height;
   const maxHeight = useMemo(() => windowHeight * MAX_HEIGHT_RATIO, [windowHeight]);
 
-  interface AnimatedGHContext {
-    [key: string]: number;
-    startX: number;
-    startY: number;
-  }
-
   const gestureHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
     AnimatedGHContext
-  >({
-    onStart: (_, ctx) => {
-      ctx.startY = translationY.value;
-    },
-    onActive: (event, ctx) => {
-      isPanning.value = true;
-      isPanningDown.value = ctx.startY + event.translationY > prevDragY.value ? true : false;
-      prevDragY.value = dragY.value;
-      dragY.value = ctx.startY + event.translationY;
-      translationY.value = isCardCollapsed.value && dragY.value <= 0 ? 0 : dragY.value;
-    },
-    onEnd: () => {
-      isCardCollapsed.value = isPanningDown.value;
-      isAnimationRunning.value = true;
-      isPanning.value = false;
-      translationYInner.value = 0;
-
-      translationY.value = withSpring(
-        isPanningDown.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-        DEFAULT_TIMING_CONFIG,
-        () => {
-          isAnimationRunning.value = false;
-        },
-      );
-    },
-  });
+  >(
+    gestureHandlerCard({
+      isPanning,
+      isPanningDown,
+      isCardCollapsed,
+      isAnimationRunning,
+      prevDragY,
+      dragY,
+      translationY,
+      snapPointBottom,
+    }),
+  );
 
   useAnimatedReaction(
     () => scrollY?.value,
@@ -146,7 +131,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
     [scrollY],
   );
 
-  const ScrollViewStyle = useAnimatedStyle(
+  const scrollViewStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       maxHeight,
       transform: [{ translateY: translationYInner.value }],
@@ -189,7 +174,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
             simultaneousHandlers={nativeViewGestureRef}
             onGestureEvent={gestureHandler}
           >
-            <Animated.View style={ScrollViewStyle}>
+            <Animated.View style={scrollViewStyle}>
               <NativeViewGestureHandler
                 ref={nativeViewGestureRef}
                 simultaneousHandlers={panGestureInnerRef}
