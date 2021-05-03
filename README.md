@@ -1,6 +1,19 @@
 ## reanimated-animation-library
 This library provides some nice animation features with the latest reanimated 2.0+ update approach that is suitable for all platforms: Web, Android and iOS. The features are a BottomSheet component, an Appear animation component and a Slider component.
 
+## Current progress
+- [ ] BottomSheet
+  - [ ] Aggressively scroll to top handler
+  - [ ] If the background content is not scrollable but there is content hiding behind the card, then make the component snappable. The card will collapse if the user tries to do a scroll gesture on the background content
+  - [ ] Implement prop flexibility and update the readme file on how the BottomSheet is implemented
+  - [x] Morphing arrow that follows the Y axis of the card animation
+  - [x] Card is collapsable by either clicking, gesturing, snapping in scrolling event to header or scrolling the background content
+  - [x] Inner scrolling event in a pangesture handler
+  - [x] iOS: Scroll-snap-to-header effect
+  - [x] Basic animation features (scrolling and pan gesture event)
+- [ ] Appear
+- [ ] Slider
+
 ## Observations
 Latest react-native-gesture-handler version vs old and latest react-native-reanimated vs old
 
