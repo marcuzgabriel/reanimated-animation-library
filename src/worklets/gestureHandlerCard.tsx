@@ -1,6 +1,5 @@
 import Animated, { withSpring } from 'react-native-reanimated';
 import { DEFAULT_SNAP_POINT_TOP, DEFAULT_TIMING_CONFIG } from 'constants/animations';
-import { Platform } from 'react-native';
 
 interface Props {
   isPanning: Animated.SharedValue<boolean>;
@@ -39,6 +38,7 @@ export const gestureHandlerCard = ({
     prevDragY.value = dragY.value;
     dragY.value = ctx.startY + event.translationY;
 
+    /* Smooth snap-to-header effect on iOS */
     if (innerScrollY.value === 0 && panGestureType.value === 1) {
       translationY.value = isCardCollapsed.value && dragY.value <= 0 ? 0 : dragY.value;
     } else if (panGestureType.value === 0) {
