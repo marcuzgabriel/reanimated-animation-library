@@ -1,5 +1,5 @@
 # Reanimated-animation-library
-This library provides some nice animation features with the latest reanimated 2+ (hooks) update approach that is suitable for all platforms: Web, Android and iOS. The features are a BottomSheet, an Appear animation, a Slider and a SVG morphing graph component.
+This library provides some nice animation features with the latest reanimated 2+ (hooks) update approach that is suitable for all platforms: Web, Android and iOS. The features are a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
 ## Current progress
 - [ ] BottomSheet
@@ -14,6 +14,7 @@ This library provides some nice animation features with the latest reanimated 2+
   - [x] Basic animation features (scrolling and pan gesture event)
 - [ ] Appear
 - [ ] Slider
+- [ ] Morphing SVG Graph
 
 ## Observations
 Latest react-native-gesture-handler version vs old and latest react-native-reanimated vs old
