@@ -1,4 +1,4 @@
-## reanimated-animation-library
+# Reanimated-animation-library
 This library provides some nice animation features with the latest reanimated 2.0+ update approach that is suitable for all platforms: Web, Android and iOS. The features are a BottomSheet, an Appear animation and a Slider component.
 
 ## Current progress
