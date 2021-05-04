@@ -25,6 +25,12 @@ const WrapperTwo = styled.View`
   background: black;
 `;
 
+const TouchableOpacity = styled.TouchableOpacity`
+  width: 100%;
+  height: 50px;
+  background: purple;
+`;
+
 const Content: React.FC<Props> = ({ contentHeight }) => {
   const onLayout = (e: LayoutChangeEvent): void => {
     contentHeight?.setValue(e.nativeEvent.layout.height);
