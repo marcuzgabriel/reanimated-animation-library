@@ -5,6 +5,7 @@ import {
   OFFSET_START_SNAP_TO_BOTTOM,
 } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
+import { withDecay } from '../hocs/withDecay';
 
 interface Props {
   isPanning: Animated.SharedValue<boolean>;

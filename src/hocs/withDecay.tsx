@@ -7,9 +7,10 @@ interface DecayAnimationState extends PhysicsAnimationState {
 const VELOCITY_EPS = 5;
 const DECELATION = 0.997;
 
-export const withDecay = (initialVelocity: any): any => {
+export const withDecay = (initialVelocity: number): any => {
   'worklet';
   return defineAnimation<DecayAnimationState>((): any => {
+    'worklet';
     const animation = (state: DecayAnimationState, now: number): any => {
       const { velocity, lastTimestamp, current } = state;
       const dt = now - lastTimestamp;
@@ -27,15 +28,16 @@ export const withDecay = (initialVelocity: any): any => {
       }
       return false;
     };
-    const start = (state: DecayAnimationState, current: number, now: number): any => {
+    const onStart = (state: DecayAnimationState, current: number, now: number): any => {
       state.current = current;
       state.velocity = initialVelocity;
       state.lastTimestamp = now;
     };
 
     return {
-      animation,
-      start,
+      onFrame: animation,
+      onStart,
+      velocity: 1,
     };
   });
 };
