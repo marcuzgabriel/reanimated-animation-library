@@ -5,14 +5,12 @@ import {
   OFFSET_START_SNAP_TO_BOTTOM,
 } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
-import { withDecay } from '../hocs/withDecay';
 
 interface Props {
   isPanning: Animated.SharedValue<boolean>;
   isPanningDown: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
   isAnimationRunning: Animated.SharedValue<boolean>;
-  isScrollingEnabled: Animated.SharedValue<boolean>;
   isCardSnapped: Animated.SharedValue<boolean>;
   prevDragY: Animated.SharedValue<number>;
   dragY: Animated.SharedValue<number>;
@@ -20,8 +18,7 @@ interface Props {
   snapPointBottom: Animated.SharedValue<number>;
   innerScrollY: Animated.SharedValue<number>;
   panGestureType: Animated.SharedValue<number>;
-  derivedIsScrollingCard: Animated.SharedValue<boolean>;
-  scrollViewRef: React.RefObject<Animated.ScrollView>;
+  isScrollingCard: Animated.SharedValue<boolean>;
 }
 
 export const gestureHandlerCard = ({
@@ -34,7 +31,7 @@ export const gestureHandlerCard = ({
   dragY,
   translationY,
   snapPointBottom,
-  derivedIsScrollingCard,
+  isScrollingCard,
   innerScrollY,
   panGestureType,
 }: Props): Record<string, unknown> => ({
@@ -51,7 +48,7 @@ export const gestureHandlerCard = ({
     dragY.value = ctx.startY + event.translationY;
 
     if (dragY.value > 0) {
-      if (derivedIsScrollingCard.value && isPanningDown.value && panGestureType.value === 1) {
+      if (isScrollingCard.value && isPanningDown.value && panGestureType.value === 1) {
         if (innerScrollY.value === 0 || innerScrollY.value <= SCROLL_EVENT_THROTTLE) {
           isCardSnapped.value = true;
           translationY.value = dragY.value;

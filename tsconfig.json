@@ -18,7 +18,7 @@
       "components/*": ["src/components/*"],
       "constants/*": ["src/constants/*"],
       "worklets": ["src/worklets/index.ts"],
-      "hocs": ["src/hocs"],
+      "hoas": ["src/hoas"],
     }
   },
   "exclude": [

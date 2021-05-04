@@ -37,7 +37,6 @@ export const withDecay = (initialVelocity: number): any => {
     return {
       onFrame: animation,
       onStart,
-      velocity: 1,
     };
   });
 };

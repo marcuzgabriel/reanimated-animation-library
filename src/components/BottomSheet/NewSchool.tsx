@@ -82,7 +82,6 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   const isScrollingDown = useSharedValue(false);
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
-  const isScrollingEnabled = useSharedValue(true);
   const isCardSnapped = useSharedValue(false);
 
   const panGestureType = useSharedValue(0);
@@ -93,7 +92,6 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
 
-  const derivedIsScrollingCard = useDerivedValue(() => isScrollingCard.value);
   const snapPointBottom = useDerivedValue(() =>
     cardHeight.value > 0 ? cardHeight.value * DEFAULT_SNAP_POINT_BOTTOM_RATIO : 0,
   );
@@ -112,13 +110,11 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
     AnimatedGHContext
   >(
     gestureHandlerCard({
-      scrollViewRef,
-      derivedIsScrollingCard,
+      isScrollingCard,
       isPanning,
       isPanningDown,
       isCardCollapsed,
       isAnimationRunning,
-      isScrollingEnabled,
       isCardSnapped,
       prevDragY,
       dragY,
