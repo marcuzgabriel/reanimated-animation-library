@@ -9,7 +9,7 @@ This library provides some nice animation features with the latest reanimated 2.
   - [x] Morphing arrow that follows the Y axis animation of the card
   - [ ] Card is collapsable by either clicking, gesturing, overlapping from scroll to pan gesture or scrolling the background content
   - [x] Add a ScrollView component in a PanGestureHandler component
-  - [x] iOS: Overlap from a scrolling gesture to a pan gesture by creating a scroll-to-top snapping effect
+  - [x] iOS + Android: Overlap from a scrolling gesture to a pan gesture by creating a scroll-to-top snapping effect
   - [x] Basic animation features (scrolling and pan gesture event)
 - [ ] Appear
 - [ ] Slider
