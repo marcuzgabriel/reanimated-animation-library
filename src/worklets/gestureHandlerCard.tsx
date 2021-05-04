@@ -62,14 +62,16 @@ export const gestureHandlerCard = ({
   onEnd: (): void => {
     'worklet';
 
+    const isCardCollapsable =
+      panGestureType.value === 1
+        ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
+        : isPanningDown.value;
     isCardCollapsed.value = isPanningDown.value;
     isAnimationRunning.value = true;
     isPanning.value = false;
 
     translationY.value = withSpring(
-      isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
-        ? snapPointBottom.value
-        : DEFAULT_SNAP_POINT_TOP,
+      isCardCollapsable ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
       DEFAULT_TIMING_CONFIG,
       () => {
         isAnimationRunning.value = false;

@@ -158,7 +158,6 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
       <Animated.View onLayout={onLayout} style={panGestureStyle}>
         <PanGestureHandler
           ref={panGestureOuterRef}
-          simultaneousHandlers={panGestureInnerRef}
           onGestureEvent={gestureHandler}
           onHandlerStateChange={(): void => {
             if (panGestureType.value !== 0) {
