@@ -21,6 +21,7 @@ import { DEFAULT_SNAP_POINT_BOTTOM_RATIO } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 import { MAX_HEIGHT_RATIO } from 'constants/styles';
 import { onScrollReaction, getAnimatedCardStyles, gestureHandlerCard } from 'worklets';
+
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
