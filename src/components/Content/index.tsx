@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutChangeEvent } from 'react-native';
+import { LayoutChangeEvent, SafeAreaView } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
@@ -25,10 +25,13 @@ const WrapperTwo = styled.View`
   background: black;
 `;
 
-const TouchableOpacity = styled.TouchableOpacity`
+const TextInput = styled.TextInput`
+  margin: 16px;
   width: 100%;
   height: 50px;
-  background: purple;
+  text-align: center;
+  border-radius: 6px;
+  background-color: white;
 `;
 
 const Content: React.FC<Props> = ({ contentHeight }) => {
@@ -37,12 +40,15 @@ const Content: React.FC<Props> = ({ contentHeight }) => {
   };
 
   return (
-    <Wrapper onLayout={onLayout}>
-      <WrapperOne>
-        <Text>Ipsem lorem whatever magic harry potter stuff</Text>
-      </WrapperOne>
-      <WrapperTwo />
-    </Wrapper>
+    <SafeAreaView>
+      <Wrapper onLayout={onLayout}>
+        <WrapperOne>
+          <Text>Ipsem lorem whatever magic harry potter stuff</Text>
+          <TextInput placeholder="useless placeholder" keyboardType="numeric" />
+        </WrapperOne>
+        <WrapperTwo />
+      </Wrapper>
+    </SafeAreaView>
   );
 };
 
