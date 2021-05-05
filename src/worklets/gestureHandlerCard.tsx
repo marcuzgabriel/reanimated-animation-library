@@ -12,13 +12,13 @@ interface Props {
   isCardCollapsed: Animated.SharedValue<boolean>;
   isAnimationRunning: Animated.SharedValue<boolean>;
   isCardSnapped: Animated.SharedValue<boolean>;
+  isScrollingCard: Animated.SharedValue<boolean>;
   prevDragY: Animated.SharedValue<number>;
   dragY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
   innerScrollY: Animated.SharedValue<number>;
   panGestureType: Animated.SharedValue<number>;
-  isScrollingCard: Animated.SharedValue<boolean>;
 }
 
 export const gestureHandlerCard = ({
@@ -27,11 +27,11 @@ export const gestureHandlerCard = ({
   isCardCollapsed,
   isAnimationRunning,
   isCardSnapped,
+  isScrollingCard,
   prevDragY,
   dragY,
   translationY,
   snapPointBottom,
-  isScrollingCard,
   innerScrollY,
   panGestureType,
 }: Props): Record<string, unknown> => ({
@@ -44,11 +44,14 @@ export const gestureHandlerCard = ({
     'worklet';
     isPanning.value = true;
     prevDragY.value = translationY.value;
-    isPanningDown.value = ctx.startY + event.translationY > prevDragY.value ? true : false;
     dragY.value = ctx.startY + event.translationY;
 
     if (dragY.value > 0) {
-      if (isScrollingCard.value && isPanningDown.value && panGestureType.value === 1) {
+      if (
+        isScrollingCard.value &&
+        ctx.startY + event.translationY > prevDragY.value &&
+        panGestureType.value === 1
+      ) {
         if (innerScrollY.value === 0 || innerScrollY.value <= SCROLL_EVENT_THROTTLE) {
           isCardSnapped.value = true;
           translationY.value = dragY.value;
@@ -59,16 +62,17 @@ export const gestureHandlerCard = ({
       }
     }
   },
-  onEnd: (): void => {
+  onEnd: (event: any, ctx: any): void => {
     'worklet';
+    isPanningDown.value = ctx.startY + event.translationY > prevDragY.value ? true : false;
+    isCardCollapsed.value = isPanningDown.value;
+    isAnimationRunning.value = true;
+    isPanning.value = false;
 
     const isCardCollapsable =
       panGestureType.value === 1
         ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
         : isPanningDown.value;
-    isCardCollapsed.value = isPanningDown.value;
-    isAnimationRunning.value = true;
-    isPanning.value = false;
 
     translationY.value = withSpring(
       isCardCollapsable ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,

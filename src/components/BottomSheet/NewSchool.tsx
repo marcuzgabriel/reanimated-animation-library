@@ -111,23 +111,27 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   const windowHeight = useWindowDimensions().height;
   const maxHeight = useMemo(() => windowHeight * MAX_HEIGHT_RATIO, [windowHeight]);
 
-  const actionRequestCloseOrOpenCard = useCallback(() => {
-    onActionRequestCloseOrOpenCard({
-      translationY,
-      isAnimationRunning,
-      derivedIsCollapsed,
-      derivedIsPanning,
+  const actionRequestCloseOrOpenCard = useCallback(
+    (direction?: string) => {
+      onActionRequestCloseOrOpenCard({
+        translationY,
+        isAnimationRunning,
+        derivedIsCollapsed,
+        derivedIsPanning,
+        isCardCollapsed,
+        snapPointBottom,
+        direction,
+      });
+    },
+    [
       isCardCollapsed,
+      isAnimationRunning,
       snapPointBottom,
-    });
-  }, [
-    isCardCollapsed,
-    isAnimationRunning,
-    snapPointBottom,
-    translationY,
-    derivedIsPanning,
-    derivedIsCollapsed,
-  ]);
+      translationY,
+      derivedIsPanning,
+      derivedIsCollapsed,
+    ],
+  );
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent): void => {
@@ -170,7 +174,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
     () => snapEffectDirection?.value,
     (result: string | undefined, previous: string | null | undefined) => {
       if (result !== previous) {
-        actionRequestCloseOrOpenCard();
+        actionRequestCloseOrOpenCard(result);
       }
     },
     [snapEffectDirection],

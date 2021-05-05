@@ -8,6 +8,7 @@ interface Props {
   derivedIsPanning: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
   translationY: Animated.SharedValue<number>;
+  direction?: string | undefined;
 }
 
 export const onActionRequestCloseOrOpenCard = ({
@@ -17,16 +18,18 @@ export const onActionRequestCloseOrOpenCard = ({
   derivedIsPanning,
   snapPointBottom,
   isCardCollapsed,
+  direction,
 }: Props): void => {
   'worklet';
 
   if (!derivedIsPanning.value) {
-    cancelAnimation(translationY);
     isAnimationRunning.value = true;
     isCardCollapsed.value = !isCardCollapsed.value;
 
     translationY.value = withSpring(
-      derivedIsCollapsed.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+      direction === 'up' || derivedIsCollapsed.value
+        ? snapPointBottom.value
+        : DEFAULT_SNAP_POINT_TOP,
       DEFAULT_TIMING_CONFIG,
       () => {
         isAnimationRunning.value = false;
