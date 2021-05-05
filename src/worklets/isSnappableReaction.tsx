@@ -1,4 +1,5 @@
 import Animated, { runOnJS } from 'react-native-reanimated';
+import { IS_SCROLLABLE_OFFSET } from 'constants/animations';
 
 interface Props {
   result: Record<string, Animated.SharedValue<number | boolean>> | undefined;
@@ -30,7 +31,7 @@ export const isSnappableReaction = ({
 
     const { contentHeight, cardHeight } = result ?? {};
 
-    isScrollable.value = contentHeight.value > windowHeight;
+    isScrollable.value = contentHeight.value > windowHeight + IS_SCROLLABLE_OFFSET;
     isCardOverlappingContent.value = contentHeight.value > cardHeight.value;
     isSnapEffectActive.value = isCardOverlappingContent.value && !isScrollable.value;
 
