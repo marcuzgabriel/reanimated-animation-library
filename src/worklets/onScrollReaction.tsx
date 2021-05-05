@@ -32,26 +32,21 @@ export const onScrollReaction = ({
     }
 
     if (
-      result >= DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM ||
-      result < DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM
+      result < DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM &&
+      isScrollingDown.value &&
+      !isCardCollapsed.value
     ) {
-      if (
-        result < DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM &&
-        isScrollingDown.value &&
-        !isCardCollapsed.value
-      ) {
-        translationY.value = result;
-      } else {
-        onScrollRequestCloseOrOpenCard({
-          isAnimationRunning,
-          isScrollingDown,
-          isScrollingUp,
-          isCardCollapsed,
-          result,
-          translationY,
-          snapPointBottom,
-        });
-      }
+      translationY.value = result;
+    } else {
+      onScrollRequestCloseOrOpenCard({
+        isAnimationRunning,
+        isScrollingDown,
+        isScrollingUp,
+        isCardCollapsed,
+        result,
+        translationY,
+        snapPointBottom,
+      });
     }
   }
 };

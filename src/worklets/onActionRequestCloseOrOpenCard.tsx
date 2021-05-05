@@ -26,14 +26,24 @@ export const onActionRequestCloseOrOpenCard = ({
     isAnimationRunning.value = true;
     isCardCollapsed.value = !isCardCollapsed.value;
 
-    translationY.value = withSpring(
-      direction === 'up' || derivedIsCollapsed.value
-        ? snapPointBottom.value
-        : DEFAULT_SNAP_POINT_TOP,
-      DEFAULT_TIMING_CONFIG,
-      () => {
-        isAnimationRunning.value = false;
-      },
-    );
+    const isSnapping = direction === 'up' || direction === 'down';
+
+    if (isSnapping) {
+      translationY.value = withSpring(
+        direction === 'up' ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+        DEFAULT_TIMING_CONFIG,
+        () => {
+          isAnimationRunning.value = false;
+        },
+      );
+    } else {
+      translationY.value = withSpring(
+        derivedIsCollapsed.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+        DEFAULT_TIMING_CONFIG,
+        () => {
+          isAnimationRunning.value = false;
+        },
+      );
+    }
   }
 };

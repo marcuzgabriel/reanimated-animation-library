@@ -6,7 +6,7 @@ interface Props {
   scrollY: Animated.SharedValue<number>;
   scrollYOldSchool: Animated.Value<number>;
   snapEffectDirection?: Animated.SharedValue<string>;
-  onLayoutRequest?: (cardHeight: Animated.SharedValue<number>) => void;
+  onLayoutRequest?: (cardHeight: number) => void;
 }
 
 const BottomSheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest }) => (

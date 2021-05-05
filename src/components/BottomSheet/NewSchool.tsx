@@ -55,7 +55,7 @@ interface Props {
   bottomActions?: React.ReactNode;
   onAnimationDoneRequest?: void;
   snapEffectDirection?: Animated.SharedValue<string>;
-  onLayoutRequest?: (cardHeight: Animated.SharedValue<number>) => void;
+  onLayoutRequest?: (height: number) => void;
 }
 
 interface AnimatedGHContext {
@@ -136,10 +136,12 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent): void => {
-      cardHeight.value = e.nativeEvent.layout.height;
+      if (e.nativeEvent.layout.height > 0) {
+        cardHeight.value = e.nativeEvent.layout.height;
 
-      if (onLayoutRequest) {
-        onLayoutRequest(cardHeight);
+        if (onLayoutRequest) {
+          onLayoutRequest(e.nativeEvent.layout.height);
+        }
       }
     },
     [cardHeight, onLayoutRequest],
@@ -174,7 +176,8 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   useAnimatedReaction(
     () => snapEffectDirection?.value,
     (result: string | undefined, previous: string | null | undefined) => {
-      if (result !== previous) {
+      if (result !== previous && (result === 'up' || result === 'down')) {
+        console.log('[ANIMATION REACTION #2]');
         actionRequestCloseOrOpenCard(result);
       }
     },
@@ -184,6 +187,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   useAnimatedReaction(
     () => scrollY?.value,
     (result: number | undefined, previous: number | null | undefined) => {
+      console.log('[ANIMATION REACTION #3]');
       onScrollReaction({
         result,
         previous,
