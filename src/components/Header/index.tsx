@@ -8,15 +8,12 @@ import {
   HIT_SLOP,
 } from 'constants/styles';
 import MorphingArrow from 'components/MorphingArrow';
-import { onPressRequestCloseOrOpenCard } from 'worklets';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
   scrollY: Animated.SharedValue<number>;
-  isAnimationRunning: Animated.SharedValue<boolean>;
-  isCardCollapsed: Animated.SharedValue<boolean>;
-  isPanning: Animated.SharedValue<boolean>;
   translationY: Animated.SharedValue<number>;
+  onPress: () => void;
 }
 
 const TouchableOpacity = styled.TouchableOpacity`
@@ -42,47 +39,17 @@ const MorphingArrowWrapper = styled.View`
   top: -${CLOSE_OPEN_CARD_BUTTON_HITSLOP}px;
 `;
 
-const Header: React.FC<Props> = ({
-  snapPointBottom,
-  scrollY,
-  translationY,
-  isAnimationRunning,
-  isCardCollapsed,
-  isPanning,
-}) => {
-  const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
-  const derivedIsPanning = useDerivedValue(() => isPanning.value);
-
-  const onCardPressRequest = useCallback(() => {
-    onPressRequestCloseOrOpenCard({
-      translationY,
-      isAnimationRunning,
-      derivedIsCollapsed,
-      derivedIsPanning,
-      isCardCollapsed,
-      snapPointBottom,
-    });
-  }, [
-    isCardCollapsed,
-    isAnimationRunning,
-    snapPointBottom,
-    translationY,
-    derivedIsPanning,
-    derivedIsCollapsed,
-  ]);
-
-  return (
-    <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onCardPressRequest}>
-      <HitSlopAreaWrapper />
-      <MorphingArrowWrapper>
-        <MorphingArrow
-          snapPointBottom={snapPointBottom}
-          scrollY={scrollY}
-          translationY={translationY}
-        />
-      </MorphingArrowWrapper>
-    </TouchableOpacity>
-  );
-};
+const Header: React.FC<Props> = ({ snapPointBottom, scrollY, translationY, onPress }) => (
+  <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onPress}>
+    <HitSlopAreaWrapper />
+    <MorphingArrowWrapper>
+      <MorphingArrow
+        snapPointBottom={snapPointBottom}
+        scrollY={scrollY}
+        translationY={translationY}
+      />
+    </MorphingArrowWrapper>
+  </TouchableOpacity>
+);
 
 export default Header;

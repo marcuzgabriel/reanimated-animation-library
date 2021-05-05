@@ -20,8 +20,12 @@ import Header from 'components/Header';
 import { DEFAULT_SNAP_POINT_BOTTOM_RATIO } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 import { MAX_HEIGHT_RATIO } from 'constants/styles';
-import { onScrollReaction, getAnimatedCardStyles, gestureHandlerCard } from 'worklets';
-
+import {
+  onScrollReaction,
+  onActionRequestCloseOrOpenCard,
+  getAnimatedCardStyles,
+  gestureHandlerCard,
+} from 'worklets';
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -50,6 +54,8 @@ interface Props {
   children?: React.ReactNode;
   bottomActions?: React.ReactNode;
   onAnimationDoneRequest?: void;
+  snapEffectDirection?: Animated.SharedValue<string>;
+  onLayoutRequest?: (cardHeight: Animated.SharedValue<number>) => void;
 }
 
 interface AnimatedGHContext {
@@ -69,7 +75,11 @@ const View = styled.View`
 
 const ContentWrapper = styled.View``;
 
-const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
+const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
+  scrollY,
+  snapEffectDirection,
+  onLayoutRequest,
+}) => {
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const panGestureOuterRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
@@ -92,12 +102,43 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
 
+  const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
+  const derivedIsPanning = useDerivedValue(() => isPanning.value);
   const snapPointBottom = useDerivedValue(() =>
     cardHeight.value > 0 ? cardHeight.value * DEFAULT_SNAP_POINT_BOTTOM_RATIO : 0,
   );
 
   const windowHeight = useWindowDimensions().height;
   const maxHeight = useMemo(() => windowHeight * MAX_HEIGHT_RATIO, [windowHeight]);
+
+  const actionRequestCloseOrOpenCard = useCallback(() => {
+    onActionRequestCloseOrOpenCard({
+      translationY,
+      isAnimationRunning,
+      derivedIsCollapsed,
+      derivedIsPanning,
+      isCardCollapsed,
+      snapPointBottom,
+    });
+  }, [
+    isCardCollapsed,
+    isAnimationRunning,
+    snapPointBottom,
+    translationY,
+    derivedIsPanning,
+    derivedIsCollapsed,
+  ]);
+
+  const onLayout = useCallback(
+    (e: LayoutChangeEvent): void => {
+      cardHeight.value = e.nativeEvent.layout.height;
+
+      if (onLayoutRequest) {
+        onLayoutRequest(cardHeight);
+      }
+    },
+    [cardHeight, onLayoutRequest],
+  );
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -126,6 +167,16 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
   );
 
   useAnimatedReaction(
+    () => snapEffectDirection?.value,
+    (result: string | undefined, previous: string | null | undefined) => {
+      if (result !== previous) {
+        actionRequestCloseOrOpenCard();
+      }
+    },
+    [snapEffectDirection],
+  );
+
+  useAnimatedReaction(
     () => scrollY?.value,
     (result: number | undefined, previous: number | null | undefined) => {
       onScrollReaction({
@@ -146,13 +197,6 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
     (): Animated.AnimatedStyleProp<ViewStyle> => getAnimatedCardStyles(translationY.value),
   );
 
-  const onLayout = useCallback(
-    (e: LayoutChangeEvent): void => {
-      cardHeight.value = e.nativeEvent.layout.height;
-    },
-    [cardHeight],
-  );
-
   return (
     <View pointerEvents="box-none">
       <Animated.View onLayout={onLayout} style={panGestureStyle}>
@@ -170,9 +214,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({ scrollY }) => {
               snapPointBottom={snapPointBottom}
               scrollY={scrollY}
               translationY={translationY}
-              isAnimationRunning={isAnimationRunning}
-              isCardCollapsed={isCardCollapsed}
-              isPanning={isPanning}
+              onPress={actionRequestCloseOrOpenCard}
             />
           </Animated.View>
         </PanGestureHandler>

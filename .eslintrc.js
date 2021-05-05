@@ -43,10 +43,7 @@ module.exports = {
     '@typescript-eslint/prefer-optional-chain': 'error',
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/prefer-as-const': 'error',
-    '@typescript-eslint/no-unused-vars': [
-      'warn',
-      { varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
-    ],
+    '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-floating-promises': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-unsafe-call': 'off',

@@ -5,11 +5,16 @@ import OldSchool from './OldSchool';
 interface Props {
   scrollY: Animated.SharedValue<number>;
   scrollYOldSchool: Animated.Value<number>;
-  windowHeight: number;
+  snapEffectDirection?: Animated.SharedValue<string>;
+  onLayoutRequest?: (cardHeight: Animated.SharedValue<number>) => void;
 }
 
-const BottomSheet: React.FC<Props> = ({ scrollY, scrollYOldSchool }) => (
-  <NewSchool scrollY={scrollY} />
+const BottomSheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest }) => (
+  <NewSchool
+    scrollY={scrollY}
+    snapEffectDirection={snapEffectDirection}
+    onLayoutRequest={onLayoutRequest}
+  />
 );
 
 export default BottomSheet;

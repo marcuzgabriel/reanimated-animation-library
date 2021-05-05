@@ -1,4 +1,4 @@
-export { onPressRequestCloseOrOpenCard } from './onPressRequestCloseOrOpenCard';
+export { onActionRequestCloseOrOpenCard } from './onActionRequestCloseOrOpenCard';
 export { onScrollReaction } from './onScrollReaction';
 export { onScrollRequestCloseOrOpenCard } from './onScrollRequestCloseOrOpenCard';
 export { getAnimatedCardStyles } from './getAnimatedCardStyles';

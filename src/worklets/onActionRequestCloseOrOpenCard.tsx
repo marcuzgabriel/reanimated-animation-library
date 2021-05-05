@@ -10,7 +10,7 @@ interface Props {
   translationY: Animated.SharedValue<number>;
 }
 
-export const onPressRequestCloseOrOpenCard = ({
+export const onActionRequestCloseOrOpenCard = ({
   translationY,
   isAnimationRunning,
   derivedIsCollapsed,

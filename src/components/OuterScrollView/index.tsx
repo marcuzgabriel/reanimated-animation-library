@@ -1,7 +1,8 @@
 /* Example on how to implement the BottomSheet to a ScrollView
 and attach the scrollY as a controller to it */
 
-import React, { useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
@@ -9,10 +10,10 @@ import Animated, {
   useAnimatedRef,
 } from 'react-native-reanimated';
 import BottomSheet from '../BottomSheet';
+import SnapEffect from 'components/SnapEffect';
 
 const SCROLL_EVENT_THROTTHLE = 16;
 interface Props {
-  windowHeight: number;
   children: React.ReactNode;
 }
 
@@ -31,13 +32,23 @@ const BackgroundContent = styled.View`
   z-index: 1;
 `;
 
-const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
+const OuterScrollView: React.FC<Props> = ({ children }) => {
+  const [isSnapEffectActiveState, setIsSnapEffectActiveState] = useState<boolean>(false);
+
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const previousScrollY = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const contentSize = useSharedValue(0);
   const layoutHeight = useSharedValue(0);
+  const contentHeight = useSharedValue(0);
+  const snapEffectDirection = useSharedValue('');
   const scrollYOldSchool = useRef(new Animated.Value<number>(0)).current;
+
+  const isScrollable = useSharedValue(false);
+  const isCardOverlappingContent = useSharedValue(false);
+  const isSnapEffectActive = useSharedValue(false);
+
+  const windowHeight = useWindowDimensions().height;
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -58,14 +69,35 @@ const OuterScrollView: React.FC<Props> = ({ windowHeight, children }) => {
           bounces={false}
           alwaysBounceVertical={false}
           onScroll={onScrollHandler}
+          onContentSizeChange={(_, height): void => {
+            /* Be aware: window height is a very easy way
+            of determing scrollability but in many cases there
+            is a header that needs to be a part of the calculation */
+            contentHeight.value = height;
+            isScrollable.value = contentHeight.value > windowHeight;
+          }}
           scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
         >
-          <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
-          <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
+          <SnapEffect
+            isSnapEffectActive={isSnapEffectActiveState}
+            snapEffectDirection={snapEffectDirection}
+          >
+            <Wrapper windowHeight={windowHeight}>{children}</Wrapper>
+          </SnapEffect>
         </Animated.ScrollView>
       </BackgroundContent>
       <BottomSheet
-        windowHeight={windowHeight}
+        onLayoutRequest={(cardHeight: Animated.SharedValue<number>): any => {
+          isCardOverlappingContent.value = contentHeight.value > cardHeight.value;
+          isSnapEffectActive.value = isCardOverlappingContent.value && !isScrollable.value;
+
+          if (isSnapEffectActive.value && !isSnapEffectActiveState) {
+            setIsSnapEffectActiveState(true);
+          } else if (isSnapEffectActiveState) {
+            setIsSnapEffectActiveState(false);
+          }
+        }}
+        snapEffectDirection={snapEffectDirection}
         scrollY={scrollY}
         scrollYOldSchool={scrollYOldSchool}
       />

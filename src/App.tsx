@@ -30,7 +30,7 @@ const App: React.FC = () => {
   const windowHeight = useWindowDimensions().height;
 
   return (
-    <OuterScrollView windowHeight={windowHeight}>
+    <OuterScrollView>
       {fakeScrollItem.map(({ text }, i) => (
         <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
           <Text>{text}</Text>
