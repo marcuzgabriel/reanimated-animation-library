@@ -113,6 +113,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
 
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
+      'worklet';
       onActionRequestCloseOrOpenCard({
         translationY,
         isAnimationRunning,
