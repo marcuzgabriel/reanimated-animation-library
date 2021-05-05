@@ -4,10 +4,10 @@ This library provides some nice animation features with the latest reanimated 2+
 ## Current progress
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
-  - [ ] If the background content is not scrollable but there is content hiding behind the card, then make the component snappable so the card will collapse if the user tries to do a scroll gesture on the background content
+  - [x] If the background content is not scrollable but there is content hiding behind the card, then make the component snappable so the card will collapse if the user tries to do a scroll gesture on the background content
   - [ ] Implement prop flexibility and update the readme file on how to implement the BottomSheet
   - [x] Morphing arrow that follows the Y axis animation of the card
-  - [ ] Card is collapsable by either clicking, gesturing, overlapping from scroll to pan gesture or scrolling the background content
+  - [x] Card is collapsable by either clicking, gesturing, overlapping from scroll to pan gesture or scrolling the background content
   - [ ] The card should be able to handle input fields. When an input field is pressed, then the keyboard should press the card upwards
   - [x] Add a ScrollView component in a PanGestureHandler component
   - [x] iOS + Android: Overlap from a scrolling gesture to a pan gesture by creating a scroll-to-top snapping effect
