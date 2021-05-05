@@ -19,7 +19,7 @@ This library provides some nice animation features with the latest reanimated 2+
 ## Observations
 Latest react-native-gesture-handler version vs old and latest react-native-reanimated vs old
 
-| Package | Platform | Observation / bug |
+| Package | Platform | Observations / bugs |
 | :--- | :---: | :---: |
 | #react-native-reanimated | web | The package has a bug on web when it comes to interpolating SVG's. https://github.com/software-mansion/react-native-reanimated/issues/1951 |
 | #react-native-gesture-handler | all | There are quite some limitation from previously. Before react-native-gesture-handler handled the touches automatically with no further control to it. Now all pan gestures needs to be controlled with waitFor and simoustanously.
