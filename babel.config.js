@@ -16,7 +16,7 @@ module.exports = {
           worklets: './src/worklets',
           constants: './src/constants',
           components: './src/components',
-          hocs: './src/hocs',
+          hoas: './src/hoas',
         },
         extensions: ['.ts', '.tsx', '.js', 'cjs', '.ios.js', '.android.js', '.web.js'],
       },

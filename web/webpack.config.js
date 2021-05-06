@@ -39,20 +39,25 @@ module.exports = {
           },
         ],
       },
-
       {
-        test: /\.(js|tsx)$/,
+        test: /\.(ts|tsx)$/,
         use: [
-          {
-            loader: 'babel-loader',
-            options: babelConfig,
-          },
           {
             loader: 'awesome-typescript-loader',
             options: {
               useBabel: true,
               babelOptions: babelConfig,
+              reportFiles: ['./src/**/*.{ts,tsx}'],
             },
+          },
+        ],
+      },
+      {
+        test: /\.js?$/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: babelConfig,
           },
         ],
         include: [
