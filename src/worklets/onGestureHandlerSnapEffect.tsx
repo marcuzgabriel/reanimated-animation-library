@@ -1,5 +1,5 @@
 import Animated, { withSpring } from 'react-native-reanimated';
-import { DEFAULT_TIMING_CONFIG } from 'constants/animations';
+import { DEFAULT_SPRING_CONFIG } from 'constants/animations';
 
 interface Props {
   translationY: Animated.SharedValue<number>;
@@ -43,6 +43,6 @@ export const onGestureHandlerSnapEffect = ({
   onEnd: (): void => {
     'worklet';
 
-    translationY.value = withSpring(0, DEFAULT_TIMING_CONFIG);
+    translationY.value = withSpring(0, DEFAULT_SPRING_CONFIG);
   },
 });

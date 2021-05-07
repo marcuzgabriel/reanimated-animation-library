@@ -1,7 +1,7 @@
 import Animated, { withSpring } from 'react-native-reanimated';
 import {
   DEFAULT_SNAP_POINT_TOP,
-  DEFAULT_TIMING_CONFIG,
+  DEFAULT_SPRING_CONFIG,
   DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM,
 } from '../constants/animations';
 
@@ -41,7 +41,7 @@ export const onScrollRequestCloseOrOpenCard = ({
     isCardCollapsed.value = shouldCardCollapse;
     translationY.value = withSpring(
       shouldCardCollapse ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-      DEFAULT_TIMING_CONFIG,
+      DEFAULT_SPRING_CONFIG,
       isAnimationComplete => {
         if (isAnimationComplete) {
           isAnimationRunning.value = false;

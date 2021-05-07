@@ -1,3 +1,4 @@
+export const KEYBOARD_CARD_HEIGHT_RATIO = 0.3;
 export const DEFAULT_CARD_HEIGHT = 500;
 export const DEFAULT_BORDER_RADIUS = 16;
 export const CARD_BOTTOM_OFFSET = 50;

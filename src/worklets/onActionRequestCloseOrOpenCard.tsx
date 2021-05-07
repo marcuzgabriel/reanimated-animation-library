@@ -1,5 +1,5 @@
 import Animated, { cancelAnimation, withSpring } from 'react-native-reanimated';
-import { DEFAULT_SNAP_POINT_TOP, DEFAULT_TIMING_CONFIG } from 'constants/animations';
+import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from 'constants/animations';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
@@ -31,7 +31,7 @@ export const onActionRequestCloseOrOpenCard = ({
     if (isSnapping) {
       translationY.value = withSpring(
         direction === 'up' ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-        DEFAULT_TIMING_CONFIG,
+        DEFAULT_SPRING_CONFIG,
         () => {
           isAnimationRunning.value = false;
         },
@@ -39,7 +39,7 @@ export const onActionRequestCloseOrOpenCard = ({
     } else {
       translationY.value = withSpring(
         derivedIsCollapsed.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-        DEFAULT_TIMING_CONFIG,
+        DEFAULT_SPRING_CONFIG,
         () => {
           isAnimationRunning.value = false;
         },

@@ -1,6 +1,7 @@
-import React, { useRef, useContext, useCallback } from 'react';
+import React, { useRef, useMemo, useContext, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
+  Easing,
   useAnimatedRef,
   useSharedValue,
   useAnimatedStyle,
@@ -8,6 +9,7 @@ import Animated, {
   useDerivedValue,
   useAnimatedGestureHandler,
   useAnimatedScrollHandler,
+  withTiming,
   runOnJS,
 } from 'react-native-reanimated';
 import {
@@ -27,7 +29,11 @@ import Content from '../Content';
 import Header from '../Header';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 import { OFFSET_SNAP_POINT_BOTTOM, DEFAULT_TIMING_CONFIG } from 'constants/animations';
-import { MAX_HEIGHT_RATIO, CLOSE_CARD_BUTTON_HEIGHT } from 'constants/styles';
+import {
+  MAX_HEIGHT_RATIO,
+  CLOSE_CARD_BUTTON_HEIGHT,
+  KEYBOARD_CARD_HEIGHT_RATIO,
+} from 'constants/styles';
 import {
   onScrollReaction,
   onActionRequestCloseOrOpenCard,
@@ -126,6 +132,18 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
       : 0,
   );
 
+  /* Workaround: Typescript says that there is not a scrollTo function
+  on the ScrollviewRef */
+  const scrollTo = useCallback(
+    ({ y }: Record<string, number>): void => {
+      if (scrollViewRef.current) {
+        const { scrollTo: fn }: any = scrollViewRef.current;
+        return fn({ y });
+      }
+    },
+    [scrollViewRef],
+  );
+
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
       'worklet';
@@ -195,6 +213,18 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     }),
   );
 
+  /* When you go from a alphabetic keyboard type to number etc. then
+  the card will follow */
+  useAnimatedReaction(
+    () => keyboardContext.keyboardHeight.value,
+    (result: number, previous: number | null | undefined) => {
+      if (result !== previous && isInFocusedInputState.value) {
+        translationY.value = withTiming(-result, DEFAULT_TIMING_CONFIG);
+      }
+    },
+    [snapEffectDirection],
+  );
+
   useAnimatedReaction(
     () => snapEffectDirection?.value,
     (result: string | undefined, previous: string | null | undefined) => {
@@ -206,14 +236,12 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     [snapEffectDirection],
   );
 
-  console.log(keyboardContext);
-
   useAnimatedReaction(
     () => keyboardContext.isKeyboardVisible.value,
-    (result: boolean | undefined, previous: boolean | null | undefined) => {
+    (result: boolean, previous: boolean | null | undefined) => {
       if (result !== previous && !result) {
         maxHeight.value = windowHeight * MAX_HEIGHT_RATIO;
-        translationY.value = Animated.withSpring(0, DEFAULT_TIMING_CONFIG);
+        translationY.value = withTiming(0, DEFAULT_TIMING_CONFIG);
         isInFocusedInputState.value = false;
       }
     },
@@ -221,7 +249,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
 
   useAnimatedReaction(
     () => scrollY?.value,
-    (result: number | undefined, previous: number | null | undefined) => {
+    (result: number, previous: number | null | undefined) => {
       if (!isInFocusedInputState.value) {
         console.log('[ANIMATION REACTION #3]');
         onScrollReaction({
@@ -312,15 +340,16 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
                       scrollViewRef={scrollViewRef}
                       setKeyboardOffsetCallback={(value: number): void => {
                         if (scrollViewRef.current) {
-                          const { scrollTo }: any = scrollViewRef.current;
-                          translationY.value = Animated.withSpring(
+                          maxHeight.value = withTiming(
+                            windowHeight * KEYBOARD_CARD_HEIGHT_RATIO,
+                            DEFAULT_TIMING_CONFIG,
+                          );
+                          translationY.value = withTiming(
                             -keyboardContext.keyboardHeight.value,
                             DEFAULT_TIMING_CONFIG,
                           );
 
-                          maxHeight.value = 250;
                           scrollTo({ y: value });
-
                           isInFocusedInputState.value = true;
                         }
                       }}

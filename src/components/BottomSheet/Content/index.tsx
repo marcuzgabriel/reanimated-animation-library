@@ -60,7 +60,7 @@ const Content: React.FC<Props> = ({
       selectedInputFieldPositionY,
     }),
     (
-      result: Record<string, Animated.SharedValue<number>> | undefined,
+      result: Record<string, Animated.SharedValue<number>>,
       previous: Record<string, Animated.SharedValue<number>> | null | undefined,
     ) => {
       if (result && previous && keyboardContext.isKeyboardVisible.value) {

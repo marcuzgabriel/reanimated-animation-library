@@ -1,7 +1,7 @@
 import Animated, { withSpring } from 'react-native-reanimated';
 import {
   DEFAULT_SNAP_POINT_TOP,
-  DEFAULT_TIMING_CONFIG,
+  DEFAULT_SPRING_CONFIG,
   OFFSET_START_SNAP_TO_BOTTOM,
 } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
@@ -82,7 +82,7 @@ export const onGestureHandlerCard = ({
     if (!isInFocusedInputState.value) {
       translationY.value = withSpring(
         isCardCollapsable ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-        DEFAULT_TIMING_CONFIG,
+        DEFAULT_SPRING_CONFIG,
         () => {
           isAnimationRunning.value = false;
         },
