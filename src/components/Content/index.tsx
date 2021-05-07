@@ -23,10 +23,8 @@ const Text = styled.Text``;
 
 const WrapperOne = styled.View`
   width: 100%;
-  padding: 32px 16px;
+  padding: 32px;
   align-items: center;
-  height: 600px;
-  background: rgba(0, 0, 0, 0.25);
 `;
 
 const WrapperTwo = styled.View`
@@ -58,22 +56,22 @@ const Content: React.FC<Props> = ({
 
   useAnimatedReaction(
     () => ({
-      keyboardHeight: keyboardContext.keyboardHeight,
+      isKeyboardVisible: keyboardContext.isKeyboardVisible,
       selectedInputFieldPositionY,
     }),
     (
       result: Record<string, Animated.SharedValue<number>> | undefined,
       previous: Record<string, Animated.SharedValue<number>> | null | undefined,
     ) => {
-      if (result && previous && keyboardContext.keyboardHeight.value > 0) {
-        const res = selectedInputFieldPositionY.value - 32 - 50;
+      if (result && previous && keyboardContext.isKeyboardVisible.value) {
+        const res = selectedInputFieldPositionY.value - 32;
 
         if (setKeyboardOffsetCallback) {
           runOnJS(setKeyboardOffsetCallback)(res);
         }
       }
     },
-    [keyboardContext.keyboardHeight, selectedInputFieldPositionY],
+    [keyboardContext.isKeyboardVisible, selectedInputFieldPositionY],
   );
 
   const onLayout = (e: LayoutChangeEvent): void => {
@@ -98,7 +96,7 @@ const Content: React.FC<Props> = ({
           onLayout={(e): void => onInputLayout(e, 0)}
           onFocus={(e): void => onFocus(e, 0)}
           placeholder="useless placeholder"
-          keyboardType="numeric"
+          keyboardType="default"
         />
         <TextInput
           onLayout={(e): void => onInputLayout(e, 1)}
@@ -112,8 +110,36 @@ const Content: React.FC<Props> = ({
           placeholder="useless placeholder"
           keyboardType="numeric"
         />
+        <Text>
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+          est laborum."
+        </Text>
+        <TextInput
+          onLayout={(e): void => onInputLayout(e, 3)}
+          onFocus={(e): void => onFocus(e, 3)}
+          placeholder="useless placeholder"
+          keyboardType="numeric"
+        />
+        <Text>
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+          est laborum."
+        </Text>
+        <TextInput
+          onLayout={(e): void => onInputLayout(e, 4)}
+          onFocus={(e): void => onFocus(e, 4)}
+          placeholder="useless placeholder"
+          keyboardType="numeric"
+        />
       </WrapperOne>
-      <WrapperTwo />
+      {/* <WrapperTwo /> */}
     </Wrapper>
   );
 };

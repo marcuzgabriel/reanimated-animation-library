@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useCallback } from 'react';
+import React, { useRef, useContext, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
   useAnimatedRef,
@@ -8,6 +8,7 @@ import Animated, {
   useDerivedValue,
   useAnimatedGestureHandler,
   useAnimatedScrollHandler,
+  runOnJS,
 } from 'react-native-reanimated';
 import {
   LayoutChangeEvent,
@@ -15,6 +16,7 @@ import {
   useWindowDimensions,
   Platform,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import {
   PanGestureHandlerGestureEvent,
@@ -23,16 +25,16 @@ import {
 } from 'react-native-gesture-handler';
 import Content from 'components/Content';
 import Header from 'components/Header';
-import { DEFAULT_SNAP_POINT_BOTTOM_RATIO } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
-import { MAX_HEIGHT_RATIO } from 'constants/styles';
+import { OFFSET_SNAP_POINT_BOTTOM, DEFAULT_TIMING_CONFIG } from 'constants/animations';
+import { MAX_HEIGHT_RATIO, CLOSE_CARD_BUTTON_HEIGHT } from 'constants/styles';
 import {
   onScrollReaction,
   onActionRequestCloseOrOpenCard,
   getAnimatedCardStyles,
   gestureHandlerCard,
 } from 'worklets';
-import KeyboardProviderWrapper from '../../containers/KeyboardProviderWrapper';
+import { KeyboardContext } from '../../containers/KeyboardProviderWrapper';
 
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
@@ -81,13 +83,19 @@ const View = styled.View`
   z-index: 2;
 `;
 
-const ContentWrapper = styled.View``;
+const ContentWrapper = styled.View`
+  overflow: hidden;
+`;
 
 const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   scrollY,
   snapEffectDirection,
   onLayoutRequest,
 }) => {
+  const windowHeight = useWindowDimensions().height;
+
+  const keyboardContext = useContext(KeyboardContext);
+
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const panGestureOuterRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
@@ -101,7 +109,10 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
   const isCardSnapped = useSharedValue(false);
+  const isScrollable = useSharedValue(false);
+  const isInFocusedInputState = useSharedValue(false);
 
+  const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
   const keyboardOffset = useSharedValue(0);
   const panGestureType = useSharedValue(0);
 
@@ -114,15 +125,19 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
   const derivedIsPanning = useDerivedValue(() => isPanning.value);
   const snapPointBottom = useDerivedValue(() =>
-    cardHeight.value > 0 ? cardHeight.value * DEFAULT_SNAP_POINT_BOTTOM_RATIO : 0,
+    cardHeight.value > 0
+      ? cardHeight.value - CLOSE_CARD_BUTTON_HEIGHT - OFFSET_SNAP_POINT_BOTTOM
+      : 0,
   );
-
-  const windowHeight = useWindowDimensions().height;
-  const maxHeight = useMemo(() => windowHeight * MAX_HEIGHT_RATIO, [windowHeight]);
 
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
       'worklet';
+
+      if (keyboardContext.isKeyboardVisible.value) {
+        runOnJS(Keyboard.dismiss)();
+      }
+
       onActionRequestCloseOrOpenCard({
         translationY,
         isAnimationRunning,
@@ -134,6 +149,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
       });
     },
     [
+      keyboardContext,
       isCardCollapsed,
       isAnimationRunning,
       snapPointBottom,
@@ -167,6 +183,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
     AnimatedGHContext
   >(
     gestureHandlerCard({
+      isInFocusedInputState,
       isScrollingCard,
       isPanning,
       isPanningDown,
@@ -194,19 +211,33 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   );
 
   useAnimatedReaction(
+    () => keyboardContext.isKeyboardVisible.value,
+    (result: boolean | undefined, previous: boolean | null | undefined) => {
+      if (result !== previous && !keyboardContext.isKeyboardVisible.value) {
+        maxHeight.value = windowHeight * MAX_HEIGHT_RATIO;
+        translationY.value = Animated.withSpring(0, DEFAULT_TIMING_CONFIG);
+        isInFocusedInputState.value = false;
+      }
+    },
+    [snapEffectDirection],
+  );
+
+  useAnimatedReaction(
     () => scrollY?.value,
     (result: number | undefined, previous: number | null | undefined) => {
-      console.log('[ANIMATION REACTION #3]');
-      onScrollReaction({
-        result,
-        previous,
-        isCardCollapsed,
-        isScrollingUp,
-        isScrollingDown,
-        isAnimationRunning,
-        translationY,
-        snapPointBottom,
-      });
+      if (!isInFocusedInputState.value) {
+        console.log('[ANIMATION REACTION #3]');
+        onScrollReaction({
+          result,
+          previous,
+          isCardCollapsed,
+          isScrollingUp,
+          isScrollingDown,
+          isAnimationRunning,
+          translationY,
+          snapPointBottom,
+        });
+      }
     },
     [scrollY],
   );
@@ -215,82 +246,96 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
     (): Animated.AnimatedStyleProp<ViewStyle> => getAnimatedCardStyles(translationY.value),
   );
 
+  const maxHeightStyle = useAnimatedStyle(
+    (): Animated.AnimatedStyleProp<ViewStyle> => ({
+      maxHeight: maxHeight.value,
+    }),
+  );
+
   return (
-    <KeyboardProviderWrapper>
-      <View pointerEvents="box-none">
-        <Animated.View onLayout={onLayout} style={panGestureStyle}>
-          <PanGestureHandler
-            ref={panGestureOuterRef}
-            onGestureEvent={gestureHandler}
-            onHandlerStateChange={(): void => {
-              if (panGestureType.value !== 0) {
-                panGestureType.value = 0;
-              }
-            }}
-          >
-            <Animated.View>
-              <Header
-                snapPointBottom={snapPointBottom}
-                scrollY={scrollY}
-                translationY={translationY}
-                onPress={actionRequestCloseOrOpenCard}
-              />
-            </Animated.View>
-          </PanGestureHandler>
-          <ContentWrapper>
-            <KeyboardAvoidingView behavior="position">
-              <PanGestureHandler
-                enabled={Platform.OS !== 'web'}
-                ref={panGestureInnerRef}
-                shouldCancelWhenOutside={false}
-                simultaneousHandlers={nativeViewGestureRef}
-                onGestureEvent={gestureHandler}
-                onHandlerStateChange={(): void => {
-                  if (panGestureType.value !== 1) {
-                    panGestureType.value = 1;
-                  }
-                }}
-              >
-                <Animated.View style={{ maxHeight }}>
-                  <NativeViewGestureHandler
-                    ref={nativeViewGestureRef}
-                    shouldCancelWhenOutside={false}
-                    simultaneousHandlers={panGestureInnerRef}
+    <View pointerEvents="box-none">
+      <Animated.View onLayout={onLayout} style={panGestureStyle}>
+        <PanGestureHandler
+          ref={panGestureOuterRef}
+          onGestureEvent={gestureHandler}
+          onHandlerStateChange={(): void => {
+            if (panGestureType.value !== 0) {
+              panGestureType.value = 0;
+            }
+          }}
+        >
+          <Animated.View>
+            <Header
+              snapPointBottom={snapPointBottom}
+              scrollY={scrollY}
+              translationY={translationY}
+              onPress={actionRequestCloseOrOpenCard}
+            />
+          </Animated.View>
+        </PanGestureHandler>
+        <ContentWrapper>
+          <KeyboardAvoidingView behavior="position">
+            <PanGestureHandler
+              enabled={Platform.OS !== 'web'}
+              ref={panGestureInnerRef}
+              shouldCancelWhenOutside={false}
+              simultaneousHandlers={nativeViewGestureRef}
+              onGestureEvent={gestureHandler}
+              onHandlerStateChange={(): void => {
+                if (panGestureType.value !== 1) {
+                  panGestureType.value = 1;
+                }
+              }}
+            >
+              <Animated.View style={maxHeightStyle}>
+                <NativeViewGestureHandler
+                  ref={nativeViewGestureRef}
+                  shouldCancelWhenOutside={false}
+                  simultaneousHandlers={panGestureInnerRef}
+                >
+                  <Animated.ScrollView
+                    ref={scrollViewRef}
+                    bounces={false}
+                    alwaysBounceVertical={false}
+                    onScroll={onScrollHandler}
+                    onContentSizeChange={(_, contentHeight): void => {
+                      isScrollable.value = contentHeight > maxHeight.value;
+                    }}
+                    scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+                    onTouchMove={(): void => {
+                      isScrollingCard.value = true;
+                    }}
+                    onTouchEnd={(): void => {
+                      isScrollingCard.value = false;
+                    }}
                   >
-                    <Animated.ScrollView
-                      ref={scrollViewRef}
-                      bounces={false}
-                      alwaysBounceVertical={false}
-                      keyboardDismissMode="on-drag"
-                      onScroll={onScrollHandler}
-                      scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-                      onTouchMove={(): void => {
-                        isScrollingCard.value = true;
+                    <Content
+                      translationY={translationY}
+                      keyboardOffset={keyboardOffset}
+                      scrollViewRef={scrollViewRef}
+                      setKeyboardOffsetCallback={(value: number): void => {
+                        if (scrollViewRef.current) {
+                          const { scrollTo }: any = scrollViewRef.current;
+                          translationY.value = Animated.withSpring(
+                            -keyboardContext.keyboardHeight.value,
+                            DEFAULT_TIMING_CONFIG,
+                          );
+
+                          maxHeight.value = 250;
+                          scrollTo({ y: value });
+
+                          isInFocusedInputState.value = true;
+                        }
                       }}
-                      onTouchEnd={(): void => {
-                        isScrollingCard.value = false;
-                      }}
-                    >
-                      <Content
-                        translationY={translationY}
-                        keyboardOffset={keyboardOffset}
-                        scrollViewRef={scrollViewRef}
-                        setKeyboardOffsetCallback={(value: number): void => {
-                          if (scrollViewRef.current) {
-                            const { scrollTo }: any = scrollViewRef.current;
-                            scrollTo({ y: value });
-                          }
-                        }}
-                      />
-                    </Animated.ScrollView>
-                  </NativeViewGestureHandler>
-                </Animated.View>
-              </PanGestureHandler>
-            </KeyboardAvoidingView>
-          </ContentWrapper>
-        </Animated.View>
-      </View>
-    </KeyboardProviderWrapper>
+                    />
+                  </Animated.ScrollView>
+                </NativeViewGestureHandler>
+              </Animated.View>
+            </PanGestureHandler>
+          </KeyboardAvoidingView>
+        </ContentWrapper>
+      </Animated.View>
+    </View>
   );
 };
 
