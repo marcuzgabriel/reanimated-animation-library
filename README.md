@@ -14,7 +14,7 @@ This library provides some nice animation features with the latest reanimated 2+
   - [x] Basic animation features (scrolling and pan gesture event)
   - [x] Header component
   - [x] Content component
-  - [x] Footer component
+  - [ ] Footer component
 - [ ] Appear
 - [ ] Slider
 - [ ] Morphing SVG Graph
