@@ -12,6 +12,9 @@ This library provides some nice animation features with the latest reanimated 2+
   - [x] Add a ScrollView component in a PanGestureHandler component
   - [x] iOS + Android: Overlap from a scrolling gesture to a pan gesture by creating a scroll-to-top snapping effect
   - [x] Basic animation features (scrolling and pan gesture event)
+  - [x] Header component
+  - [x] Content component
+  - [x] Footer component
 - [ ] Appear
 - [ ] Slider
 - [ ] Morphing SVG Graph
