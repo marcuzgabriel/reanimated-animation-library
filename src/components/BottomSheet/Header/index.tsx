@@ -7,7 +7,7 @@ import {
   CLOSE_OPEN_CARD_BUTTON_HITSLOP,
   HIT_SLOP,
 } from 'constants/styles';
-import MorphingArrow from 'components/MorphingArrow';
+import MorphingArrow from 'components/BottomSheet/MorphingArrow';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;

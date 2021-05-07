@@ -14,6 +14,7 @@ module.exports = {
           'react-native-reanimated': './node_modules/react-native-reanimated',
           'react-native-gesture-handler': './node_modules/react-native-gesture-handler',
           worklets: './src/worklets',
+          containers: './src/containers',
           constants: './src/constants',
           components: './src/components',
           hoas: './src/hoas',

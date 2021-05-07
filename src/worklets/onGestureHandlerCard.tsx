@@ -22,7 +22,7 @@ interface Props {
   panGestureType: Animated.SharedValue<number>;
 }
 
-export const gestureHandlerCard = ({
+export const onGestureHandlerCard = ({
   isInFocusedInputState,
   isPanning,
   isPanningDown,
@@ -39,11 +39,13 @@ export const gestureHandlerCard = ({
 }: Props): Record<string, unknown> => ({
   onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {
     'worklet';
+
     ctx.startY = translationY.value - innerScrollY.value;
     isPanningDown.value = false;
   },
   onActive: (event: Record<string, number>, ctx: Record<string, number>): void => {
     'worklet';
+
     isPanning.value = true;
     prevDragY.value = translationY.value;
     dragY.value = ctx.startY + event.translationY;
@@ -66,6 +68,7 @@ export const gestureHandlerCard = ({
   },
   onEnd: (event: any, ctx: any): void => {
     'worklet';
+
     isPanningDown.value = ctx.startY + event.translationY > prevDragY.value ? true : false;
     isCardCollapsed.value = isPanningDown.value;
     isAnimationRunning.value = true;

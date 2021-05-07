@@ -9,9 +9,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const KeyboardProviderWrapper: React.FC<Props> = ({ children }) => {
-  const keyboardProps = React.useState<Record<string, number>>({});
-
+const KeyboardProvider: React.FC<Props> = ({ children }) => {
   const isKeyboardVisible = useSharedValue(0);
   const keyboardHeight = useSharedValue(0);
   const keyboardDuration = useSharedValue(0);
@@ -60,4 +58,4 @@ const KeyboardProviderWrapper: React.FC<Props> = ({ children }) => {
   );
 };
 
-export default KeyboardProviderWrapper;
+export default KeyboardProvider;

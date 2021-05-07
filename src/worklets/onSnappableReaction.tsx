@@ -2,24 +2,20 @@ import Animated, { runOnJS } from 'react-native-reanimated';
 import { IS_SCROLLABLE_OFFSET } from 'constants/animations';
 
 interface Props {
-  result: Record<string, Animated.SharedValue<number | boolean>> | undefined;
-  previous: Record<string, Animated.SharedValue<number | boolean>> | undefined | null;
-  isScrollable: Animated.SharedValue<boolean>;
-  isSnapEffectActive: Animated.SharedValue<boolean>;
-  isCardOverlappingContent: Animated.SharedValue<boolean>;
+  result: boolean | undefined;
+  previous: boolean | undefined | null;
+  contentHeight: Animated.SharedValue<number>;
   isSnapEffectActiveState: boolean;
   windowHeight: number;
   setIsSnapEffectActiveState: (status: boolean) => void;
 }
 
-export const isSnappableReaction = ({
+export const onSnappableReaction = ({
   result,
   previous,
   windowHeight,
-  isCardOverlappingContent,
-  isSnapEffectActive,
+  contentHeight,
   isSnapEffectActiveState,
-  isScrollable,
   setIsSnapEffectActiveState,
 }: Props): void => {
   'worklet';
@@ -29,13 +25,10 @@ export const isSnappableReaction = ({
     are a header that needs to be a part of the calculation
     as well */
 
-    const { contentHeight, cardHeight } = result ?? {};
+    const isScrollable = contentHeight.value > windowHeight + IS_SCROLLABLE_OFFSET;
+    const isSnapEffectActive = result && !isScrollable;
 
-    isScrollable.value = contentHeight.value > windowHeight + IS_SCROLLABLE_OFFSET;
-    isCardOverlappingContent.value = contentHeight.value > cardHeight.value;
-    isSnapEffectActive.value = isCardOverlappingContent.value && !isScrollable.value;
-
-    if (isSnapEffectActive.value && !isSnapEffectActiveState) {
+    if (isSnapEffectActive && !isSnapEffectActiveState) {
       console.log('[ANIMATION REACTION #1]');
       runOnJS(setIsSnapEffectActiveState)(true);
     } else if (isSnapEffectActiveState) {

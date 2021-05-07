@@ -7,7 +7,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
-import { KeyboardContext } from '../../containers/KeyboardProviderWrapper';
+import { KeyboardContext } from 'containers/KeyboardProvider';
 
 interface Props {
   translationY?: Animated.SharedValue<number>;

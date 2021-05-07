@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import OuterScrollView from './components/OuterScrollView';
+import ScrollViewWithSnapEffect from 'components/Examples/ScrollViewWithSnapEffect';
 import { useWindowDimensions } from 'react-native';
 
 interface WindowProp {
@@ -30,13 +30,13 @@ const App: React.FC = () => {
   const windowHeight = useWindowDimensions().height;
 
   return (
-    <OuterScrollView>
+    <ScrollViewWithSnapEffect>
       {fakeScrollItem.map(({ text }, i) => (
         <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
           <Text>{text}</Text>
         </FakeContentWrapper>
       ))}
-    </OuterScrollView>
+    </ScrollViewWithSnapEffect>
   );
 };
 

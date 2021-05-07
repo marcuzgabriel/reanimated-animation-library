@@ -5,9 +5,9 @@ import {
   CLOSE_CARD_BUTTON_HEIGHT,
   CLOSE_OPEN_CARD_BUTTON_HITSLOP,
   HIT_SLOP,
-} from '../../constants/styles';
-import MorphingArrow from '../MorphingArrow/OldSchool';
-import { DEFAULT_SNAP_POINT_BOTTOM_RATIO } from '../../constants/animations';
+} from 'constants/styles';
+import MorphingArrow from 'components/BottomSheet/MorphingArrow/OldSchool';
+import { DEFAULT_SNAP_POINT_BOTTOM_RATIO } from 'constants/animations';
 
 interface Props {
   cardHeight: Animated.Value<number>;

@@ -23,8 +23,8 @@ import {
   PanGestureHandler,
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
-import Content from 'components/Content';
-import Header from 'components/Header';
+import Content from '../Content';
+import Header from '../Header';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 import { OFFSET_SNAP_POINT_BOTTOM, DEFAULT_TIMING_CONFIG } from 'constants/animations';
 import { MAX_HEIGHT_RATIO, CLOSE_CARD_BUTTON_HEIGHT } from 'constants/styles';
@@ -32,9 +32,9 @@ import {
   onScrollReaction,
   onActionRequestCloseOrOpenCard,
   getAnimatedCardStyles,
-  gestureHandlerCard,
+  onGestureHandlerCard,
 } from 'worklets';
-import { KeyboardContext } from '../../containers/KeyboardProviderWrapper';
+import { KeyboardContext } from 'containers/KeyboardProvider';
 
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
@@ -87,11 +87,7 @@ const ContentWrapper = styled.View`
   overflow: hidden;
 `;
 
-const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
-  scrollY,
-  snapEffectDirection,
-  onLayoutRequest,
-}) => {
+const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest }) => {
   const windowHeight = useWindowDimensions().height;
 
   const keyboardContext = useContext(KeyboardContext);
@@ -182,7 +178,7 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
     PanGestureHandlerGestureEvent,
     AnimatedGHContext
   >(
-    gestureHandlerCard({
+    onGestureHandlerCard({
       isInFocusedInputState,
       isScrollingCard,
       isPanning,
@@ -210,16 +206,17 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
     [snapEffectDirection],
   );
 
+  console.log(keyboardContext);
+
   useAnimatedReaction(
     () => keyboardContext.isKeyboardVisible.value,
     (result: boolean | undefined, previous: boolean | null | undefined) => {
-      if (result !== previous && !keyboardContext.isKeyboardVisible.value) {
+      if (result !== previous && !result) {
         maxHeight.value = windowHeight * MAX_HEIGHT_RATIO;
         translationY.value = Animated.withSpring(0, DEFAULT_TIMING_CONFIG);
         isInFocusedInputState.value = false;
       }
     },
-    [snapEffectDirection],
   );
 
   useAnimatedReaction(
@@ -339,4 +336,4 @@ const ReactNativeUltimateBottomSheet: React.FC<Props> = ({
   );
 };
 
-export default ReactNativeUltimateBottomSheet;
+export default Sheet;
