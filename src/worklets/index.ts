@@ -5,4 +5,4 @@ export { getAnimatedCardStyles } from './getAnimatedCardStyles';
 export { onGestureHandlerCard } from './onGestureHandlerCard';
 export { onGestureHandlerSnapEffect } from './onGestureHandlerSnapEffect';
 export { onSnappableReaction } from './onSnappableReaction';
-export { onIsInputFieldFocused } from './onIsInputFieldFocused';
+export { onIsInputFieldFocusedReaction } from './onIsInputFieldFocusedReaction';

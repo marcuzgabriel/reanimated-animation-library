@@ -8,7 +8,7 @@ import {
 import Animated, { scrollTo, useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { KeyboardContext } from 'containers/KeyboardProvider';
-import { onIsInputFieldFocused } from 'worklets';
+import { onIsInputFieldFocusedReaction } from 'worklets';
 
 interface Props {
   translationY: Animated.SharedValue<number>;
@@ -68,7 +68,7 @@ const Content: React.FC<Props> = ({
       result: Record<string, Animated.SharedValue<number>>,
       previous: Record<string, Animated.SharedValue<number>> | null | undefined,
     ) =>
-      onIsInputFieldFocused({
+      onIsInputFieldFocusedReaction({
         result,
         previous,
         maxHeight,

@@ -1,4 +1,4 @@
-import Animated, { scrollTo, withTiming, Easing } from 'react-native-reanimated';
+import Animated, { scrollTo, withTiming } from 'react-native-reanimated';
 import { KEYBOARD_CARD_HEIGHT_RATIO, MAX_HEIGHT_RATIO } from 'constants/styles';
 import { DEFAULT_TIMING_CONFIG } from 'constants/animations';
 
@@ -12,7 +12,7 @@ interface Props {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
 }
 
-export const onIsInputFieldFocused = ({
+export const onIsInputFieldFocusedReaction = ({
   result,
   previous,
   maxHeight,
@@ -27,10 +27,8 @@ export const onIsInputFieldFocused = ({
     if (result.keyboardHeight.value > 0) {
       const res = result.selectedInputFieldPositionY.value - 32;
 
-      maxHeight.value = withTiming(
-        windowHeight * KEYBOARD_CARD_HEIGHT_RATIO,
-        DEFAULT_TIMING_CONFIG,
-      );
+      /* TODO: Play around with height */
+      maxHeight.value = withTiming(300, DEFAULT_TIMING_CONFIG);
       translationY.value = withTiming(-result.keyboardHeight.value, DEFAULT_TIMING_CONFIG);
 
       scrollTo(scrollViewRef, 0, res, true);
@@ -38,8 +36,8 @@ export const onIsInputFieldFocused = ({
     }
 
     if (result.keyboardHeight.value === 0 && isInputFieldFocused.value) {
-      maxHeight.value = windowHeight * MAX_HEIGHT_RATIO;
       translationY.value = withTiming(0, DEFAULT_TIMING_CONFIG);
+      maxHeight.value = withTiming(windowHeight * MAX_HEIGHT_RATIO, DEFAULT_TIMING_CONFIG);
       isInputFieldFocused.value = false;
     }
   }
