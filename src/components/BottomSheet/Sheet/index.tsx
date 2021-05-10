@@ -112,7 +112,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const isCardCollapsed = useSharedValue(false);
   const isCardSnapped = useSharedValue(false);
   const isScrollable = useSharedValue(false);
-  const isInFocusedInputState = useSharedValue(false);
+  const isInputFieldFocused = useSharedValue(false);
 
   const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
   const keyboardOffset = useSharedValue(0);
@@ -130,18 +130,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     cardHeight.value > 0
       ? cardHeight.value - CLOSE_CARD_BUTTON_HEIGHT - OFFSET_SNAP_POINT_BOTTOM
       : 0,
-  );
-
-  /* Workaround: Typescript says that there is not a scrollTo function
-  on the ScrollviewRef */
-  const scrollTo = useCallback(
-    ({ y }: Record<string, number>): void => {
-      if (scrollViewRef.current) {
-        const { scrollTo: fn }: any = scrollViewRef.current;
-        return fn({ y });
-      }
-    },
-    [scrollViewRef],
   );
 
   const actionRequestCloseOrOpenCard = useCallback(
@@ -197,7 +185,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     AnimatedGHContext
   >(
     onGestureHandlerCard({
-      isInFocusedInputState,
+      isInputFieldFocused,
       isScrollingCard,
       isPanning,
       isPanningDown,
@@ -213,18 +201,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     }),
   );
 
-  /* When you go from a alphabetic keyboard type to number etc. then
-  the card will follow */
-  useAnimatedReaction(
-    () => keyboardContext.keyboardHeight.value,
-    (result: number, previous: number | null | undefined) => {
-      if (result !== previous && isInFocusedInputState.value) {
-        translationY.value = withTiming(-result, DEFAULT_TIMING_CONFIG);
-      }
-    },
-    [snapEffectDirection],
-  );
-
   useAnimatedReaction(
     () => snapEffectDirection?.value,
     (result: string | undefined, previous: string | null | undefined) => {
@@ -237,20 +213,9 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   );
 
   useAnimatedReaction(
-    () => keyboardContext.isKeyboardVisible.value,
-    (result: boolean, previous: boolean | null | undefined) => {
-      if (result !== previous && !result) {
-        maxHeight.value = windowHeight * MAX_HEIGHT_RATIO;
-        translationY.value = withTiming(0, DEFAULT_TIMING_CONFIG);
-        isInFocusedInputState.value = false;
-      }
-    },
-  );
-
-  useAnimatedReaction(
     () => scrollY?.value,
     (result: number, previous: number | null | undefined) => {
-      if (!isInFocusedInputState.value) {
+      if (!isInputFieldFocused.value) {
         console.log('[ANIMATION REACTION #3]');
         onScrollReaction({
           result,
@@ -335,24 +300,11 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
                     }}
                   >
                     <Content
+                      isInputFieldFocused={isInputFieldFocused}
                       translationY={translationY}
                       keyboardOffset={keyboardOffset}
                       scrollViewRef={scrollViewRef}
-                      setKeyboardOffsetCallback={(value: number): void => {
-                        if (scrollViewRef.current) {
-                          maxHeight.value = withTiming(
-                            windowHeight * KEYBOARD_CARD_HEIGHT_RATIO,
-                            DEFAULT_TIMING_CONFIG,
-                          );
-                          translationY.value = withTiming(
-                            -keyboardContext.keyboardHeight.value,
-                            DEFAULT_TIMING_CONFIG,
-                          );
-
-                          scrollTo({ y: value });
-                          isInFocusedInputState.value = true;
-                        }
-                      }}
+                      maxHeight={maxHeight}
                     />
                   </Animated.ScrollView>
                 </NativeViewGestureHandler>

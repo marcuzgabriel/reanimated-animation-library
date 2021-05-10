@@ -1,19 +1,22 @@
 import React, { useContext } from 'react';
-import { LayoutChangeEvent, NativeSyntheticEvent, TextInputFocusEventData } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useDerivedValue,
-  useAnimatedReaction,
-  runOnJS,
-} from 'react-native-reanimated';
+import {
+  useWindowDimensions,
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+  TextInputFocusEventData,
+} from 'react-native';
+import Animated, { scrollTo, useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { KeyboardContext } from 'containers/KeyboardProvider';
+import { onIsInputFieldFocused } from 'worklets';
 
 interface Props {
-  translationY?: Animated.SharedValue<number>;
+  translationY: Animated.SharedValue<number>;
   contentHeight?: Animated.Value<number>;
   keyboardOffset?: Animated.SharedValue<number>;
-  scrollViewRef?: React.RefObject<Animated.ScrollView>;
+  maxHeight: Animated.SharedValue<number>;
+  scrollViewRef: React.RefObject<Animated.ScrollView>;
+  isInputFieldFocused: Animated.SharedValue<boolean>;
   setKeyboardOffsetCallback?: (value: number) => void;
 }
 
@@ -46,31 +49,34 @@ const Content: React.FC<Props> = ({
   contentHeight,
   translationY,
   scrollViewRef,
-  keyboardOffset,
-  setKeyboardOffsetCallback,
+  maxHeight,
+  isInputFieldFocused,
 }) => {
   const inputFieldsHeightPositions = useSharedValue<Record<string, any>>([]);
   const selectedInputFieldPositionY = useSharedValue(0);
 
   const keyboardContext = useContext(KeyboardContext);
+  const windowHeight = useWindowDimensions().height;
 
   useAnimatedReaction(
     () => ({
       isKeyboardVisible: keyboardContext.isKeyboardVisible,
+      keyboardHeight: keyboardContext.keyboardHeight,
       selectedInputFieldPositionY,
     }),
     (
       result: Record<string, Animated.SharedValue<number>>,
       previous: Record<string, Animated.SharedValue<number>> | null | undefined,
-    ) => {
-      if (result && previous && keyboardContext.isKeyboardVisible.value) {
-        const res = selectedInputFieldPositionY.value - 32;
-
-        if (setKeyboardOffsetCallback) {
-          runOnJS(setKeyboardOffsetCallback)(res);
-        }
-      }
-    },
+    ) =>
+      onIsInputFieldFocused({
+        result,
+        previous,
+        maxHeight,
+        windowHeight,
+        scrollViewRef,
+        translationY,
+        isInputFieldFocused,
+      }),
     [keyboardContext.isKeyboardVisible, selectedInputFieldPositionY],
   );
 

@@ -7,7 +7,7 @@ import {
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 
 interface Props {
-  isInFocusedInputState: Animated.SharedValue<boolean>;
+  isInputFieldFocused: Animated.SharedValue<boolean>;
   isPanning: Animated.SharedValue<boolean>;
   isPanningDown: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
@@ -23,7 +23,7 @@ interface Props {
 }
 
 export const onGestureHandlerCard = ({
-  isInFocusedInputState,
+  isInputFieldFocused,
   isPanning,
   isPanningDown,
   isCardCollapsed,
@@ -79,7 +79,7 @@ export const onGestureHandlerCard = ({
         ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
         : isPanningDown.value;
 
-    if (!isInFocusedInputState.value) {
+    if (!isInputFieldFocused.value) {
       translationY.value = withSpring(
         isCardCollapsable ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
         DEFAULT_SPRING_CONFIG,
