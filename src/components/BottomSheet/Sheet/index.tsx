@@ -109,7 +109,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const isScrollingDown = useSharedValue(false);
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
-  const isCardSnapped = useSharedValue(false);
   const isScrollable = useSharedValue(false);
   const isInputFieldFocused = useSharedValue(false);
 
@@ -139,20 +138,23 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
         runOnJS(Keyboard.dismiss)();
       }
 
-      onActionRequestCloseOrOpenCard({
-        translationY,
-        isAnimationRunning,
-        derivedIsCollapsed,
-        derivedIsPanning,
-        isCardCollapsed,
-        snapPointBottom,
-        direction,
-      });
+      if (!isPanning.value) {
+        onActionRequestCloseOrOpenCard({
+          translationY,
+          isAnimationRunning,
+          derivedIsCollapsed,
+          derivedIsPanning,
+          isCardCollapsed,
+          snapPointBottom,
+          direction,
+        });
+      }
     },
     [
       keyboardContext,
       isCardCollapsed,
       isAnimationRunning,
+      isPanning,
       snapPointBottom,
       translationY,
       derivedIsPanning,
@@ -190,7 +192,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
       isPanningDown,
       isCardCollapsed,
       isAnimationRunning,
-      isCardSnapped,
       prevDragY,
       dragY,
       translationY,

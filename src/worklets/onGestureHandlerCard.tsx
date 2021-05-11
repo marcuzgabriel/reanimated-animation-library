@@ -13,7 +13,6 @@ interface Props {
   isPanningDown: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
   isAnimationRunning: Animated.SharedValue<boolean>;
-  isCardSnapped: Animated.SharedValue<boolean>;
   isScrollingCard: Animated.SharedValue<boolean>;
   prevDragY: Animated.SharedValue<number>;
   dragY: Animated.SharedValue<number>;
@@ -29,7 +28,6 @@ export const onGestureHandlerCard = ({
   isPanningDown,
   isCardCollapsed,
   isAnimationRunning,
-  isCardSnapped,
   isScrollingCard,
   prevDragY,
   dragY,
@@ -58,11 +56,9 @@ export const onGestureHandlerCard = ({
         panGestureType.value === 1
       ) {
         if (innerScrollY.value === 0 || innerScrollY.value <= SCROLL_EVENT_THROTTLE) {
-          isCardSnapped.value = true;
           translationY.value = dragY.value;
         }
       } else {
-        isCardSnapped.value = false;
         translationY.value = dragY.value;
       }
     }
