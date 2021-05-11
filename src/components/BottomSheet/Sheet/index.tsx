@@ -95,7 +95,6 @@ const ContentWrapper = styled.View`
 
 const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest }) => {
   const windowHeight = useWindowDimensions().height;
-
   const keyboardContext = useContext(KeyboardContext);
 
   const panGestureInnerRef = useRef<PanGestureHandler>();
@@ -114,10 +113,8 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const isScrollable = useSharedValue(false);
   const isInputFieldFocused = useSharedValue(false);
 
-  const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
   const keyboardOffset = useSharedValue(0);
   const panGestureType = useSharedValue(0);
-
   const innerScrollY = useSharedValue(0);
   const translationY = useSharedValue(0);
   const prevDragY = useSharedValue(0);
@@ -131,6 +128,8 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
       ? cardHeight.value - CLOSE_CARD_BUTTON_HEIGHT - OFFSET_SNAP_POINT_BOTTOM
       : 0,
   );
+
+  const maxHeight = useMemo(() => windowHeight * MAX_HEIGHT_RATIO, [windowHeight]);
 
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
@@ -238,7 +237,8 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
 
   const maxHeightStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      maxHeight: maxHeight.value,
+      maxHeight,
+      height: '100%',
     }),
   );
 
@@ -289,7 +289,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
                     alwaysBounceVertical={false}
                     onScroll={onScrollHandler}
                     onContentSizeChange={(_, contentHeight): void => {
-                      isScrollable.value = contentHeight > maxHeight.value;
+                      isScrollable.value = contentHeight > maxHeight;
                     }}
                     scrollEventThrottle={SCROLL_EVENT_THROTTLE}
                     onTouchMove={(): void => {

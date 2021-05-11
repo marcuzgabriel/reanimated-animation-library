@@ -18,8 +18,8 @@ const Wrapper = styled.View`
 
 interface Props {
   scrollY: Animated.SharedValue<number>;
-  snapPointBottom: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
+  snapPointBottom: Animated.SharedValue<number>;
 }
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);

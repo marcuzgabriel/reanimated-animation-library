@@ -1,22 +1,23 @@
-import React, { useContext } from 'react';
+import React, { useMemo, useContext } from 'react';
 import {
   useWindowDimensions,
   LayoutChangeEvent,
   NativeSyntheticEvent,
   TextInputFocusEventData,
 } from 'react-native';
-import Animated, { scrollTo, useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { KeyboardContext } from 'containers/KeyboardProvider';
+import { KEYBOARD_CARD_HEIGHT_RATIO } from 'constants/styles';
 import { onIsInputFieldFocusedReaction } from 'worklets';
 
 interface Props {
   translationY: Animated.SharedValue<number>;
   contentHeight?: Animated.Value<number>;
   keyboardOffset?: Animated.SharedValue<number>;
-  maxHeight: Animated.SharedValue<number>;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
+  maxHeight: number;
   setKeyboardOffsetCallback?: (value: number) => void;
 }
 
@@ -57,6 +58,10 @@ const Content: React.FC<Props> = ({
 
   const keyboardContext = useContext(KeyboardContext);
   const windowHeight = useWindowDimensions().height;
+
+  const cardHeightWhenKeyboardIsOpen = useMemo(() => windowHeight * KEYBOARD_CARD_HEIGHT_RATIO, [
+    windowHeight,
+  ]);
 
   useAnimatedReaction(
     () => ({

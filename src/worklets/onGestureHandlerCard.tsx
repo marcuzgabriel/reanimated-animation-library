@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import Animated, { withSpring } from 'react-native-reanimated';
 import {
   DEFAULT_SNAP_POINT_TOP,
@@ -17,9 +18,9 @@ interface Props {
   prevDragY: Animated.SharedValue<number>;
   dragY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
-  snapPointBottom: Animated.SharedValue<number>;
   innerScrollY: Animated.SharedValue<number>;
   panGestureType: Animated.SharedValue<number>;
+  snapPointBottom: Animated.SharedValue<number>;
 }
 
 export const onGestureHandlerCard = ({
@@ -66,18 +67,23 @@ export const onGestureHandlerCard = ({
       }
     }
   },
-  onEnd: (event: any, ctx: any): void => {
+  onEnd: (): void => {
     'worklet';
 
-    isPanningDown.value = ctx.startY + event.translationY > prevDragY.value ? true : false;
+    isPanningDown.value = translationY.value > prevDragY.value;
     isCardCollapsed.value = isPanningDown.value;
     isAnimationRunning.value = true;
     isPanning.value = false;
 
-    const isCardCollapsable =
-      panGestureType.value === 1
+    const isCardCollapsable = Platform.select({
+      web: isPanningDown.value
         ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
-        : isPanningDown.value;
+        : isPanningDown.value,
+      default:
+        panGestureType.value === 1
+          ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
+          : isPanningDown.value,
+    });
 
     if (!isInputFieldFocused.value) {
       translationY.value = withSpring(

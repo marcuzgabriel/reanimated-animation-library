@@ -11,8 +11,8 @@ interface Props {
   isScrollingDown: Animated.SharedValue<boolean>;
   isScrollingUp: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
-  snapPointBottom: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
+  snapPointBottom: Animated.SharedValue<number>;
 }
 
 export const onScrollRequestCloseOrOpenCard = ({
