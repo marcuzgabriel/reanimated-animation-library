@@ -14,11 +14,9 @@ import { onIsInputFieldFocusedReaction } from 'worklets';
 interface Props {
   translationY: Animated.SharedValue<number>;
   contentHeight?: Animated.Value<number>;
-  keyboardOffset?: Animated.SharedValue<number>;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
   maxHeight: number;
-  setKeyboardOffsetCallback?: (value: number) => void;
 }
 
 const Wrapper = styled.View``;

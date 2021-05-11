@@ -112,7 +112,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const isScrollable = useSharedValue(false);
   const isInputFieldFocused = useSharedValue(false);
 
-  const keyboardOffset = useSharedValue(0);
   const panGestureType = useSharedValue(0);
   const innerScrollY = useSharedValue(0);
   const translationY = useSharedValue(0);
@@ -303,7 +302,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
                     <Content
                       isInputFieldFocused={isInputFieldFocused}
                       translationY={translationY}
-                      keyboardOffset={keyboardOffset}
                       scrollViewRef={scrollViewRef}
                       maxHeight={maxHeight}
                     />
