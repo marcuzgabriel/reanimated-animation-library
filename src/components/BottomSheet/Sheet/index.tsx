@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useContext, useCallback } from 'react';
+import React, { useRef, useContext, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
   Easing,
@@ -102,6 +102,8 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
 
+  const isWeb = useSharedValue(Platform.OS === 'web');
+
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
   const isAnimationRunning = useSharedValue(false);
@@ -127,7 +129,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
       : 0,
   );
 
-  const maxHeight = useMemo(() => windowHeight * MAX_HEIGHT_RATIO, [windowHeight]);
+  const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
 
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
@@ -191,6 +193,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
       isPanningDown,
       isCardCollapsed,
       isAnimationRunning,
+      isWeb,
       prevDragY,
       dragY,
       translationY,
@@ -204,7 +207,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     () => snapEffectDirection?.value,
     (result: string | undefined, previous: string | null | undefined) => {
       if (result !== previous && (result === 'up' || result === 'down')) {
-        console.log('[ANIMATION REACTION #2]');
         actionRequestCloseOrOpenCard(result);
       }
     },
@@ -215,7 +217,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     () => scrollY?.value,
     (result: number, previous: number | null | undefined) => {
       if (!isInputFieldFocused.value) {
-        console.log('[ANIMATION REACTION #3]');
         onScrollReaction({
           result,
           previous,
@@ -237,8 +238,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
 
   const maxHeightStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      maxHeight,
-      height: '100%',
+      maxHeight: maxHeight.value,
     }),
   );
 
@@ -289,7 +289,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
                     alwaysBounceVertical={false}
                     onScroll={onScrollHandler}
                     onContentSizeChange={(_, contentHeight): void => {
-                      isScrollable.value = contentHeight > maxHeight;
+                      isScrollable.value = contentHeight > maxHeight.value;
                     }}
                     scrollEventThrottle={SCROLL_EVENT_THROTTLE}
                     onTouchMove={(): void => {

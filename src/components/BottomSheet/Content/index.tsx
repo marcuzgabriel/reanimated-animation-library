@@ -16,7 +16,7 @@ interface Props {
   contentHeight?: Animated.Value<number>;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
-  maxHeight: number;
+  maxHeight: Animated.SharedValue<number>;
 }
 
 const Wrapper = styled.View``;

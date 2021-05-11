@@ -17,6 +17,7 @@ module.exports = {
           containers: './src/containers',
           constants: './src/constants',
           components: './src/components',
+          helpers: './src/helpers',
           hoas: './src/hoas',
         },
         extensions: ['.ts', '.tsx', '.js', 'cjs', '.ios.js', '.android.js', '.web.js'],
