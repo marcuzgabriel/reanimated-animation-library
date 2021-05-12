@@ -4,14 +4,14 @@ import styled from 'styled-components/native';
 import { FocusedInputFieldContext } from 'containers/FocusedInputFieldProvider';
 
 /* NOTE: There is a type bug when it comes to justifyContent and
-textAlign parsed directly from an object. */
-type StylesTypeFix<T> = {
+textAlign parsed directly from an object in react-native. */
+type StyleTypeFix<T> = {
   [K in keyof T]: K extends 'justifyContent' ? any : K extends 'textAlign' ? any : T[K];
 };
 
 interface Props extends TextInputProps {
   uniqueId: number | string;
-  style: StylesTypeFix<TextStyle>;
+  style: StyleTypeFix<TextStyle>;
 }
 
 interface DoesExist {
@@ -28,21 +28,27 @@ const InputField: React.FC<Props> = props => {
       ({ identifier }: DoesExist) => identifier === props.uniqueId,
     );
 
-    if (doesExist) {
-      const msg = `uniqueId: ${props.uniqueId} on inputField is already taken. Please pick another`;
-      throw new Error(msg);
-    } else {
+    if (!doesExist) {
       inputFields.value.push({
         identifier: props.uniqueId,
         y: e.nativeEvent.layout.y,
       });
+    } else {
+      const hasSameIdentifier = inputFields.value.some(
+        ({ identifier, y }: Record<string, number | string>) =>
+          identifier === props.uniqueId && e.nativeEvent.layout.y !== y,
+      );
+
+      if (hasSameIdentifier) {
+        throw new Error(`uniqueId: ${props.uniqueId} already exists. Please change it`);
+      }
     }
   };
 
   const onFocus = (): void => {
     try {
       selectedInputFieldPositionY.value = inputFields.value.find(
-        ({ identifier }: any) => identifier === props.uniqueId,
+        ({ identifier }: Record<string, number | string>) => identifier === props.uniqueId,
       ).y;
     } catch (err) {
       throw new Error(
