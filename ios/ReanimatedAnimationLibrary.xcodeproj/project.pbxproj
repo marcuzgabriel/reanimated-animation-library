@@ -114,7 +114,6 @@
 				1649195EEBF85E0597E9EFD4 /* Pods-ReanimatedAnimationLibrary-ReanimatedAnimationLibraryTests.debug.xcconfig */,
 				8100084D725F21A2D1180DF2 /* Pods-ReanimatedAnimationLibrary-ReanimatedAnimationLibraryTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -485,6 +484,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7856NSLC7C;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ReanimatedAnimationLibrary/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -511,6 +511,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7856NSLC7C;
 				INFOPLIST_FILE = ReanimatedAnimationLibrary/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

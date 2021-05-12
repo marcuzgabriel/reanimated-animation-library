@@ -19,6 +19,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   Keyboard,
+  SafeAreaView,
 } from 'react-native';
 import {
   PanGestureHandlerGestureEvent,
@@ -103,6 +104,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
 
   const isWeb = useSharedValue(Platform.OS === 'web');
+  const isAndroid = useSharedValue(Platform.OS === 'android');
 
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
@@ -113,6 +115,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const isCardCollapsed = useSharedValue(false);
   const isScrollable = useSharedValue(false);
   const isInputFieldFocused = useSharedValue(false);
+  const isScrollEnabled = useSharedValue(true);
 
   const panGestureType = useSharedValue(0);
   const innerScrollY = useSharedValue(0);
@@ -120,6 +123,8 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
+  const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
+  const cardContentHeight = useSharedValue(0);
 
   const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
   const derivedIsPanning = useDerivedValue(() => isPanning.value);
@@ -239,6 +244,8 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const maxHeightStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       maxHeight: maxHeight.value,
+      height:
+        cardHeightWhenKeyboardIsVisible.value > 0 ? cardHeightWhenKeyboardIsVisible.value : '100%',
     }),
   );
 
@@ -264,52 +271,53 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
           </Animated.View>
         </PanGestureHandler>
         <ContentWrapper>
-          <KeyboardAvoidingView behavior="position">
-            <PanGestureHandler
-              enabled={Platform.OS !== 'web'}
-              ref={panGestureInnerRef}
-              shouldCancelWhenOutside={false}
-              simultaneousHandlers={nativeViewGestureRef}
-              onGestureEvent={gestureHandler}
-              onHandlerStateChange={(): void => {
-                if (panGestureType.value !== 1) {
-                  panGestureType.value = 1;
-                }
-              }}
-            >
-              <Animated.View style={maxHeightStyle}>
-                <NativeViewGestureHandler
-                  ref={nativeViewGestureRef}
-                  shouldCancelWhenOutside={false}
-                  simultaneousHandlers={panGestureInnerRef}
+          <PanGestureHandler
+            enabled={Platform.OS !== 'web'}
+            ref={panGestureInnerRef}
+            shouldCancelWhenOutside={false}
+            simultaneousHandlers={nativeViewGestureRef}
+            onGestureEvent={gestureHandler}
+            onHandlerStateChange={(): void => {
+              if (panGestureType.value !== 1) {
+                panGestureType.value = 1;
+              }
+            }}
+          >
+            <Animated.View style={maxHeightStyle}>
+              <NativeViewGestureHandler
+                ref={nativeViewGestureRef}
+                shouldCancelWhenOutside={false}
+                simultaneousHandlers={panGestureInnerRef}
+              >
+                <Animated.ScrollView
+                  ref={scrollViewRef}
+                  bounces={false}
+                  alwaysBounceVertical={false}
+                  directionalLockEnabled={true}
+                  onScroll={onScrollHandler}
+                  onContentSizeChange={(_, height): void => {
+                    isScrollable.value = height > maxHeight.value;
+                    cardContentHeight.value = height;
+                  }}
+                  scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+                  onTouchMove={(): void => {
+                    isScrollingCard.value = true;
+                  }}
+                  onTouchEnd={(): void => {
+                    isScrollingCard.value = false;
+                  }}
                 >
-                  <Animated.ScrollView
-                    ref={scrollViewRef}
-                    bounces={false}
-                    alwaysBounceVertical={false}
-                    onScroll={onScrollHandler}
-                    onContentSizeChange={(_, contentHeight): void => {
-                      isScrollable.value = contentHeight > maxHeight.value;
-                    }}
-                    scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-                    onTouchMove={(): void => {
-                      isScrollingCard.value = true;
-                    }}
-                    onTouchEnd={(): void => {
-                      isScrollingCard.value = false;
-                    }}
-                  >
-                    <Content
-                      isInputFieldFocused={isInputFieldFocused}
-                      translationY={translationY}
-                      scrollViewRef={scrollViewRef}
-                      maxHeight={maxHeight}
-                    />
-                  </Animated.ScrollView>
-                </NativeViewGestureHandler>
-              </Animated.View>
-            </PanGestureHandler>
-          </KeyboardAvoidingView>
+                  <Content
+                    cardContentHeight={cardContentHeight}
+                    cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
+                    isInputFieldFocused={isInputFieldFocused}
+                    translationY={translationY}
+                    scrollViewRef={scrollViewRef}
+                  />
+                </Animated.ScrollView>
+              </NativeViewGestureHandler>
+            </Animated.View>
+          </PanGestureHandler>
         </ContentWrapper>
       </Animated.View>
     </View>
