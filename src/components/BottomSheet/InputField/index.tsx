@@ -28,30 +28,27 @@ const InputField: React.FC<Props> = props => {
       ({ identifier }: DoesExist) => identifier === props.uniqueId,
     );
 
-    if (!doesExist) {
+    if (doesExist) {
+      const msg = `uniqueId: ${props.uniqueId} on inputField is already taken. Please pick another`;
+      throw new Error(msg);
+    } else {
       inputFields.value.push({
         identifier: props.uniqueId,
         y: e.nativeEvent.layout.y,
       });
     }
-
-    try {
-      if (doesExist || typeof props.uniqueId === 'undefined') {
-        const msg = doesExist
-          ? `uniqueId: ${props.uniqueId} is already taken. Please pick another`
-          : 'Input field does not have a uniqueId prop.';
-
-        throw msg;
-      }
-    } catch (err) {
-      throw new Error(err);
-    }
   };
 
   const onFocus = (): void => {
-    selectedInputFieldPositionY.value = inputFields.value.find(
-      ({ identifier }: any) => identifier === props.uniqueId,
-    ).y;
+    try {
+      selectedInputFieldPositionY.value = inputFields.value.find(
+        ({ identifier }: any) => identifier === props.uniqueId,
+      ).y;
+    } catch (err) {
+      throw new Error(
+        'Please provide a uniqueId prop to the input field so the animation know what to look for',
+      );
+    }
   };
 
   return <TextInput onLayout={onLayout} onFocus={onFocus} {...props} />;

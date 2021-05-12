@@ -1,6 +1,3 @@
-/* Example on how to implement the BottomSheet to a ScrollView
-and attach the scrollY as a controller to it */
-
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
@@ -11,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import BottomSheet from 'components/BottomSheet';
 import SnapEffect from 'components/BottomSheet/SnapEffect';
-import InputField from 'components//BottomSheet/InputField';
+import InputField from 'components/BottomSheet/InputField';
 
 const SCROLL_EVENT_THROTTHLE = 16;
 interface Props {
@@ -102,7 +99,7 @@ const ScrollView: React.FC<Props> = ({ children }) => {
             Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
             mollit anim id est laborum."
           </Text>
-          <InputField uniqueId={1} placeholder="useless placeholder" style={inputStyle} />
+          <InputField uniqueId="1234" placeholder="useless placeholder" style={inputStyle} />
         </BottomSheetContentWrapper>
       </BottomSheet>
     </Wrapper>
