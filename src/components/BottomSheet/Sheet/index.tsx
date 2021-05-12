@@ -1,40 +1,19 @@
 import React, { useRef, useContext, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
-  Easing,
-  useAnimatedRef,
   useSharedValue,
   useAnimatedStyle,
   useAnimatedReaction,
   useDerivedValue,
   useAnimatedGestureHandler,
-  useAnimatedScrollHandler,
-  withTiming,
   runOnJS,
 } from 'react-native-reanimated';
-import {
-  LayoutChangeEvent,
-  ViewStyle,
-  useWindowDimensions,
-  Platform,
-  KeyboardAvoidingView,
-  Keyboard,
-  SafeAreaView,
-} from 'react-native';
-import {
-  PanGestureHandlerGestureEvent,
-  PanGestureHandler,
-  NativeViewGestureHandler,
-} from 'react-native-gesture-handler';
+import { LayoutChangeEvent, ViewStyle, Platform, Keyboard } from 'react-native';
+import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
 import Content from '../Content';
 import Header from '../Header';
-import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
-import { OFFSET_SNAP_POINT_BOTTOM, DEFAULT_TIMING_CONFIG } from 'constants/animations';
-import {
-  MAX_HEIGHT_RATIO,
-  CLOSE_CARD_BUTTON_HEIGHT,
-  KEYBOARD_CARD_HEIGHT_RATIO,
-} from 'constants/styles';
+import { OFFSET_SNAP_POINT_BOTTOM } from 'constants/animations';
+import { CLOSE_CARD_BUTTON_HEIGHT } from 'constants/styles';
 import {
   onScrollReaction,
   onActionRequestCloseOrOpenCard,
@@ -68,7 +47,7 @@ interface Props {
     arrowTopIcon?: React.ReactNode;
     maxHeightRatio?: number;
   };
-  children?: React.ReactNode;
+  children: React.ReactNode;
   bottomActions?: React.ReactNode;
   onAnimationDoneRequest?: void;
   snapEffectDirection?: Animated.SharedValue<string>;
@@ -90,21 +69,12 @@ const View = styled.View`
   z-index: 2;
 `;
 
-const ContentWrapper = styled.View`
-  overflow: hidden;
-`;
-
-const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest }) => {
-  const windowHeight = useWindowDimensions().height;
+const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest, children }) => {
   const keyboardContext = useContext(KeyboardContext);
 
-  const panGestureInnerRef = useRef<PanGestureHandler>();
   const panGestureOuterRef = useRef<PanGestureHandler>();
-  const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
 
   const isWeb = useSharedValue(Platform.OS === 'web');
-  const isAndroid = useSharedValue(Platform.OS === 'android');
 
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
@@ -113,9 +83,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const isScrollingDown = useSharedValue(false);
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
-  const isScrollable = useSharedValue(false);
   const isInputFieldFocused = useSharedValue(false);
-  const isScrollEnabled = useSharedValue(true);
 
   const panGestureType = useSharedValue(0);
   const innerScrollY = useSharedValue(0);
@@ -123,8 +91,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
-  const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const cardContentHeight = useSharedValue(0);
 
   const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
   const derivedIsPanning = useDerivedValue(() => isPanning.value);
@@ -133,8 +99,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
       ? cardHeight.value - CLOSE_CARD_BUTTON_HEIGHT - OFFSET_SNAP_POINT_BOTTOM
       : 0,
   );
-
-  const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
 
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
@@ -180,12 +144,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     },
     [cardHeight, onLayoutRequest],
   );
-
-  const onScrollHandler = useAnimatedScrollHandler({
-    onScroll: e => {
-      innerScrollY.value = e.contentOffset.y;
-    },
-  });
 
   const gestureHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
@@ -241,14 +199,6 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
     (): Animated.AnimatedStyleProp<ViewStyle> => getAnimatedCardStyles(translationY.value),
   );
 
-  const maxHeightStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      maxHeight: maxHeight.value,
-      height:
-        cardHeightWhenKeyboardIsVisible.value > 0 ? cardHeightWhenKeyboardIsVisible.value : '100%',
-    }),
-  );
-
   return (
     <View pointerEvents="box-none">
       <Animated.View onLayout={onLayout} style={panGestureStyle}>
@@ -270,55 +220,16 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest 
             />
           </Animated.View>
         </PanGestureHandler>
-        <ContentWrapper>
-          <PanGestureHandler
-            enabled={Platform.OS !== 'web'}
-            ref={panGestureInnerRef}
-            shouldCancelWhenOutside={false}
-            simultaneousHandlers={nativeViewGestureRef}
-            onGestureEvent={gestureHandler}
-            onHandlerStateChange={(): void => {
-              if (panGestureType.value !== 1) {
-                panGestureType.value = 1;
-              }
-            }}
-          >
-            <Animated.View style={maxHeightStyle}>
-              <NativeViewGestureHandler
-                ref={nativeViewGestureRef}
-                shouldCancelWhenOutside={false}
-                simultaneousHandlers={panGestureInnerRef}
-              >
-                <Animated.ScrollView
-                  ref={scrollViewRef}
-                  bounces={false}
-                  alwaysBounceVertical={false}
-                  directionalLockEnabled={true}
-                  onScroll={onScrollHandler}
-                  onContentSizeChange={(_, height): void => {
-                    isScrollable.value = height > maxHeight.value;
-                    cardContentHeight.value = height;
-                  }}
-                  scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-                  onTouchMove={(): void => {
-                    isScrollingCard.value = true;
-                  }}
-                  onTouchEnd={(): void => {
-                    isScrollingCard.value = false;
-                  }}
-                >
-                  <Content
-                    cardContentHeight={cardContentHeight}
-                    cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
-                    isInputFieldFocused={isInputFieldFocused}
-                    translationY={translationY}
-                    scrollViewRef={scrollViewRef}
-                  />
-                </Animated.ScrollView>
-              </NativeViewGestureHandler>
-            </Animated.View>
-          </PanGestureHandler>
-        </ContentWrapper>
+        <Content
+          gestureHandler={gestureHandler}
+          panGestureType={panGestureType}
+          innerScrollY={innerScrollY}
+          isScrollingCard={isScrollingCard}
+          isInputFieldFocused={isInputFieldFocused}
+          translationY={translationY}
+        >
+          {children}
+        </Content>
       </Animated.View>
     </View>
   );

@@ -47,7 +47,7 @@ module.exports = {
             options: {
               useBabel: true,
               babelOptions: babelConfig,
-              reportFiles: ['./src/**/*.{ts,tsx}'],
+              reportFiles: ['../src/**/*.{ts,tsx}'],
             },
           },
         ],

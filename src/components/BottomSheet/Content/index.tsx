@@ -1,154 +1,122 @@
-import React, { useMemo, useContext } from 'react';
-import {
-  useWindowDimensions,
-  LayoutChangeEvent,
-  NativeSyntheticEvent,
-  TextInputFocusEventData,
-  SafeAreaView,
-} from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedReaction,
-  useDerivedValue,
-} from 'react-native-reanimated';
+import React, { useRef } from 'react';
+import { Platform, ViewStyle, useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
-import { KeyboardContext } from 'containers/KeyboardProvider';
-import { KEYBOARD_CARD_HEIGHT_RATIO } from 'constants/styles';
-import { onIsInputFieldFocusedReaction } from 'worklets';
+import Animated, {
+  useAnimatedRef,
+  useSharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+import {
+  GestureEvent,
+  PanGestureHandler,
+  PanGestureHandlerEventPayload,
+  NativeViewGestureHandler,
+} from 'react-native-gesture-handler';
+import { MAX_HEIGHT_RATIO } from 'constants/styles';
+import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
+import FocusedInputFieldProvider from 'containers/FocusedInputFieldProvider';
 
 interface Props {
+  gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
+  panGestureType: Animated.SharedValue<number>;
+  innerScrollY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
-  cardContentHeight: Animated.SharedValue<number>;
-  cardHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
-  scrollViewRef: React.RefObject<Animated.ScrollView>;
+  isScrollingCard: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
 }
 
-const Wrapper = styled.View`
-  flex: 1;
-`;
-
-const Text = styled.Text``;
-
-const WrapperOne = styled.View`
-  width: 100%;
-  padding: 32px;
-  align-items: center;
-`;
-
-const WrapperTwo = styled.View`
-  height: 100px;
-  width: 100%;
-  background: black;
-`;
-
-const TextInput = styled.TextInput`
-  margin: 16px;
-  width: 100%;
-  height: 50px;
-  text-align: center;
-  border-radius: 6px;
-  background-color: white;
+const ContentWrapper = styled.View`
+  overflow: hidden;
 `;
 
 const Content: React.FC<Props> = ({
-  cardContentHeight,
-  cardHeightWhenKeyboardIsVisible,
+  gestureHandler,
+  panGestureType,
+  innerScrollY,
+  isScrollingCard,
   isInputFieldFocused,
-  scrollViewRef,
   translationY,
+  children,
 }) => {
-  const inputFieldsHeightPositions = useSharedValue<Record<string, any>>([]);
-  const selectedInputFieldPositionY = useSharedValue(0);
-
-  const keyboardContext = useContext(KeyboardContext);
   const windowHeight = useWindowDimensions().height;
 
-  useAnimatedReaction(
-    () => ({
-      isKeyboardVisible: keyboardContext.isKeyboardVisible,
-      keyboardHeight: keyboardContext.keyboardHeight,
-      keyboardDuration: keyboardContext.keyboardDuration,
-      selectedInputFieldPositionY,
+  const panGestureInnerRef = useRef<PanGestureHandler>();
+  const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+
+  const isScrollable = useSharedValue(false);
+
+  const cardContentHeight = useSharedValue(0);
+  const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
+  const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
+
+  const onScrollHandler = useAnimatedScrollHandler({
+    onScroll: e => {
+      innerScrollY.value = e.contentOffset.y;
+    },
+  });
+
+  const maxHeightStyle = useAnimatedStyle(
+    (): Animated.AnimatedStyleProp<ViewStyle> => ({
+      maxHeight: maxHeight.value,
+      height:
+        cardHeightWhenKeyboardIsVisible.value > 0 ? cardHeightWhenKeyboardIsVisible.value : '100%',
     }),
-    (
-      result: Record<string, Animated.SharedValue<number>>,
-      previous: Record<string, Animated.SharedValue<number>> | null | undefined,
-    ) =>
-      onIsInputFieldFocusedReaction({
-        result,
-        previous,
-        windowHeight,
-        scrollViewRef,
-        translationY,
-        isInputFieldFocused,
-        cardHeightWhenKeyboardIsVisible,
-        cardContentHeight,
-      }),
-    [keyboardContext.isKeyboardVisible, selectedInputFieldPositionY],
   );
 
-  const onInputLayout = (e: LayoutChangeEvent, index: number): void => {
-    inputFieldsHeightPositions.value.push({ index, y: e.nativeEvent.layout.y });
-  };
-
-  const onFocus = (_e: NativeSyntheticEvent<TextInputFocusEventData>, index: number): void => {
-    selectedInputFieldPositionY.value = inputFieldsHeightPositions.value.find(
-      ({ index: i }: any) => i === index,
-    ).y;
-  };
-
   return (
-    <Wrapper>
-      <WrapperOne>
-        <Text>Ipsem lorem whatever magic harry potter stuff</Text>
-        <TextInput
-          onLayout={(e): void => onInputLayout(e, 0)}
-          onFocus={(e): void => onFocus(e, 0)}
-          placeholder="useless placeholder"
-          keyboardType="default"
-        />
-        <TextInput
-          onLayout={(e): void => onInputLayout(e, 1)}
-          onFocus={(e): void => onFocus(e, 1)}
-          placeholder="useless placeholder"
-          keyboardType="numeric"
-        />
-        <TextInput
-          onLayout={(e): void => onInputLayout(e, 2)}
-          onFocus={(e): void => onFocus(e, 2)}
-          placeholder="useless placeholder"
-          keyboardType="numeric"
-        />
-        <Text>
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
-          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-          est laborum."
-        </Text>
-        <TextInput
-          onLayout={(e): void => onInputLayout(e, 3)}
-          onFocus={(e): void => onFocus(e, 3)}
-          placeholder="useless placeholder"
-          keyboardType="numeric"
-        />
-        <TextInput
-          onLayout={(e): void => onInputLayout(e, 4)}
-          onFocus={(e): void => onFocus(e, 4)}
-          placeholder="useless placeholder"
-          keyboardType="numeric"
-        />
-        <TextInput
-          onLayout={(e): void => onInputLayout(e, 5)}
-          onFocus={(e): void => onFocus(e, 5)}
-          placeholder="useless placeholder"
-          keyboardType="numeric"
-        />
-      </WrapperOne>
-      {/* <WrapperTwo /> */}
-    </Wrapper>
+    <ContentWrapper>
+      <PanGestureHandler
+        enabled={Platform.OS !== 'web'}
+        ref={panGestureInnerRef}
+        shouldCancelWhenOutside={false}
+        simultaneousHandlers={nativeViewGestureRef}
+        onGestureEvent={gestureHandler}
+        onHandlerStateChange={(): void => {
+          if (panGestureType.value !== 1) {
+            panGestureType.value = 1;
+          }
+        }}
+      >
+        <Animated.View style={maxHeightStyle}>
+          <NativeViewGestureHandler
+            ref={nativeViewGestureRef}
+            shouldCancelWhenOutside={false}
+            simultaneousHandlers={panGestureInnerRef}
+          >
+            <Animated.ScrollView
+              ref={scrollViewRef}
+              bounces={false}
+              alwaysBounceVertical={false}
+              directionalLockEnabled={true}
+              onScroll={onScrollHandler}
+              onContentSizeChange={(_, height): void => {
+                isScrollable.value = height > maxHeight.value;
+                cardContentHeight.value = height;
+              }}
+              scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+              onTouchMove={(): void => {
+                isScrollingCard.value = true;
+              }}
+              onTouchEnd={(): void => {
+                isScrollingCard.value = false;
+              }}
+            >
+              <FocusedInputFieldProvider
+                scrollViewRef={scrollViewRef}
+                translationY={translationY}
+                isInputFieldFocused={isInputFieldFocused}
+                cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
+                cardContentHeight={cardContentHeight}
+              >
+                {children}
+              </FocusedInputFieldProvider>
+            </Animated.ScrollView>
+          </NativeViewGestureHandler>
+        </Animated.View>
+      </PanGestureHandler>
+    </ContentWrapper>
   );
 };
 

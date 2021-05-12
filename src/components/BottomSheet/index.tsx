@@ -1,21 +1,29 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import Sheet from 'components/BottomSheet/Sheet';
-import KeyboardProviderWrapper from 'containers/KeyboardProvider';
+import KeyboardProvider from 'containers/KeyboardProvider';
 interface Props {
   scrollY: Animated.SharedValue<number>;
   snapEffectDirection?: Animated.SharedValue<string>;
   onLayoutRequest?: (cardHeight: number) => void;
+  children: React.ReactNode;
 }
 
-const BottomSheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest }) => (
-  <KeyboardProviderWrapper>
+const BottomSheet: React.FC<Props> = ({
+  scrollY,
+  snapEffectDirection,
+  onLayoutRequest,
+  children,
+}) => (
+  <KeyboardProvider>
     <Sheet
       scrollY={scrollY}
       snapEffectDirection={snapEffectDirection}
       onLayoutRequest={onLayoutRequest}
-    />
-  </KeyboardProviderWrapper>
+    >
+      {children}
+    </Sheet>
+  </KeyboardProvider>
 );
 
 export default BottomSheet;
