@@ -4,7 +4,7 @@ This library provides some nice animation features with the latest reanimated 2+
 ## Current progress
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
-  - [x] InputField component that accepts a unique id so no matter where its located then a scroll event will locate it to achieve a nice scrollTo animation effect when the input field is focused
+  - [x] InputField component that accepts a unique id so no matter where the component is located then a nice scrollTo animation effect to the input field is achieved
   - [x] If the background content is not scrollable but there is content hiding behind the card, then make the component snappable so the card will collapse if the user tries to do a scroll gesture on the background content
   - [ ] Implement prop flexibility and update the readme file on how to implement the BottomSheet
   - [x] Morphing arrow that follows the Y axis animation of the card
