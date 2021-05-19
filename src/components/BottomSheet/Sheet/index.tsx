@@ -12,8 +12,9 @@ import { LayoutChangeEvent, ViewStyle, Platform, Keyboard } from 'react-native';
 import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
 import Content from '../Content';
 import Header from '../Header';
+import Footer from '../Footer';
 import { OFFSET_SNAP_POINT_BOTTOM } from 'constants/animations';
-import { CLOSE_CARD_BUTTON_HEIGHT } from 'constants/styles';
+import { CLOSE_CARD_BUTTON_HEIGHT, CLOSE_OPEN_CARD_BUTTON_HITSLOP } from 'constants/styles';
 import {
   onScrollReaction,
   onActionRequestCloseOrOpenCard,
@@ -22,6 +23,11 @@ import {
 } from 'worklets';
 import { KeyboardContext } from 'containers/KeyboardProvider';
 
+const FooterContent = styled.View`
+  width: 100%;
+  height: 100px;
+  background: black;
+`;
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -29,7 +35,7 @@ interface Props {
   height?: number;
   width?: number;
   scrollViewRef?: React.RefObject<Animated.ScrollView> | null;
-  previousScrollY?: Animated.SharedValue<number>;
+  previousScrollY?: Animated.SharedValue<nfumber>;
   scrollY: Animated.SharedValue<number>;
   contentSize?: Animated.SharedValue<number>;
   layoutHeight?: Animated.SharedValue<number>;
@@ -91,12 +97,16 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest,
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
+  const headerHeight = useSharedValue(0);
 
   const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
   const derivedIsPanning = useDerivedValue(() => isPanning.value);
   const snapPointBottom = useDerivedValue(() =>
     cardHeight.value > 0
-      ? cardHeight.value - CLOSE_CARD_BUTTON_HEIGHT - OFFSET_SNAP_POINT_BOTTOM
+      ? cardHeight.value -
+        CLOSE_CARD_BUTTON_HEIGHT -
+        OFFSET_SNAP_POINT_BOTTOM +
+        CLOSE_OPEN_CARD_BUTTON_HITSLOP
       : 0,
   );
 
@@ -177,7 +187,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest,
   );
 
   useAnimatedReaction(
-    () => scrollY?.value,
+    () => scrollY.value,
     (result: number, previous: number | null | undefined) => {
       if (!isInputFieldFocused.value) {
         onScrollReaction({
@@ -216,6 +226,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest,
               snapPointBottom={snapPointBottom}
               scrollY={scrollY}
               translationY={translationY}
+              headerHeight={headerHeight}
               onPress={actionRequestCloseOrOpenCard}
             />
           </Animated.View>
@@ -231,6 +242,9 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest,
           {children}
         </Content>
       </Animated.View>
+      <Footer cardHeight={cardHeight} headerHeight={headerHeight} translationY={translationY}>
+        <FooterContent />
+      </Footer>
     </View>
   );
 };

@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { CARD_BOTTOM_OFFSET } from '../constants/styles';
 
 /* It is not possible to put styles as a constant when
 running it on the UI thread */

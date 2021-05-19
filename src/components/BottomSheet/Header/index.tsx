@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import { LayoutChangeEvent } from 'react-native';
+import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {
   DEFAULT_BORDER_RADIUS,
@@ -13,6 +14,7 @@ interface Props {
   snapPointBottom: Animated.SharedValue<number>;
   scrollY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
+  headerHeight: Animated.SharedValue<number>;
   onPress: () => void;
 }
 
@@ -39,17 +41,34 @@ const MorphingArrowWrapper = styled.View`
   top: -${CLOSE_OPEN_CARD_BUTTON_HITSLOP}px;
 `;
 
-const Header: React.FC<Props> = ({ snapPointBottom, scrollY, translationY, onPress }) => (
-  <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onPress}>
-    <HitSlopAreaWrapper />
-    <MorphingArrowWrapper>
-      <MorphingArrow
-        snapPointBottom={snapPointBottom}
-        scrollY={scrollY}
-        translationY={translationY}
-      />
-    </MorphingArrowWrapper>
-  </TouchableOpacity>
-);
+const Header: React.FC<Props> = ({
+  snapPointBottom,
+  scrollY,
+  translationY,
+  headerHeight,
+  onPress,
+}) => {
+  const onLayout = useCallback(
+    (e: LayoutChangeEvent): void => {
+      if (e.nativeEvent.layout.height > 0) {
+        headerHeight.value = e.nativeEvent.layout.height;
+      }
+    },
+    [headerHeight],
+  );
+
+  return (
+    <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onPress}>
+      <HitSlopAreaWrapper />
+      <MorphingArrowWrapper onLayout={onLayout}>
+        <MorphingArrow
+          snapPointBottom={snapPointBottom}
+          scrollY={scrollY}
+          translationY={translationY}
+        />
+      </MorphingArrowWrapper>
+    </TouchableOpacity>
+  );
+};
 
 export default Header;
