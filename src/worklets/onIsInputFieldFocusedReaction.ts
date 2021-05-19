@@ -40,44 +40,38 @@ export const onIsInputFieldFocusedReaction = ({
   'worklet';
 
   if (result !== previous) {
-    const res = result.selectedInputFieldPositionY.value;
-    const availableContentSpace =
-      windowHeight -
-      headerHeight.value -
-      footerHeight.value -
-      result.keyboardHeight.value -
-      CLOSE_OPEN_CARD_BUTTON_HITSLOP;
+    const areAllLayoutsCalculated = headerHeight.value > 0 && footerHeight.value > 0;
 
-    const height = availableContentSpace * KEYBOARD_CARD_HEIGHT_RATIO;
-    const isScrollable = cardContentHeight.value > height;
-    const animationConfigIsScrollable = { duration: SCROLL_EVENT_THROTTLE };
-    const animationConfigIsNotScrollable = {
-      duration: result.keyboardDuration.value,
-      KEYBOARD_TIMING_EASING,
-    };
-    const animationConfig = isScrollable
-      ? animationConfigIsScrollable
-      : animationConfigIsNotScrollable;
+    if (result.keyboardHeight.value > 0 && areAllLayoutsCalculated) {
+      const res = result.selectedInputFieldPositionY.value;
+      const availableContentSpace =
+        windowHeight -
+        headerHeight.value -
+        footerHeight.value -
+        result.keyboardHeight.value -
+        CLOSE_OPEN_CARD_BUTTON_HITSLOP;
 
-    if (result.keyboardHeight.value > 0 && availableContentSpace > 0) {
-      if (translationY.value !== -result.keyboardHeight.value && isInputFieldFocused.value) {
-        translationY.value = -result.keyboardHeight.value;
-      }
+      const height = availableContentSpace * KEYBOARD_CARD_HEIGHT_RATIO;
+      const isScrollable = cardContentHeight.value > height;
+      const animationConfigIsScrollable = { duration: SCROLL_EVENT_THROTTLE };
+      const animationConfigIsNotScrollable = {
+        duration: result.keyboardDuration.value,
+        KEYBOARD_TIMING_EASING,
+      };
+      const animationConfig = isScrollable
+        ? animationConfigIsScrollable
+        : animationConfigIsNotScrollable;
 
-      if (translationY.value !== -result.keyboardHeight.value) {
-        cardHeightWhenKeyboardIsVisible.value = withTiming(
-          isScrollable ? height : cardContentHeight.value,
-          { duration: AVOID_FLICKERING_MS },
-          () => {
-            footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
-            translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
-              scrollTo(scrollViewRef, 0, res, true);
-            });
-          },
-        );
-      } else {
-        scrollTo(scrollViewRef, 0, res, true);
-      }
+      cardHeightWhenKeyboardIsVisible.value = withTiming(
+        isScrollable ? height : cardContentHeight.value,
+        { duration: AVOID_FLICKERING_MS },
+        () => {
+          footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
+          translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
+            scrollTo(scrollViewRef, 0, res, true);
+          });
+        },
+      );
 
       isInputFieldFocused.value = true;
     }
