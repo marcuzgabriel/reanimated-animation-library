@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
   useAnimatedStyle,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import {
   GestureEvent,
@@ -22,6 +23,7 @@ interface Props {
   panGestureType: Animated.SharedValue<number>;
   innerScrollY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
+  footerHeight: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
 }
@@ -37,6 +39,7 @@ const Content: React.FC<Props> = ({
   isScrollingCard,
   isInputFieldFocused,
   translationY,
+  footerHeight,
   children,
 }) => {
   const windowHeight = useWindowDimensions().height;
@@ -51,6 +54,8 @@ const Content: React.FC<Props> = ({
   const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
   const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
 
+  const derivedMarginBottom = useDerivedValue(() => footerHeight.value);
+
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
       innerScrollY.value = e.contentOffset.y;
@@ -59,7 +64,8 @@ const Content: React.FC<Props> = ({
 
   const maxHeightStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      maxHeight: maxHeight.value,
+      marginBottom: derivedMarginBottom.value,
+      maxHeight: maxHeight.value - derivedMarginBottom.value,
       height:
         cardHeightWhenKeyboardIsVisible.value > 0 ? cardHeightWhenKeyboardIsVisible.value : '100%',
     }),

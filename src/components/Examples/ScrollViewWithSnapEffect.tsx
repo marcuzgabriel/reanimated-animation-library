@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import BottomSheet from 'components/BottomSheet';
 import SnapEffect from 'components/BottomSheet/SnapEffect';
-import InputField from 'components/BottomSheet/InputField';
+import Content from './components/Content';
 
 const SCROLL_EVENT_THROTTHLE = 16;
 interface Props {
@@ -30,26 +30,17 @@ const BackgroundContent = styled.View`
   z-index: 1;
 `;
 
-const BottomSheetContentWrapper = styled.View`
-  margin: 32px;
+const FooterContent = styled.View`
+  width: 100%;
+  height: 100px;
+  background: black;
 `;
-
-const Text = styled.Text``;
 
 const ScrollView: React.FC<Props> = ({ children }) => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const scrollY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
   const snapEffectDirection = useSharedValue('');
-
-  const inputStyle = {
-    width: '100%',
-    height: 50,
-    textAlign: 'center',
-    justifyContent: 'center',
-    borderRadius: 6,
-    backgroundColor: 'white',
-  };
 
   const windowHeight = useWindowDimensions().height;
 
@@ -75,33 +66,14 @@ const ScrollView: React.FC<Props> = ({ children }) => {
         </Animated.ScrollView>
       </BackgroundContent>
       <BottomSheet
+        scrollY={scrollY}
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
         snapEffectDirection={snapEffectDirection}
-        scrollY={scrollY}
-      >
-        <BottomSheetContentWrapper>
-          <Text>
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-            mollit anim id est laborum."
-          </Text>
-          <InputField uniqueId={0} placeholder="useless placeholder" style={inputStyle} />
-          <Text>
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-            mollit anim id est laborum."
-          </Text>
-          <InputField uniqueId="1234" placeholder="useless placeholder" style={inputStyle} />
-        </BottomSheetContentWrapper>
-      </BottomSheet>
+        contentComponent={<Content />}
+        footerComponent={<FooterContent />}
+      />
     </Wrapper>
   );
 };

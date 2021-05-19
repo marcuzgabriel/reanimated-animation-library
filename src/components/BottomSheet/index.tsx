@@ -5,24 +5,26 @@ import KeyboardProvider from 'containers/KeyboardProvider';
 interface Props {
   scrollY: Animated.SharedValue<number>;
   snapEffectDirection?: Animated.SharedValue<string>;
+  contentComponent: React.ReactNode;
+  footerComponent: React.ReactNode;
   onLayoutRequest?: (cardHeight: number) => void;
-  children: React.ReactNode;
 }
 
 const BottomSheet: React.FC<Props> = ({
   scrollY,
   snapEffectDirection,
+  contentComponent,
+  footerComponent,
   onLayoutRequest,
-  children,
 }) => (
   <KeyboardProvider>
     <Sheet
       scrollY={scrollY}
       snapEffectDirection={snapEffectDirection}
+      contentComponent={contentComponent}
+      footerComponent={footerComponent}
       onLayoutRequest={onLayoutRequest}
-    >
-      {children}
-    </Sheet>
+    />
   </KeyboardProvider>
 );
 

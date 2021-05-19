@@ -12,21 +12,31 @@ interface Props {
   translationY: Animated.SharedValue<number>;
   cardHeight: Animated.SharedValue<number>;
   headerHeight: Animated.SharedValue<number>;
+  footerHeight: Animated.SharedValue<number>;
   children: React.ReactNode;
 }
 
-const Wrapper = styled.View`
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
-  z-index: 3;
-`;
+const Wrapper = Animated.createAnimatedComponent(styled.View``);
 
-const Footer: React.FC<Props> = ({ translationY, cardHeight, headerHeight, children }) => {
+const Footer: React.FC<Props> = ({
+  translationY,
+  cardHeight,
+  headerHeight,
+  footerHeight,
+  children,
+}) => {
   const footerTranslationY = useSharedValue(0);
-  const footerHeight = useSharedValue(0);
 
-  const animatedStyle = useAnimatedStyle(
+  const animatedParentStyle = useAnimatedStyle(
+    (): Animated.AnimatedStyleProp<ViewStyle> => ({
+      position: 'absolute',
+      bottom: 0,
+      width: '100%',
+      zIndex: footerTranslationY.value >= footerHeight.value ? -1 : 3,
+    }),
+  );
+
+  const animatedChildStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       flex: 1,
       transform: [{ translateY: footerTranslationY.value }],
@@ -59,8 +69,8 @@ const Footer: React.FC<Props> = ({ translationY, cardHeight, headerHeight, child
   );
 
   return (
-    <Wrapper onLayout={onLayout}>
-      <Animated.View style={animatedStyle}>{children}</Animated.View>
+    <Wrapper onLayout={onLayout} style={animatedParentStyle}>
+      <Animated.View style={animatedChildStyle}>{children}</Animated.View>
     </Wrapper>
   );
 };

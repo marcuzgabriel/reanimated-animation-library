@@ -22,12 +22,6 @@ import {
   onGestureHandlerCard,
 } from 'worklets';
 import { KeyboardContext } from 'containers/KeyboardProvider';
-
-const FooterContent = styled.View`
-  width: 100%;
-  height: 100px;
-  background: black;
-`;
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -35,7 +29,7 @@ interface Props {
   height?: number;
   width?: number;
   scrollViewRef?: React.RefObject<Animated.ScrollView> | null;
-  previousScrollY?: Animated.SharedValue<nfumber>;
+  previousScrollY?: Animated.SharedValue<number>;
   scrollY: Animated.SharedValue<number>;
   contentSize?: Animated.SharedValue<number>;
   layoutHeight?: Animated.SharedValue<number>;
@@ -53,7 +47,8 @@ interface Props {
     arrowTopIcon?: React.ReactNode;
     maxHeightRatio?: number;
   };
-  children: React.ReactNode;
+  contentComponent: React.ReactNode;
+  footerComponent: React.ReactNode;
   bottomActions?: React.ReactNode;
   onAnimationDoneRequest?: void;
   snapEffectDirection?: Animated.SharedValue<string>;
@@ -75,7 +70,13 @@ const View = styled.View`
   z-index: 2;
 `;
 
-const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest, children }) => {
+const Sheet: React.FC<Props> = ({
+  scrollY,
+  snapEffectDirection,
+  contentComponent,
+  footerComponent,
+  onLayoutRequest,
+}) => {
   const keyboardContext = useContext(KeyboardContext);
 
   const panGestureOuterRef = useRef<PanGestureHandler>();
@@ -98,6 +99,7 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest,
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
   const headerHeight = useSharedValue(0);
+  const footerHeight = useSharedValue(0);
 
   const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
   const derivedIsPanning = useDerivedValue(() => isPanning.value);
@@ -178,10 +180,8 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest,
 
   useAnimatedReaction(
     () => snapEffectDirection?.value,
-    (result: string | undefined, previous: string | null | undefined) => {
-      if (result !== previous && (result === 'up' || result === 'down')) {
-        actionRequestCloseOrOpenCard(result);
-      }
+    (result: string | undefined) => {
+      actionRequestCloseOrOpenCard(result);
     },
     [snapEffectDirection],
   );
@@ -238,12 +238,18 @@ const Sheet: React.FC<Props> = ({ scrollY, snapEffectDirection, onLayoutRequest,
           isScrollingCard={isScrollingCard}
           isInputFieldFocused={isInputFieldFocused}
           translationY={translationY}
+          footerHeight={footerHeight}
         >
-          {children}
+          {contentComponent}
         </Content>
       </Animated.View>
-      <Footer cardHeight={cardHeight} headerHeight={headerHeight} translationY={translationY}>
-        <FooterContent />
+      <Footer
+        cardHeight={cardHeight}
+        headerHeight={headerHeight}
+        footerHeight={footerHeight}
+        translationY={translationY}
+      >
+        {footerComponent}
       </Footer>
     </View>
   );
