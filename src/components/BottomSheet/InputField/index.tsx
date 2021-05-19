@@ -33,7 +33,7 @@ const InputField: React.FC<Props> = props => {
         identifier: props.uniqueId,
         y: e.nativeEvent.layout.y,
       });
-    } else {
+    } else if (inputFields.length > 0) {
       const hasSameIdentifier = inputFields.value.some(
         ({ identifier, y }: Record<string, number | string>) =>
           identifier === props.uniqueId && e.nativeEvent.layout.y !== y,

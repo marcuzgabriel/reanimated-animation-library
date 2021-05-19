@@ -9,6 +9,7 @@ import Animated, {
 import BottomSheet from 'components/BottomSheet';
 import SnapEffect from 'components/BottomSheet/SnapEffect';
 import Content from './components/Content';
+import Footer from './components/Footer';
 
 const SCROLL_EVENT_THROTTHLE = 16;
 interface Props {
@@ -28,12 +29,6 @@ const BackgroundContent = styled.View`
   right: 0px;
   left: 0px;
   z-index: 1;
-`;
-
-const FooterContent = styled.View`
-  width: 100%;
-  height: 100px;
-  background: black;
 `;
 
 const ScrollView: React.FC<Props> = ({ children }) => {
@@ -72,7 +67,7 @@ const ScrollView: React.FC<Props> = ({ children }) => {
         }}
         snapEffectDirection={snapEffectDirection}
         contentComponent={<Content />}
-        footerComponent={<FooterContent />}
+        footerComponent={<Footer />}
       />
     </Wrapper>
   );

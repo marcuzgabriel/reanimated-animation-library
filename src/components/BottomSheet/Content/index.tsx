@@ -19,13 +19,15 @@ import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 import FocusedInputFieldProvider from 'containers/FocusedInputFieldProvider';
 
 interface Props {
-  gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
   panGestureType: Animated.SharedValue<number>;
   innerScrollY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
+  footerTranslationY: Animated.SharedValue<number>;
+  headerHeight: Animated.SharedValue<number>;
   footerHeight: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
+  gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
 }
 
 const ContentWrapper = styled.View`
@@ -39,6 +41,8 @@ const Content: React.FC<Props> = ({
   isScrollingCard,
   isInputFieldFocused,
   translationY,
+  footerTranslationY,
+  headerHeight,
   footerHeight,
   children,
 }) => {
@@ -52,9 +56,11 @@ const Content: React.FC<Props> = ({
 
   const cardContentHeight = useSharedValue(0);
   const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useSharedValue(windowHeight * MAX_HEIGHT_RATIO);
 
   const derivedMarginBottom = useDerivedValue(() => footerHeight.value);
+  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
+    footerHeight,
+  ]);
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -65,7 +71,7 @@ const Content: React.FC<Props> = ({
   const maxHeightStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       marginBottom: derivedMarginBottom.value,
-      maxHeight: maxHeight.value - derivedMarginBottom.value,
+      maxHeight: maxHeight.value,
       height:
         cardHeightWhenKeyboardIsVisible.value > 0 ? cardHeightWhenKeyboardIsVisible.value : '100%',
     }),
@@ -112,9 +118,12 @@ const Content: React.FC<Props> = ({
               <FocusedInputFieldProvider
                 scrollViewRef={scrollViewRef}
                 translationY={translationY}
+                footerTranslationY={footerTranslationY}
                 isInputFieldFocused={isInputFieldFocused}
                 cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
                 cardContentHeight={cardContentHeight}
+                headerHeight={headerHeight}
+                footerHeight={footerHeight}
               >
                 {children}
               </FocusedInputFieldProvider>

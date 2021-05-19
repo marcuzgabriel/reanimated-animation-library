@@ -1,6 +1,6 @@
-import Animated, { Easing, withTiming, scrollTo } from 'react-native-reanimated';
-import { KEYBOARD_TIMING_EASING, DEFAULT_TIMING_CONFIG } from 'constants/animations';
-import { KEYBOARD_CARD_HEIGHT_RATIO } from 'constants/styles';
+import Animated, { withTiming, scrollTo } from 'react-native-reanimated';
+import { KEYBOARD_TIMING_EASING } from 'constants/animations';
+import { CLOSE_OPEN_CARD_BUTTON_HITSLOP, KEYBOARD_CARD_HEIGHT_RATIO } from 'constants/styles';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 
 /* NOTE: Eliminating race condition and flickering effect: When an input
@@ -8,17 +8,20 @@ is focused. Then one animation changes the card height where the
 other animation translates the y position of the card so that the card
 will float above the keyboard. This fix ensures that translation of the card
 respects the change of height before it animates. 1 ms. wait time is enough. */
-const AVOID_FLICKERING_MS = 1;
+const AVOID_FLICKERING_MS = 0.1;
 
 interface Props {
   result: Record<string, Animated.SharedValue<number>>;
   previous: Record<string, Animated.SharedValue<number>> | null | undefined;
   translationY: Animated.SharedValue<number>;
+  footerTranslationY: Animated.SharedValue<number>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
   windowHeight: number;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   cardHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
   cardContentHeight: Animated.SharedValue<number>;
+  headerHeight: Animated.SharedValue<number>;
+  footerHeight: Animated.SharedValue<number>;
 }
 
 export const onIsInputFieldFocusedReaction = ({
@@ -26,16 +29,26 @@ export const onIsInputFieldFocusedReaction = ({
   previous,
   cardHeightWhenKeyboardIsVisible,
   cardContentHeight,
+  headerHeight,
+  footerHeight,
   windowHeight,
   scrollViewRef,
   translationY,
+  footerTranslationY,
   isInputFieldFocused,
 }: Props): void => {
   'worklet';
 
   if (result !== previous) {
-    const res = result.selectedInputFieldPositionY.value - 32;
-    const height = windowHeight * KEYBOARD_CARD_HEIGHT_RATIO;
+    const res = result.selectedInputFieldPositionY.value;
+    const availableContentSpace =
+      windowHeight -
+      headerHeight.value -
+      footerHeight.value -
+      result.keyboardHeight.value -
+      CLOSE_OPEN_CARD_BUTTON_HITSLOP;
+
+    const height = availableContentSpace * KEYBOARD_CARD_HEIGHT_RATIO;
     const isScrollable = cardContentHeight.value > height;
     const animationConfigIsScrollable = { duration: SCROLL_EVENT_THROTTLE };
     const animationConfigIsNotScrollable = {
@@ -46,16 +59,17 @@ export const onIsInputFieldFocusedReaction = ({
       ? animationConfigIsScrollable
       : animationConfigIsNotScrollable;
 
-    if (result.keyboardHeight.value > 0) {
+    if (result.keyboardHeight.value > 0 && availableContentSpace > 0) {
       if (translationY.value !== -result.keyboardHeight.value && isInputFieldFocused.value) {
         translationY.value = -result.keyboardHeight.value;
       }
 
       if (translationY.value !== -result.keyboardHeight.value) {
         cardHeightWhenKeyboardIsVisible.value = withTiming(
-          height,
+          isScrollable ? height : cardContentHeight.value,
           { duration: AVOID_FLICKERING_MS },
           () => {
+            footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
             translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
               scrollTo(scrollViewRef, 0, res, true);
             });
@@ -71,6 +85,7 @@ export const onIsInputFieldFocusedReaction = ({
     if (result.keyboardHeight.value === 0 && isInputFieldFocused.value) {
       cardHeightWhenKeyboardIsVisible.value = 0;
       translationY.value = 0;
+      footerTranslationY.value = 0;
       scrollTo(scrollViewRef, 0, 0, false);
       isInputFieldFocused.value = false;
     }

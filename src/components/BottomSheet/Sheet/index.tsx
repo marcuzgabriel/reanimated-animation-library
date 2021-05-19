@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useCallback } from 'react';
+import React, { useMemo, useRef, useContext, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
@@ -95,11 +95,17 @@ const Sheet: React.FC<Props> = ({
   const panGestureType = useSharedValue(0);
   const innerScrollY = useSharedValue(0);
   const translationY = useSharedValue(0);
+  const footerTranslationY = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
   const headerHeight = useSharedValue(0);
   const footerHeight = useSharedValue(0);
+
+  const extraSnapPointBottomOffset = useMemo(
+    () => (Platform.OS === 'ios' ? CLOSE_OPEN_CARD_BUTTON_HITSLOP : 0),
+    [],
+  );
 
   const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
   const derivedIsPanning = useDerivedValue(() => isPanning.value);
@@ -108,7 +114,7 @@ const Sheet: React.FC<Props> = ({
       ? cardHeight.value -
         CLOSE_CARD_BUTTON_HEIGHT -
         OFFSET_SNAP_POINT_BOTTOM +
-        CLOSE_OPEN_CARD_BUTTON_HITSLOP
+        extraSnapPointBottomOffset
       : 0,
   );
 
@@ -176,6 +182,7 @@ const Sheet: React.FC<Props> = ({
       panGestureType,
       innerScrollY,
     }),
+    [cardHeight],
   );
 
   useAnimatedReaction(
@@ -210,48 +217,53 @@ const Sheet: React.FC<Props> = ({
   );
 
   return (
-    <View pointerEvents="box-none">
-      <Animated.View onLayout={onLayout} style={panGestureStyle}>
-        <PanGestureHandler
-          ref={panGestureOuterRef}
-          onGestureEvent={gestureHandler}
-          onHandlerStateChange={(): void => {
-            if (panGestureType.value !== 0) {
-              panGestureType.value = 0;
-            }
-          }}
-        >
-          <Animated.View>
-            <Header
-              snapPointBottom={snapPointBottom}
-              scrollY={scrollY}
-              translationY={translationY}
-              headerHeight={headerHeight}
-              onPress={actionRequestCloseOrOpenCard}
-            />
-          </Animated.View>
-        </PanGestureHandler>
-        <Content
-          gestureHandler={gestureHandler}
-          panGestureType={panGestureType}
-          innerScrollY={innerScrollY}
-          isScrollingCard={isScrollingCard}
-          isInputFieldFocused={isInputFieldFocused}
-          translationY={translationY}
-          footerHeight={footerHeight}
-        >
-          {contentComponent}
-        </Content>
-      </Animated.View>
+    <>
+      <View pointerEvents="box-none">
+        <Animated.View onLayout={onLayout} style={panGestureStyle}>
+          <PanGestureHandler
+            ref={panGestureOuterRef}
+            onGestureEvent={gestureHandler}
+            onHandlerStateChange={(): void => {
+              if (panGestureType.value !== 0) {
+                panGestureType.value = 0;
+              }
+            }}
+          >
+            <Animated.View>
+              <Header
+                snapPointBottom={snapPointBottom}
+                scrollY={scrollY}
+                translationY={translationY}
+                headerHeight={headerHeight}
+                onPress={actionRequestCloseOrOpenCard}
+              />
+            </Animated.View>
+          </PanGestureHandler>
+          <Content
+            gestureHandler={gestureHandler}
+            panGestureType={panGestureType}
+            innerScrollY={innerScrollY}
+            isScrollingCard={isScrollingCard}
+            isInputFieldFocused={isInputFieldFocused}
+            translationY={translationY}
+            footerTranslationY={footerTranslationY}
+            footerHeight={footerHeight}
+            headerHeight={headerHeight}
+          >
+            {contentComponent}
+          </Content>
+        </Animated.View>
+      </View>
       <Footer
         cardHeight={cardHeight}
         headerHeight={headerHeight}
         footerHeight={footerHeight}
         translationY={translationY}
+        footerTranslationY={footerTranslationY}
       >
         {footerComponent}
       </Footer>
-    </View>
+    </>
   );
 };
 

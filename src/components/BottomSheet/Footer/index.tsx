@@ -10,6 +10,7 @@ import styled from 'styled-components/native';
 
 interface Props {
   translationY: Animated.SharedValue<number>;
+  footerTranslationY: Animated.SharedValue<number>;
   cardHeight: Animated.SharedValue<number>;
   headerHeight: Animated.SharedValue<number>;
   footerHeight: Animated.SharedValue<number>;
@@ -20,13 +21,12 @@ const Wrapper = Animated.createAnimatedComponent(styled.View``);
 
 const Footer: React.FC<Props> = ({
   translationY,
+  footerTranslationY,
   cardHeight,
   headerHeight,
   footerHeight,
   children,
 }) => {
-  const footerTranslationY = useSharedValue(0);
-
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       position: 'absolute',
