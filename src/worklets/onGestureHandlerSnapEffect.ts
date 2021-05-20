@@ -1,5 +1,6 @@
 import Animated, { withSpring } from 'react-native-reanimated';
 import { DEFAULT_SPRING_CONFIG } from 'constants/animations';
+import { withFriction } from 'hoas/withFriction';
 
 interface Props {
   translationY: Animated.SharedValue<number>;
@@ -30,15 +31,12 @@ export const onGestureHandlerSnapEffect = ({
 
     prevDragY.value = translationY.value;
     dragY.value = ctx.startY + event.translationY;
-    if (dragY.value <= maxDragY && dragY.value >= minDragY) {
-      dragResistanceFactor.value =
-        translationY.value > 0
-          ? (maxDragY - translationY.value) / maxDragY
-          : (minDragY - translationY.value) / minDragY;
-
-      snapEffectDirection.value = event.translationY > 0 ? 'down' : 'up';
-      translationY.value = dragY.value * dragResistanceFactor.value;
-    }
+    snapEffectDirection.value = event.translationY > 0 ? 'down' : 'up';
+    translationY.value = withFriction({
+      value: dragY.value,
+      initialVelocity: event.velocityY,
+      friction: 0.1,
+    });
   },
   onEnd: (): void => {
     'worklet';
