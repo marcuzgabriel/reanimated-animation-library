@@ -20,6 +20,7 @@ This library provides some nice animation features with the latest reanimated 2+
 - [ ] Appear
 - [ ] Slider
 - [ ] Morphing SVG Graph
+- [ ] Unit tests
 
 ## Observations
 Latest react-native-gesture-handler version vs old and latest react-native-reanimated vs old
