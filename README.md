@@ -4,9 +4,10 @@ This library provides some nice animation features with the latest reanimated 2+
 ## Current progress
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
+  - [ ] Scroll arrows that appear / dissapear
+  - [x] Drag resistance when using the snap effect
   - [x] InputField component that accepts a unique id so no matter where the component is located then a nice scrollTo animation effect to the input field is achieved
   - [x] If the background content is not scrollable but there is content hiding behind the card, then make the component snappable so the card will collapse if the user tries to do a scroll gesture on the background content
-  - [ ] Implement prop flexibility and update the readme file on how to implement the BottomSheet
   - [x] Morphing arrow that follows the Y axis animation of the card
   - [x] Card is collapsable by either clicking, gesturing, overlapping from scroll to pan gesture or scrolling the background content
   - [x] The card should be able to handle input fields. When an input field is pressed, then the keyboard should press the card upwards
@@ -15,7 +16,7 @@ This library provides some nice animation features with the latest reanimated 2+
   - [x] Basic animation features (scrolling and pan gesture event)
   - [x] Header component
   - [x] Content component
-  - [ ] Footer component
+  - [x] Footer component
 - [ ] Appear
 - [ ] Slider
 - [ ] Morphing SVG Graph
