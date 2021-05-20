@@ -58,7 +58,14 @@ const Header: React.FC<Props> = ({
   );
 
   return (
-    <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onPress}>
+    <TouchableOpacity
+      activeOpacity={1}
+      hitSlop={HIT_SLOP}
+      onPress={() => {
+        console.log('pressed');
+        onPress();
+      }}
+    >
       <HitSlopAreaWrapper />
       <MorphingArrowWrapper onLayout={onLayout}>
         <MorphingArrow

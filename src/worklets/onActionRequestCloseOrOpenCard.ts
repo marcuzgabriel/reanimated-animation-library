@@ -1,5 +1,5 @@
 import Animated, { cancelAnimation, withSpring } from 'react-native-reanimated';
-import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from 'constants/animations';
+import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG, SPRING_OFFSET } from 'constants/animations';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
@@ -21,29 +21,27 @@ export const onActionRequestCloseOrOpenCard = ({
   direction,
 }: Props): void => {
   'worklet';
+  cancelAnimation(translationY);
+  isAnimationRunning.value = true;
+  isCardCollapsed.value = !isCardCollapsed.value;
 
-  if (!derivedIsPanning.value) {
-    isAnimationRunning.value = true;
-    isCardCollapsed.value = !isCardCollapsed.value;
+  const isSnapping = direction === 'up' || direction === 'down';
 
-    const isSnapping = direction === 'up' || direction === 'down';
-
-    if (isSnapping) {
-      translationY.value = withSpring(
-        direction === 'up' ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-        DEFAULT_SPRING_CONFIG,
-        () => {
-          isAnimationRunning.value = false;
-        },
-      );
-    } else {
-      translationY.value = withSpring(
-        derivedIsCollapsed.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-        DEFAULT_SPRING_CONFIG,
-        () => {
-          isAnimationRunning.value = false;
-        },
-      );
-    }
+  if (isSnapping) {
+    translationY.value = withSpring(
+      direction === 'up' ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+      DEFAULT_SPRING_CONFIG,
+      () => {
+        isAnimationRunning.value = false;
+      },
+    );
+  } else {
+    translationY.value = withSpring(
+      translationY.value <= SPRING_OFFSET ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+      DEFAULT_SPRING_CONFIG,
+      () => {
+        isAnimationRunning.value = false;
+      },
+    );
   }
 };

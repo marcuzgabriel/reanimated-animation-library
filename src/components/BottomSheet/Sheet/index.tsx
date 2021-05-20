@@ -22,6 +22,8 @@ import {
   onGestureHandlerCard,
 } from 'worklets';
 import { KeyboardContext } from 'containers/KeyboardProvider';
+
+const isAndroid = Platform.OS === 'android';
 interface Props {
   attachOuterScrollY?: Animated.Value<number>;
   overdragResistanceFactor?: number;
@@ -81,8 +83,6 @@ const Sheet: React.FC<Props> = ({
 
   const panGestureOuterRef = useRef<PanGestureHandler>();
 
-  const isWeb = useSharedValue(Platform.OS === 'web');
-
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
   const isAnimationRunning = useSharedValue(false);
@@ -103,7 +103,7 @@ const Sheet: React.FC<Props> = ({
   const footerHeight = useSharedValue(0);
 
   const extraSnapPointBottomOffset = useMemo(
-    () => (Platform.OS === 'ios' ? CLOSE_OPEN_CARD_BUTTON_HITSLOP : 0),
+    () => (isAndroid ? 0 : CLOSE_OPEN_CARD_BUTTON_HITSLOP),
     [],
   );
 
@@ -126,23 +126,20 @@ const Sheet: React.FC<Props> = ({
         runOnJS(Keyboard.dismiss)();
       }
 
-      if (!isPanning.value) {
-        onActionRequestCloseOrOpenCard({
-          translationY,
-          isAnimationRunning,
-          derivedIsCollapsed,
-          derivedIsPanning,
-          isCardCollapsed,
-          snapPointBottom,
-          direction,
-        });
-      }
+      onActionRequestCloseOrOpenCard({
+        translationY,
+        isAnimationRunning,
+        derivedIsCollapsed,
+        derivedIsPanning,
+        isCardCollapsed,
+        snapPointBottom,
+        direction,
+      });
     },
     [
       keyboardContext,
       isCardCollapsed,
       isAnimationRunning,
-      isPanning,
       snapPointBottom,
       translationY,
       derivedIsPanning,
@@ -174,7 +171,6 @@ const Sheet: React.FC<Props> = ({
       isPanningDown,
       isCardCollapsed,
       isAnimationRunning,
-      isWeb,
       prevDragY,
       dragY,
       translationY,
@@ -185,17 +181,31 @@ const Sheet: React.FC<Props> = ({
     [cardHeight],
   );
 
+  /* Panning direction reaction */
+  useAnimatedReaction(
+    () => translationY.value,
+    (result: number, previous: number | null | undefined) => {
+      if (result && previous && result !== previous) {
+        isPanningDown.value = result > previous;
+      }
+    },
+    [translationY],
+  );
+
+  /* Snap-effect reaction */
   useAnimatedReaction(
     () => snapEffectDirection?.value,
-    (result: string | undefined) => {
-      actionRequestCloseOrOpenCard(result);
+    (result: string | undefined, previous: string | null | undefined) => {
+      if (result !== previous && (result === 'up' || result === 'down')) {
+        actionRequestCloseOrOpenCard(result);
+      }
     },
     [snapEffectDirection],
   );
 
   useAnimatedReaction(
-    () => scrollY.value,
-    (result: number, previous: number | null | undefined) => {
+    () => scrollY?.value,
+    (result: number | undefined, previous: number | null | undefined) => {
       if (!isInputFieldFocused.value) {
         onScrollReaction({
           result,

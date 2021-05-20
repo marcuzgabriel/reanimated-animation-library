@@ -1,5 +1,6 @@
 import { Easing } from 'react-native-reanimated';
 
+export const SPRING_OFFSET = 5;
 export const DEFAULT_SNAP_POINT_BOTTOM_RATIO = 0.8;
 export const DEFAULT_SNAP_POINT_TOP = 0;
 export const DEFAULT_SCROLL_SNAP_POINT_RATIO = 0.1;

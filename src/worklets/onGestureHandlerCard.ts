@@ -7,6 +7,8 @@ import {
 } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 
+const isWeb = Platform.OS === 'web';
+
 interface Props {
   isInputFieldFocused: Animated.SharedValue<boolean>;
   isPanning: Animated.SharedValue<boolean>;
@@ -14,7 +16,6 @@ interface Props {
   isCardCollapsed: Animated.SharedValue<boolean>;
   isAnimationRunning: Animated.SharedValue<boolean>;
   isScrollingCard: Animated.SharedValue<boolean>;
-  isWeb: Animated.SharedValue<boolean>;
   prevDragY: Animated.SharedValue<number>;
   dragY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
@@ -30,7 +31,6 @@ export const onGestureHandlerCard = ({
   isCardCollapsed,
   isAnimationRunning,
   isScrollingCard,
-  isWeb,
   prevDragY,
   dragY,
   translationY,
@@ -68,7 +68,6 @@ export const onGestureHandlerCard = ({
   onEnd: (): void => {
     'worklet';
 
-    isPanningDown.value = translationY.value > prevDragY.value;
     isCardCollapsed.value = isPanningDown.value;
     isAnimationRunning.value = true;
     isPanning.value = false;
@@ -82,7 +81,7 @@ export const onGestureHandlerCard = ({
         ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
         : isPanningDown.value;
 
-    const isCardCollapsable = isWeb.value ? isCardCollapsableWeb : isCardCollapsableDefault;
+    const isCardCollapsable = isWeb ? isCardCollapsableWeb : isCardCollapsableDefault;
 
     if (!isInputFieldFocused.value) {
       translationY.value = withSpring(

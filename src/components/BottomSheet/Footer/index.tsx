@@ -1,12 +1,8 @@
 import React, { useCallback } from 'react';
 import { LayoutChangeEvent, ViewStyle } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useAnimatedReaction,
-  useSharedValue,
-} from 'react-native-reanimated';
-import { onPanGestureHitFooterReaction } from 'worklets';
 import styled from 'styled-components/native';
+import Animated, { useAnimatedStyle, useAnimatedReaction } from 'react-native-reanimated';
+import { onPanGestureHitFooterReaction } from 'worklets';
 
 interface Props {
   translationY: Animated.SharedValue<number>;
@@ -30,16 +26,9 @@ const Footer: React.FC<Props> = ({
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       position: 'absolute',
-      bottom: 0,
+      bottom: -footerTranslationY.value,
       width: '100%',
-      zIndex: footerTranslationY.value >= footerHeight.value ? -1 : 3,
-    }),
-  );
-
-  const animatedChildStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      flex: 1,
-      transform: [{ translateY: footerTranslationY.value }],
+      zIndex: 3,
     }),
   );
 
@@ -70,7 +59,7 @@ const Footer: React.FC<Props> = ({
 
   return (
     <Wrapper onLayout={onLayout} style={animatedParentStyle}>
-      <Animated.View style={animatedChildStyle}>{children}</Animated.View>
+      {children}
     </Wrapper>
   );
 };
