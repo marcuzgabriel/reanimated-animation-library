@@ -57,10 +57,9 @@ const Content: React.FC<Props> = ({
   const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
 
   const derivedMarginBottom = useDerivedValue(() => footerHeight.value);
-  const maxHeight = useDerivedValue(
-    () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
-    [footerHeight],
-  );
+  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
+    footerHeight,
+  ]);
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -79,7 +78,6 @@ const Content: React.FC<Props> = ({
 
   return (
     <ContentWrapper>
-      <ScrollArrow direction="up" height={40} width={40} fill="blue" />
       <PanGestureHandler
         enabled={Platform.OS !== 'web'}
         ref={panGestureInnerRef}
@@ -93,6 +91,7 @@ const Content: React.FC<Props> = ({
         }}
       >
         <Animated.View style={maxHeightStyle}>
+          <ScrollArrow direction="up" height={40} width={40} fill="blue" />
           <NativeViewGestureHandler
             ref={nativeViewGestureRef}
             shouldCancelWhenOutside={false}
@@ -130,6 +129,7 @@ const Content: React.FC<Props> = ({
               </FocusedInputFieldProvider>
             </Animated.ScrollView>
           </NativeViewGestureHandler>
+          <ScrollArrow direction="down" height={40} width={40} fill="blue" />
         </Animated.View>
       </PanGestureHandler>
     </ContentWrapper>

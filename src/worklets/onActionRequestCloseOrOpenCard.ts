@@ -14,8 +14,6 @@ interface Props {
 export const onActionRequestCloseOrOpenCard = ({
   translationY,
   isAnimationRunning,
-  derivedIsCollapsed,
-  derivedIsPanning,
   snapPointBottom,
   isCardCollapsed,
   direction,

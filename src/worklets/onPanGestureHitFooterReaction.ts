@@ -4,6 +4,7 @@ import { CLOSE_OPEN_CARD_BUTTON_HITSLOP } from 'constants/styles';
 interface Props {
   result: number;
   previous: number | null | undefined;
+  isKeyboardVisible: Animated.SharedValue<boolean>;
   translationY: Animated.SharedValue<number>;
   footerTranslationY: Animated.SharedValue<number>;
   cardHeight: Animated.SharedValue<number>;
@@ -14,6 +15,7 @@ interface Props {
 export const onPanGestureHitFooterReaction = ({
   result,
   previous,
+  isKeyboardVisible,
   translationY,
   footerTranslationY,
   cardHeight,
@@ -32,6 +34,8 @@ export const onPanGestureHitFooterReaction = ({
 
     if (isHittingFooter) {
       footerTranslationY.value = translationY.value - footerTransYPosition;
+    } else if (!isKeyboardVisible.value) {
+      footerTranslationY.value = 0;
     }
   }
 };

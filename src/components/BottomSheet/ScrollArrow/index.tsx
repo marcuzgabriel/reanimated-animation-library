@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import SvgArrow from './SvgArrow';
+import Animated from 'react-native-reanimated';
 
 const ROTATION = 90;
+const BOTTOM_OFFSET = 5;
 
 interface Props {
   height: number;
@@ -11,19 +13,27 @@ interface Props {
   fill: string;
 }
 
-const Wrapper = styled.View<{ top: number; direction: string }>`
+const Wrapper = styled.TouchableOpacity<{
+  type: string;
+  offset: number;
+  rotation: number;
+}>`
   position: absolute;
   justify-content: center;
   align-items: center;
-  z-index: 3;
   width: 100%;
-  transform: ${({ direction }): string =>
-    `rotate(${direction === 'up' ? -ROTATION : ROTATION}deg)`};
-  top: ${({ top }): number => -top}px;
+  z-index: 4;
+  transform: ${({ rotation }): string => `rotate(${rotation}deg)`};
+  ${({ type, offset }): string =>
+    type === 'up' ? `top: ${-offset}px` : `bottom: ${BOTTOM_OFFSET}px`}
 `;
 
 const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => (
-  <Wrapper direction={direction} top={height / 2}>
+  <Wrapper
+    type={direction}
+    rotation={direction === 'up' ? -ROTATION : ROTATION}
+    offset={height / 2}
+  >
     <SvgArrow width={height} height={width} fill={fill} />
   </Wrapper>
 );

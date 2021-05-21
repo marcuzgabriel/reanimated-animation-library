@@ -13,6 +13,7 @@ import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-g
 import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
+import ScrollArrow from '../ScrollArrow';
 import { OFFSET_SNAP_POINT_BOTTOM } from 'constants/animations';
 import { CLOSE_CARD_BUTTON_HEIGHT, CLOSE_OPEN_CARD_BUTTON_HITSLOP } from 'constants/styles';
 import {

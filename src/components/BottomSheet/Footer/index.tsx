@@ -1,8 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { LayoutChangeEvent, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedStyle, useAnimatedReaction } from 'react-native-reanimated';
 import { onPanGestureHitFooterReaction } from 'worklets';
+import { KeyboardContext } from 'containers/KeyboardProvider';
 
 interface Props {
   translationY: Animated.SharedValue<number>;
@@ -23,6 +24,8 @@ const Footer: React.FC<Props> = ({
   footerHeight,
   children,
 }) => {
+  const { isKeyboardVisible } = useContext(KeyboardContext);
+
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       position: 'absolute',
@@ -41,11 +44,12 @@ const Footer: React.FC<Props> = ({
         translationY,
         footerTranslationY,
         cardHeight,
+        isKeyboardVisible,
         headerHeight,
         footerHeight,
       });
     },
-    [translationY.value, cardHeight, headerHeight, footerHeight],
+    [translationY.value, cardHeight, headerHeight, footerHeight, isKeyboardVisible],
   );
 
   const onLayout = useCallback(
