@@ -4,27 +4,19 @@ import styled from 'styled-components/native';
 import Animated, { useAnimatedStyle, useAnimatedReaction } from 'react-native-reanimated';
 import { onPanGestureHitFooterReaction } from 'worklets';
 import { KeyboardContext } from 'containers/KeyboardProvider';
+import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 
 interface Props {
-  translationY: Animated.SharedValue<number>;
-  footerTranslationY: Animated.SharedValue<number>;
-  cardHeight: Animated.SharedValue<number>;
-  headerHeight: Animated.SharedValue<number>;
-  footerHeight: Animated.SharedValue<number>;
   children: React.ReactNode;
 }
 
 const Wrapper = Animated.createAnimatedComponent(styled.View``);
 
-const Footer: React.FC<Props> = ({
-  translationY,
-  footerTranslationY,
-  cardHeight,
-  headerHeight,
-  footerHeight,
-  children,
-}) => {
+const Footer: React.FC<Props> = ({ children }) => {
   const { isKeyboardVisible } = useContext(KeyboardContext);
+  const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } = useContext(
+    ReusablePropsContext,
+  );
 
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({

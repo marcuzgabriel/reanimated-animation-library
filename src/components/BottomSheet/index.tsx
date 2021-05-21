@@ -2,6 +2,7 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import Sheet from 'components/BottomSheet/Sheet';
 import KeyboardProvider from 'containers/KeyboardProvider';
+import ReusablePropsProvider from 'containers/ReusablePropsProvider';
 interface Props {
   scrollY: Animated.SharedValue<number>;
   snapEffectDirection?: Animated.SharedValue<string>;
@@ -18,13 +19,15 @@ const BottomSheet: React.FC<Props> = ({
   onLayoutRequest,
 }) => (
   <KeyboardProvider>
-    <Sheet
-      scrollY={scrollY}
-      snapEffectDirection={snapEffectDirection}
-      contentComponent={contentComponent}
-      footerComponent={footerComponent}
-      onLayoutRequest={onLayoutRequest}
-    />
+    <ReusablePropsProvider>
+      <Sheet
+        scrollY={scrollY}
+        snapEffectDirection={snapEffectDirection}
+        contentComponent={contentComponent}
+        footerComponent={footerComponent}
+        onLayoutRequest={onLayoutRequest}
+      />
+    </ReusablePropsProvider>
   </KeyboardProvider>
 );
 

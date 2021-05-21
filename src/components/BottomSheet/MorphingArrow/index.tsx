@@ -1,9 +1,9 @@
-import React from 'react';
-import { useWindowDimensions } from 'react-native';
+import React, { useContext } from 'react';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import { createPath, addCurve, interpolatePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
+import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 
 const START_Y = 30;
 const X_OFFSET = 25;
@@ -18,14 +18,13 @@ const Wrapper = styled.View`
 
 interface Props {
   scrollY: Animated.SharedValue<number>;
-  translationY: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
 }
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-const MorphingArrow: React.FC<Props> = ({ translationY, snapPointBottom }) => {
-  const windowWidth = useWindowDimensions().width;
+const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
+  const { translationY, windowWidth } = useContext(ReusablePropsContext);
 
   const animatedProps = useAnimatedProps(() => {
     const startX = windowWidth / 2;

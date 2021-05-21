@@ -12,14 +12,29 @@ import Content from './components/Content';
 import Footer from './components/Footer';
 
 const SCROLL_EVENT_THROTTHLE = 16;
-interface Props {
-  children: React.ReactNode;
-}
+const fakeScrollItem = [
+  {
+    text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+  laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+  cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
+  },
+];
 
 const Wrapper = styled.View<{ windowHeight: number }>`
   position: relative;
   height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
+`;
+
+const Text = styled.Text``;
+
+const FakeContentWrapper = styled.View<{ windowHeight: number }>`
+  background: white;
+  height: ${({ windowHeight }): number => windowHeight}px;
+  width: 100%;
+  padding: 32px 16px;
 `;
 
 const BackgroundContent = styled.View`
@@ -31,7 +46,7 @@ const BackgroundContent = styled.View`
   z-index: 1;
 `;
 
-const ScrollView: React.FC<Props> = ({ children }) => {
+const ScrollViewWithSnapEffect: React.FC = () => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const scrollY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
@@ -56,7 +71,11 @@ const ScrollView: React.FC<Props> = ({ children }) => {
           scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
         >
           <SnapEffect cardHeight={cardHeight} snapEffectDirection={snapEffectDirection}>
-            {children}
+            {fakeScrollItem.map(({ text }, i) => (
+              <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
+                <Text>{text}</Text>
+              </FakeContentWrapper>
+            ))}
           </SnapEffect>
         </Animated.ScrollView>
       </BackgroundContent>
@@ -73,4 +92,4 @@ const ScrollView: React.FC<Props> = ({ children }) => {
   );
 };
 
-export default ScrollView;
+export default ScrollViewWithSnapEffect;

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { TextInputProps, LayoutChangeEvent, TextStyle } from 'react-native';
 import styled from 'styled-components/native';
-import { FocusedInputFieldContext } from 'containers/FocusedInputFieldProvider';
+import { KeyboardAvoidingViewContext } from 'containers/KeyboardAvoidingViewProvider';
 
 /* NOTE: There is a type bug when it comes to justifyContent and
 textAlign parsed directly from an object in react-native. */
@@ -21,7 +21,7 @@ interface DoesExist {
 const TextInput = styled.TextInput``;
 
 const InputField: React.FC<Props> = props => {
-  const { inputFields, selectedInputFieldPositionY } = useContext(FocusedInputFieldContext);
+  const { inputFields, selectedInputFieldPositionY } = useContext(KeyboardAvoidingViewContext);
 
   const onLayout = (e: LayoutChangeEvent): void => {
     const doesExist = inputFields.value.some(

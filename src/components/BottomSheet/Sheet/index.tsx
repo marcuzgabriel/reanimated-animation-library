@@ -13,16 +13,16 @@ import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-g
 import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
-import ScrollArrow from '../ScrollArrow';
 import { OFFSET_SNAP_POINT_BOTTOM } from 'constants/animations';
 import { CLOSE_CARD_BUTTON_HEIGHT, CLOSE_OPEN_CARD_BUTTON_HITSLOP } from 'constants/styles';
 import {
-  onScrollReaction,
+  onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
   getAnimatedCardStyles,
   onGestureHandlerCard,
 } from 'worklets';
 import { KeyboardContext } from 'containers/KeyboardProvider';
+import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 
 const isAndroid = Platform.OS === 'android';
 interface Props {
@@ -80,9 +80,9 @@ const Sheet: React.FC<Props> = ({
   footerComponent,
   onLayoutRequest,
 }) => {
-  const keyboardContext = useContext(KeyboardContext);
-
   const panGestureOuterRef = useRef<PanGestureHandler>();
+  const keyboardContext = useContext(KeyboardContext);
+  const { cardHeight, innerScrollY, translationY } = useContext(ReusablePropsContext);
 
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
@@ -94,22 +94,14 @@ const Sheet: React.FC<Props> = ({
   const isInputFieldFocused = useSharedValue(false);
 
   const panGestureType = useSharedValue(0);
-  const innerScrollY = useSharedValue(0);
-  const translationY = useSharedValue(0);
-  const footerTranslationY = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
-  const cardHeight = useSharedValue(0);
-  const headerHeight = useSharedValue(0);
-  const footerHeight = useSharedValue(0);
 
   const extraSnapPointBottomOffset = useMemo(
     () => (isAndroid ? 0 : CLOSE_OPEN_CARD_BUTTON_HITSLOP),
     [],
   );
 
-  const derivedIsCollapsed = useDerivedValue(() => isCardCollapsed.value);
-  const derivedIsPanning = useDerivedValue(() => isPanning.value);
   const snapPointBottom = useDerivedValue(() =>
     cardHeight.value > 0
       ? cardHeight.value -
@@ -130,22 +122,12 @@ const Sheet: React.FC<Props> = ({
       onActionRequestCloseOrOpenCard({
         translationY,
         isAnimationRunning,
-        derivedIsCollapsed,
-        derivedIsPanning,
         isCardCollapsed,
         snapPointBottom,
         direction,
       });
     },
-    [
-      keyboardContext,
-      isCardCollapsed,
-      isAnimationRunning,
-      snapPointBottom,
-      translationY,
-      derivedIsPanning,
-      derivedIsCollapsed,
-    ],
+    [keyboardContext, isCardCollapsed, isAnimationRunning, snapPointBottom, translationY],
   );
 
   const onLayout = useCallback(
@@ -208,7 +190,7 @@ const Sheet: React.FC<Props> = ({
     () => scrollY?.value,
     (result: number | undefined, previous: number | null | undefined) => {
       if (!isInputFieldFocused.value) {
-        onScrollReaction({
+        onOuterScrollReaction({
           result,
           previous,
           isCardCollapsed,
@@ -242,10 +224,8 @@ const Sheet: React.FC<Props> = ({
           >
             <Animated.View>
               <Header
-                snapPointBottom={snapPointBottom}
                 scrollY={scrollY}
-                translationY={translationY}
-                headerHeight={headerHeight}
+                snapPointBottom={snapPointBottom}
                 onPress={actionRequestCloseOrOpenCard}
               />
             </Animated.View>
@@ -253,27 +233,14 @@ const Sheet: React.FC<Props> = ({
           <Content
             gestureHandler={gestureHandler}
             panGestureType={panGestureType}
-            innerScrollY={innerScrollY}
             isScrollingCard={isScrollingCard}
             isInputFieldFocused={isInputFieldFocused}
-            translationY={translationY}
-            footerTranslationY={footerTranslationY}
-            footerHeight={footerHeight}
-            headerHeight={headerHeight}
           >
             {contentComponent}
           </Content>
         </Animated.View>
       </View>
-      <Footer
-        cardHeight={cardHeight}
-        headerHeight={headerHeight}
-        footerHeight={footerHeight}
-        translationY={translationY}
-        footerTranslationY={footerTranslationY}
-      >
-        {footerComponent}
-      </Footer>
+      <Footer>{footerComponent}</Footer>
     </>
   );
 };

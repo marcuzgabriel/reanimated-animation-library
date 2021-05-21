@@ -1,5 +1,5 @@
 export { onActionRequestCloseOrOpenCard } from './onActionRequestCloseOrOpenCard';
-export { onScrollReaction } from './onScrollReaction';
+export { onOuterScrollReaction } from './onOuterScrollReaction';
 export { onScrollRequestCloseOrOpenCard } from './onScrollRequestCloseOrOpenCard';
 export { getAnimatedCardStyles } from './getAnimatedCardStyles';
 export { onGestureHandlerCard } from './onGestureHandlerCard';

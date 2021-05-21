@@ -1,3 +1,4 @@
+export const SCROLL_ARROW_DIMENSIONS = 40;
 export const KEYBOARD_CARD_HEIGHT_RATIO = 0.7;
 export const DEFAULT_CARD_HEIGHT = 500;
 export const DEFAULT_BORDER_RADIUS = 16;

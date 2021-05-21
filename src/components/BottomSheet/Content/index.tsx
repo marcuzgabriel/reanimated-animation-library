@@ -1,8 +1,7 @@
-import React, { useRef } from 'react';
-import { Platform, ViewStyle, useWindowDimensions } from 'react-native';
+import React, { useRef, useContext } from 'react';
+import { Platform, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
-  useAnimatedRef,
   useSharedValue,
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -14,18 +13,14 @@ import {
   PanGestureHandlerEventPayload,
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
-import { MAX_HEIGHT_RATIO } from 'constants/styles';
+import { MAX_HEIGHT_RATIO, SCROLL_ARROW_DIMENSIONS } from 'constants/styles';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
-import FocusedInputFieldProvider from 'containers/FocusedInputFieldProvider';
+import KeyboardAvoidingViewProvider from 'containers/KeyboardAvoidingViewProvider';
 import ScrollArrow from '../ScrollArrow';
+import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 
 interface Props {
   panGestureType: Animated.SharedValue<number>;
-  innerScrollY: Animated.SharedValue<number>;
-  translationY: Animated.SharedValue<number>;
-  footerTranslationY: Animated.SharedValue<number>;
-  headerHeight: Animated.SharedValue<number>;
-  footerHeight: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
   gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
@@ -36,27 +31,22 @@ const ContentWrapper = styled.View``;
 const Content: React.FC<Props> = ({
   gestureHandler,
   panGestureType,
-  innerScrollY,
   isScrollingCard,
   isInputFieldFocused,
-  translationY,
-  footerTranslationY,
-  headerHeight,
-  footerHeight,
   children,
 }) => {
-  const windowHeight = useWindowDimensions().height;
+  const {
+    scrollViewRef,
+    isScrollable,
+    innerScrollY,
+    cardContentHeight,
+    footerHeight,
+    windowHeight,
+  } = useContext(ReusablePropsContext);
 
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-
-  const isScrollable = useSharedValue(false);
-
-  const cardContentHeight = useSharedValue(0);
   const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
-
-  const derivedMarginBottom = useDerivedValue(() => footerHeight.value);
   const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
     footerHeight,
   ]);
@@ -69,7 +59,7 @@ const Content: React.FC<Props> = ({
 
   const maxHeightStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      marginBottom: derivedMarginBottom.value,
+      marginBottom: footerHeight.value,
       maxHeight: maxHeight.value,
       height:
         cardHeightWhenKeyboardIsVisible.value > 0 ? cardHeightWhenKeyboardIsVisible.value : '100%',
@@ -91,7 +81,12 @@ const Content: React.FC<Props> = ({
         }}
       >
         <Animated.View style={maxHeightStyle}>
-          <ScrollArrow direction="up" height={40} width={40} fill="blue" />
+          <ScrollArrow
+            height={SCROLL_ARROW_DIMENSIONS}
+            width={SCROLL_ARROW_DIMENSIONS}
+            direction="up"
+            fill="blue"
+          />
           <NativeViewGestureHandler
             ref={nativeViewGestureRef}
             shouldCancelWhenOutside={false}
@@ -115,21 +110,20 @@ const Content: React.FC<Props> = ({
                 isScrollingCard.value = false;
               }}
             >
-              <FocusedInputFieldProvider
-                scrollViewRef={scrollViewRef}
-                translationY={translationY}
-                footerTranslationY={footerTranslationY}
+              <KeyboardAvoidingViewProvider
                 isInputFieldFocused={isInputFieldFocused}
                 cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
-                cardContentHeight={cardContentHeight}
-                headerHeight={headerHeight}
-                footerHeight={footerHeight}
               >
                 {children}
-              </FocusedInputFieldProvider>
+              </KeyboardAvoidingViewProvider>
             </Animated.ScrollView>
           </NativeViewGestureHandler>
-          <ScrollArrow direction="down" height={40} width={40} fill="blue" />
+          <ScrollArrow
+            height={SCROLL_ARROW_DIMENSIONS}
+            width={SCROLL_ARROW_DIMENSIONS}
+            direction="down"
+            fill="blue"
+          />
         </Animated.View>
       </PanGestureHandler>
     </ContentWrapper>

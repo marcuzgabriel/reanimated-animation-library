@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import SvgArrow from './SvgArrow';
-import Animated from 'react-native-reanimated';
+import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 
 const ROTATION = 90;
 const BOTTOM_OFFSET = 5;
@@ -13,7 +14,7 @@ interface Props {
   fill: string;
 }
 
-const Wrapper = styled.TouchableOpacity<{
+const Wrapper = Animated.createAnimatedComponent(styled.TouchableOpacity<{
   type: string;
   offset: number;
   rotation: number;
@@ -26,16 +27,23 @@ const Wrapper = styled.TouchableOpacity<{
   transform: ${({ rotation }): string => `rotate(${rotation}deg)`};
   ${({ type, offset }): string =>
     type === 'up' ? `top: ${-offset}px` : `bottom: ${BOTTOM_OFFSET}px`}
-`;
+`);
 
-const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => (
-  <Wrapper
-    type={direction}
-    rotation={direction === 'up' ? -ROTATION : ROTATION}
-    offset={height / 2}
-  >
-    <SvgArrow width={height} height={width} fill={fill} />
-  </Wrapper>
-);
+const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => {
+  const { scrollViewRef, innerScrollY, isScrollable } = useContext(ReusablePropsContext);
+
+  const isUpArrowVisible = useSharedValue(false);
+  const isDownArrowVisible = useSharedValue(false);
+
+  return (
+    <Wrapper
+      type={direction}
+      rotation={direction === 'up' ? -ROTATION : ROTATION}
+      offset={height / 2}
+    >
+      <SvgArrow width={height} height={width} fill={fill} />
+    </Wrapper>
+  );
+};
 
 export default ScrollArrow;

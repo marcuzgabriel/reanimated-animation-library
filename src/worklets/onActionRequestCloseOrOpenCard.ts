@@ -4,8 +4,6 @@ import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG, SPRING_OFFSET } from 'co
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
   isAnimationRunning: Animated.SharedValue<boolean>;
-  derivedIsCollapsed: Animated.SharedValue<boolean>;
-  derivedIsPanning: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
   translationY: Animated.SharedValue<number>;
   direction?: string | undefined;

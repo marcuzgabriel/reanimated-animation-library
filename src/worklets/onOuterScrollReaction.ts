@@ -1,6 +1,6 @@
 import Animated from 'react-native-reanimated';
 import { DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM } from '../constants/animations';
-import { onScrollRequestCloseOrOpenCard } from '../worklets/onScrollRequestCloseOrOpenCard';
+import { onScrollRequestCloseOrOpenCard } from './onScrollRequestCloseOrOpenCard';
 
 interface Props {
   result: number | undefined;
@@ -13,7 +13,7 @@ interface Props {
   snapPointBottom: Animated.SharedValue<number>;
 }
 
-export const onScrollReaction = ({
+export const onOuterScrollReaction = ({
   result,
   previous,
   isCardCollapsed,
