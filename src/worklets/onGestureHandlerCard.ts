@@ -1,14 +1,6 @@
-import { Platform } from 'react-native';
 import Animated, { withSpring } from 'react-native-reanimated';
-import {
-  DEFAULT_SNAP_POINT_TOP,
-  DEFAULT_SPRING_CONFIG,
-  OFFSET_START_SNAP_TO_BOTTOM,
-} from 'constants/animations';
+import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from 'constants/animations';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
-
-const isWeb = Platform.OS === 'web';
-const isAndroid = Platform.OS === 'android';
 
 interface Props {
   isInputFieldFocused: Animated.SharedValue<boolean>;
@@ -42,7 +34,7 @@ export const onGestureHandlerCard = ({
   onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {
     'worklet';
 
-    ctx.startY = isAndroid ? translationY.value - innerScrollY.value : translationY.value;
+    ctx.startY = translationY.value - innerScrollY.value;
     isPanningDown.value = false;
   },
   onActive: (event: Record<string, number>, ctx: Record<string, number>): void => {
@@ -73,20 +65,9 @@ export const onGestureHandlerCard = ({
     isAnimationRunning.value = true;
     isPanning.value = false;
 
-    const isCardCollapsableWeb = isPanningDown.value
-      ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
-      : isPanningDown.value;
-
-    const isCardCollapsableDefault =
-      panGestureType.value === 1
-        ? isPanningDown.value && translationY.value >= OFFSET_START_SNAP_TO_BOTTOM
-        : isPanningDown.value;
-
-    const isCardCollapsable = isWeb ? isCardCollapsableWeb : isCardCollapsableDefault;
-
     if (!isInputFieldFocused.value) {
       translationY.value = withSpring(
-        isCardCollapsable ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
+        isPanningDown.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
         DEFAULT_SPRING_CONFIG,
         () => {
           isAnimationRunning.value = false;

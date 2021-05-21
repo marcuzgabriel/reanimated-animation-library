@@ -37,7 +37,6 @@ const Content: React.FC<Props> = ({
 }) => {
   const {
     scrollViewRef,
-    isScrollable,
     innerScrollY,
     scrollViewHeight,
     cardContentHeight,
@@ -109,10 +108,6 @@ const Content: React.FC<Props> = ({
               directionalLockEnabled={true}
               onScroll={onScrollHandler}
               onContentSizeChange={(_, height): void => {
-                isScrollable.value =
-                  cardHeightWhenKeyboardIsVisible.value > 0
-                    ? height > cardHeightWhenKeyboardIsVisible.value
-                    : height > maxHeight.value;
                 cardContentHeight.value = height;
               }}
               scrollEventThrottle={SCROLL_EVENT_THROTTLE}
