@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import Animated, { withSpring, runOnJS } from 'react-native-reanimated';
+import Animated, { withSpring } from 'react-native-reanimated';
 import {
   DEFAULT_SNAP_POINT_TOP,
   DEFAULT_SPRING_CONFIG,
@@ -8,6 +8,7 @@ import {
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 
 const isWeb = Platform.OS === 'web';
+const isAndroid = Platform.OS === 'android';
 
 interface Props {
   isInputFieldFocused: Animated.SharedValue<boolean>;
@@ -41,7 +42,7 @@ export const onGestureHandlerCard = ({
   onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {
     'worklet';
 
-    ctx.startY = translationY.value - innerScrollY.value;
+    ctx.startY = isAndroid ? translationY.value - innerScrollY.value : translationY.value;
     isPanningDown.value = false;
   },
   onActive: (event: Record<string, number>, ctx: Record<string, number>): void => {
