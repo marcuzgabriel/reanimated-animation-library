@@ -1,5 +1,5 @@
-import React, { useRef, useContext } from 'react';
-import { Platform, ViewStyle } from 'react-native';
+import React, { useRef, useContext, useCallback } from 'react';
+import { Platform, ViewStyle, LayoutChangeEvent } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
@@ -39,6 +39,7 @@ const Content: React.FC<Props> = ({
     scrollViewRef,
     isScrollable,
     innerScrollY,
+    scrollViewHeight,
     cardContentHeight,
     footerHeight,
     windowHeight,
@@ -66,6 +67,15 @@ const Content: React.FC<Props> = ({
     }),
   );
 
+  const onLayout = useCallback(
+    (e: LayoutChangeEvent): void => {
+      if (e.nativeEvent.layout.height > 0) {
+        scrollViewHeight.value = e.nativeEvent.layout.height;
+      }
+    },
+    [scrollViewHeight],
+  );
+
   return (
     <ContentWrapper>
       <PanGestureHandler
@@ -80,7 +90,7 @@ const Content: React.FC<Props> = ({
           }
         }}
       >
-        <Animated.View style={maxHeightStyle}>
+        <Animated.View onLayout={onLayout} style={maxHeightStyle}>
           <ScrollArrow
             height={SCROLL_ARROW_DIMENSIONS}
             width={SCROLL_ARROW_DIMENSIONS}
@@ -99,7 +109,10 @@ const Content: React.FC<Props> = ({
               directionalLockEnabled={true}
               onScroll={onScrollHandler}
               onContentSizeChange={(_, height): void => {
-                isScrollable.value = height > maxHeight.value;
+                isScrollable.value =
+                  cardHeightWhenKeyboardIsVisible.value > 0
+                    ? height > cardHeightWhenKeyboardIsVisible.value
+                    : height > maxHeight.value;
                 cardContentHeight.value = height;
               }}
               scrollEventThrottle={SCROLL_EVENT_THROTTLE}

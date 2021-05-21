@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, Platform } from 'react-native';
 import Animated, { useSharedValue, useAnimatedRef } from 'react-native-reanimated';
 
 export const ReusablePropsContext = createContext<Record<string, any>>({});
@@ -18,6 +18,7 @@ const ReusablePropsProvider: React.FC<Props> = ({ children }) => {
 
   /* Scroll & Pan */
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollViewHeight = useSharedValue(0);
   const translationY = useSharedValue(0);
   const footerTranslationY = useSharedValue(0);
   const innerScrollY = useSharedValue(0);
@@ -26,6 +27,7 @@ const ReusablePropsProvider: React.FC<Props> = ({ children }) => {
   /* General */
   const windowHeight = useWindowDimensions().height;
   const windowWidth = useWindowDimensions().width;
+  const isWeb = useSharedValue(Platform.OS === 'web');
 
   return (
     <Provider
@@ -36,11 +38,13 @@ const ReusablePropsProvider: React.FC<Props> = ({ children }) => {
         cardContentHeight,
         innerScrollY,
         isScrollable,
+        scrollViewHeight,
         scrollViewRef,
         windowHeight,
         windowWidth,
         translationY,
         footerTranslationY,
+        isWeb,
       }}
     >
       {children}
