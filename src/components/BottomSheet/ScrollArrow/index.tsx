@@ -34,9 +34,16 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
 `);
 
 const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => {
-  const { scrollViewRef, scrollViewHeight, cardContentHeight, innerScrollY } = useContext(
-    ReusablePropsContext,
-  );
+  const {
+    scrollViewRef,
+    scrollViewHeight,
+    cardContentHeight,
+    innerScrollY,
+    scrollingLength,
+    isScrolledToTop,
+    isScrolledToEnd,
+    isScrollable,
+  } = useContext(ReusablePropsContext);
 
   const isDirectionUp = useMemo(() => direction === 'up', [direction]);
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
@@ -54,6 +61,10 @@ const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => {
         scrollViewHeight,
         translationYUpArrow,
         translationYDownArrow,
+        scrollingLength,
+        isScrolledToTop,
+        isScrolledToEnd,
+        isScrollable,
       });
     },
     [innerScrollY, cardContentHeight, scrollViewHeight],

@@ -19,10 +19,13 @@ const ReusablePropsProvider: React.FC<Props> = ({ children }) => {
   /* Scroll & Pan */
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const scrollViewHeight = useSharedValue(0);
+  const scrollingLength = useSharedValue(0);
   const translationY = useSharedValue(0);
   const footerTranslationY = useSharedValue(0);
   const innerScrollY = useSharedValue(0);
   const isScrollable = useSharedValue(false);
+  const isScrolledToTop = useSharedValue(false);
+  const isScrolledToEnd = useSharedValue(false);
 
   /* General */
   const windowHeight = useWindowDimensions().height;
@@ -38,7 +41,10 @@ const ReusablePropsProvider: React.FC<Props> = ({ children }) => {
         cardContentHeight,
         innerScrollY,
         isScrollable,
+        isScrolledToTop,
+        isScrolledToEnd,
         scrollViewHeight,
+        scrollingLength,
         scrollViewRef,
         windowHeight,
         windowWidth,

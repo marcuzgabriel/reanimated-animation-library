@@ -9,6 +9,10 @@ interface Props {
   scrollViewHeight: Animated.SharedValue<number>;
   translationYUpArrow: Animated.SharedValue<number>;
   translationYDownArrow: Animated.SharedValue<number>;
+  scrollingLength: Animated.SharedValue<number>;
+  isScrolledToTop: Animated.SharedValue<boolean>;
+  isScrolledToEnd: Animated.SharedValue<boolean>;
+  isScrollable: Animated.SharedValue<boolean>;
 }
 
 export const onScrollArrowAppearanceReaction = ({
@@ -17,34 +21,40 @@ export const onScrollArrowAppearanceReaction = ({
   scrollViewHeight,
   translationYUpArrow,
   translationYDownArrow,
+  scrollingLength,
+  isScrolledToTop,
+  isScrolledToEnd,
+  isScrollable,
 }: Props): void => {
   'worklet';
 
   if (result.isScrollable) {
-    const scrollingLength = cardContentHeight.value - scrollViewHeight.value;
-    const isScrolledToTop = result.innerScrollY <= SCROLL_TO_TOP_EXTRA_TRIGGER_AREA;
-    const isScrolledToEnd = Math.floor(result.innerScrollY) === Math.floor(scrollingLength);
+    isScrollable.value = true;
+    scrollingLength.value = cardContentHeight.value - scrollViewHeight.value;
+    isScrolledToTop.value = result.innerScrollY <= SCROLL_TO_TOP_EXTRA_TRIGGER_AREA;
+    isScrolledToEnd.value = Math.floor(result.innerScrollY) === Math.floor(scrollingLength.value);
 
-    if (isScrolledToTop && translationYUpArrow.value !== ARROW_UP_OFFSET) {
+    if (isScrolledToTop.value && translationYUpArrow.value !== ARROW_UP_OFFSET) {
       translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
     }
 
-    if (isScrolledToEnd && translationYDownArrow.value !== ARROW_DOWN_OFFSET) {
+    if (isScrolledToEnd.value && translationYDownArrow.value !== ARROW_DOWN_OFFSET) {
       translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
     }
 
-    if (isScrolledToTop && translationYDownArrow.value !== 0) {
+    if (isScrolledToTop.value && translationYDownArrow.value !== 0) {
       translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
     }
 
-    if (translationYDownArrow.value !== 0 && !isScrolledToEnd) {
+    if (translationYDownArrow.value !== 0 && !isScrolledToEnd.value) {
       translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
     }
 
-    if (translationYUpArrow.value !== 0 && !isScrolledToTop) {
+    if (translationYUpArrow.value !== 0 && !isScrolledToTop.value) {
       translationYUpArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
     }
   } else {
+    isScrollable.value = false;
     translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
     translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
   }

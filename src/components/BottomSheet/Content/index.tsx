@@ -17,6 +17,7 @@ import { MAX_HEIGHT_RATIO, SCROLL_ARROW_DIMENSIONS } from 'constants/styles';
 import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
 import KeyboardAvoidingViewProvider from 'containers/KeyboardAvoidingViewProvider';
 import ScrollArrow from '../ScrollArrow';
+import FadingEdge from '../FadingEdge';
 import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 
 interface Props {
@@ -47,9 +48,10 @@ const Content: React.FC<Props> = ({
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
-    footerHeight,
-  ]);
+  const maxHeight = useDerivedValue(
+    () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
+    [footerHeight],
+  );
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -90,6 +92,7 @@ const Content: React.FC<Props> = ({
         }}
       >
         <Animated.View onLayout={onLayout} style={maxHeightStyle}>
+          <FadingEdge direction="up" />
           <ScrollArrow
             height={SCROLL_ARROW_DIMENSIONS}
             width={SCROLL_ARROW_DIMENSIONS}
