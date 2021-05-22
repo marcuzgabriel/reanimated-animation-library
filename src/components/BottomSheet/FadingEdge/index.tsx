@@ -6,6 +6,7 @@ import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 import GradientToTopWhite from './GradientToTopWhite';
 import GradientToBottomWhite from './GradientToBottomWhite';
 
+const isIOS = Platform.OS === 'ios';
 const isWeb = Platform.OS === 'web';
 
 const FADING_EDGE_HEIGHT = 10;
@@ -49,7 +50,7 @@ const FadingEdge: React.FC<Props> = ({ position, nativeColor, webColor }) => {
       webColor={webColor}
       style={isPositionedTop ? animatedStyleTop : animatedStyleBottom}
     >
-      {!isWeb && isPositionedTop && (
+      {isIOS && isPositionedTop && (
         <GradientToTopWhite
           stopColor={nativeColor}
           height={FADING_EDGE_HEIGHT}
@@ -57,7 +58,7 @@ const FadingEdge: React.FC<Props> = ({ position, nativeColor, webColor }) => {
           viewBox={`0 0 ${windowWidth} ${FADING_EDGE_HEIGHT}`}
         />
       )}
-      {!isWeb && !isPositionedTop && (
+      {isIOS && !isPositionedTop && (
         <GradientToBottomWhite
           stopColor={nativeColor}
           height={FADING_EDGE_HEIGHT}

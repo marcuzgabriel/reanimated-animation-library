@@ -14,7 +14,7 @@ import {
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
 import { MAX_HEIGHT_RATIO, SCROLL_ARROW_DIMENSIONS } from 'constants/styles';
-import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
+import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from 'constants/configs';
 import KeyboardAvoidingViewProvider from 'containers/KeyboardAvoidingViewProvider';
 import ScrollArrow from '../ScrollArrow';
 import FadingEdge from '../FadingEdge';
@@ -115,6 +115,7 @@ const Content: React.FC<Props> = ({
               bounces={false}
               alwaysBounceVertical={false}
               directionalLockEnabled={true}
+              fadingEdgeLength={ANDROID_FADING_EDGE_LENGTH}
               onScroll={onScrollHandler}
               onContentSizeChange={(_, height): void => {
                 cardContentHeight.value = height;
