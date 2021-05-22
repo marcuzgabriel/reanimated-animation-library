@@ -20,6 +20,9 @@ import ScrollArrow from '../ScrollArrow';
 import FadingEdge from '../FadingEdge';
 import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 
+const FADING_EDGE_COLOR_NATIVE = 'grey';
+const FADING_EDGE_COLOR_WEB_TOP = { from: 'rgba(128,128,128,1)', to: 'rgba(128,128,128,0)' };
+const FADING_EDGE_COLOR_WEB_BOTTOM = { from: 'rgba(128,128,128,0)', to: 'rgba(128,128,128,1)' };
 interface Props {
   panGestureType: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
@@ -48,10 +51,9 @@ const Content: React.FC<Props> = ({
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useDerivedValue(
-    () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
-    [footerHeight],
-  );
+  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
+    footerHeight,
+  ]);
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -92,11 +94,15 @@ const Content: React.FC<Props> = ({
         }}
       >
         <Animated.View onLayout={onLayout} style={maxHeightStyle}>
-          <FadingEdge direction="up" />
+          <FadingEdge
+            position="top"
+            nativeColor={FADING_EDGE_COLOR_NATIVE}
+            webColor={FADING_EDGE_COLOR_WEB_TOP}
+          />
           <ScrollArrow
             height={SCROLL_ARROW_DIMENSIONS}
             width={SCROLL_ARROW_DIMENSIONS}
-            direction="up"
+            position="top"
             fill="blue"
           />
           <NativeViewGestureHandler
@@ -132,8 +138,13 @@ const Content: React.FC<Props> = ({
           <ScrollArrow
             height={SCROLL_ARROW_DIMENSIONS}
             width={SCROLL_ARROW_DIMENSIONS}
-            direction="down"
+            position="down"
             fill="blue"
+          />
+          <FadingEdge
+            position="bottom"
+            nativeColor={FADING_EDGE_COLOR_NATIVE}
+            webColor={FADING_EDGE_COLOR_WEB_BOTTOM}
           />
         </Animated.View>
       </PanGestureHandler>

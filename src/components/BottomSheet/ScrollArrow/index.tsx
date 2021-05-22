@@ -17,12 +17,12 @@ const BOTTOM_OFFSET = 5;
 interface Props {
   height: number;
   width: number;
-  direction: string;
+  position: string;
   fill: string;
 }
 
 const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacity<{
-  type: string;
+  position: string;
   offset: number;
 }>`
   position: absolute;
@@ -30,10 +30,10 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
   justify-content: center;
   z-index: 4;
   width: 100%;
-  ${({ type }): string => (type === 'up' ? `top: 0px` : `bottom: ${BOTTOM_OFFSET}px`)}
+  ${({ position }): string => (position === 'top' ? `top: 0px` : `bottom: ${BOTTOM_OFFSET}px`)}
 `);
 
-const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => {
+const ScrollArrow: React.FC<Props> = ({ position, height, width, fill }) => {
   const {
     scrollViewRef,
     scrollViewHeight,
@@ -45,7 +45,7 @@ const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => {
     isScrollable,
   } = useContext(ReusablePropsContext);
 
-  const isDirectionUp = useMemo(() => direction === 'up', [direction]);
+  const isPositionedTop = useMemo(() => position === 'top', [position]);
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
   const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
 
@@ -82,13 +82,13 @@ const ScrollArrow: React.FC<Props> = ({ direction, height, width, fill }) => {
 
   return (
     <TouchableOpacity
-      type={direction}
+      position={position}
       offset={height / 2}
       onPress={(): void =>
-        scrollToHelper({ ref: scrollViewRef, to: isDirectionUp ? 'top' : 'end' })
+        scrollToHelper({ ref: scrollViewRef, to: isPositionedTop ? 'top' : 'end' })
       }
     >
-      <Animated.View style={isDirectionUp ? animatedStyleUpArrow : animatedStyleDownArrow}>
+      <Animated.View style={isPositionedTop ? animatedStyleUpArrow : animatedStyleDownArrow}>
         <SvgArrow width={height} height={width} fill={fill} />
       </Animated.View>
     </TouchableOpacity>

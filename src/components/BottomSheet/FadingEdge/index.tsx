@@ -1,40 +1,65 @@
-import React, { useContext } from 'react';
+import React, { useMemo, useContext } from 'react';
+import { Platform } from 'react-native';
 import styled from 'styled-components/native';
-import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 import GradientToTopWhite from './GradientToTopWhite';
+import GradientToBottomWhite from './GradientToBottomWhite';
 
-const FADING_EDGE_HEIGHT = 15;
+const isWeb = Platform.OS === 'web';
+
+const FADING_EDGE_HEIGHT = 10;
 
 interface Props {
-  direction: string;
+  position: string;
+  nativeColor: string;
+  webColor: Record<string, string>;
 }
 
-const Wrapper = Animated.createAnimatedComponent(styled.View<{ direction: string }>`
+const Wrapper = Animated.createAnimatedComponent(styled.View<{
+  position: string;
+  webColor: Record<string, string>;
+}>`
   position: absolute;
   justify-content: center;
   align-items: center;
   height: ${FADING_EDGE_HEIGHT}px;
   width: 100%;
-  z-index: 4;
-  background-image: linear-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.1));
-  ${({ direction }): string => (direction === 'up' ? `top: 0px;` : `bottom: 0px`)}
+  z-index: 3;
+  ${({ webColor }): string =>
+    isWeb ? `background-image: linear-gradient(${webColor.from}, ${webColor.to});` : ``}
+  ${({ position }): string => (position === 'top' ? `top: 0px;` : `bottom: 0px`)}
 `);
 
-const FadingEdge: React.FC<Props> = ({ direction }) => {
-  const { isScrollable, isScrolledToTop, isScrolledToEnd, windowWidth } =
-    useContext(ReusablePropsContext);
+const FadingEdge: React.FC<Props> = ({ position, nativeColor, webColor }) => {
+  const { isScrolledToTop, isScrolledToEnd, windowWidth } = useContext(ReusablePropsContext);
+  const isPositionedTop = useMemo(() => position === 'top', [position]);
 
   const animatedStyleTop = useAnimatedStyle(() => ({
     display: !isScrolledToTop.value ? 'flex' : 'none',
   }));
 
-  // const animatedStyleBottom = useAnimatedStyle(() => ({}));
+  const animatedStyleBottom = useAnimatedStyle(() => ({
+    display: !isScrolledToEnd.value ? 'flex' : 'none',
+  }));
 
   return (
-    <Wrapper direction={direction} style={animatedStyleTop}>
-      {direction === 'up' && (
+    <Wrapper
+      position={position}
+      webColor={webColor}
+      style={isPositionedTop ? animatedStyleTop : animatedStyleBottom}
+    >
+      {!isWeb && isPositionedTop && (
         <GradientToTopWhite
+          stopColor={nativeColor}
+          height={FADING_EDGE_HEIGHT}
+          width={windowWidth}
+          viewBox={`0 0 ${windowWidth} ${FADING_EDGE_HEIGHT}`}
+        />
+      )}
+      {!isWeb && !isPositionedTop && (
+        <GradientToBottomWhite
+          stopColor={nativeColor}
           height={FADING_EDGE_HEIGHT}
           width={windowWidth}
           viewBox={`0 0 ${windowWidth} ${FADING_EDGE_HEIGHT}`}

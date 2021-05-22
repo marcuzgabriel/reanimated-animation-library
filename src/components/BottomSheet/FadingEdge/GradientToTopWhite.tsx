@@ -5,26 +5,28 @@ interface Props {
   height: number;
   width: number | string;
   viewBox: string;
+  stopColor: string;
 }
 
-const svgConfig = {
+const svgConfig = (stopColor: string): Record<string, React.ReactElement> => ({
   svg: (
     <G>
       <Defs>
         <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <Stop offset="100%" stopColor="white" stopOpacity="0" />
-          <Stop offset="50%" stopColor="white" stopOpacity="1" />
-          <Stop offset="0%" stopColor="white" stopOpacity="1" />
+          <Stop offset="100%" stopColor={stopColor} stopOpacity="0" />
+          <Stop offset="50%" stopColor={stopColor} stopOpacity="0.65" />
+          <Stop offset="25%" stopColor={stopColor} stopOpacity="0.8" />
+          <Stop offset="0%" stopColor={stopColor} stopOpacity="1" />
         </LinearGradient>
       </Defs>
       <Rect fill="url(#gradient)" x="0" y="0" width="100%" height="100%" />
     </G>
   ),
-};
+});
 
-const GradientToTopWhite: React.FC<Props> = ({ height, width, viewBox }) => (
+const GradientToTopWhite: React.FC<Props> = ({ height, width, stopColor, viewBox }) => (
   <Svg height={height} width={width} viewBox={viewBox}>
-    {svgConfig.svg}
+    {svgConfig(stopColor).svg}
   </Svg>
 );
 
