@@ -5,6 +5,7 @@ This library provides some nice animation features with the latest reanimated 2+
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
   - [ ] Scroll arrows that appear / dissapear
+  - [ ] Fading scroll edges for alle platforms 
   - [x] Drag resistance when using the snap effect
   - [x] InputField component that accepts a unique id so no matter where the component is located then a nice scrollTo animation effect to the input field is achieved
   - [x] If the background content is not scrollable but there is content hiding behind the card, then make the component snappable so the card will collapse if the user tries to do a scroll gesture on the background content
