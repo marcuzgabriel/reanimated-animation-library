@@ -138,7 +138,7 @@ const Content: React.FC<Props> = ({
           <ScrollArrow
             height={SCROLL_ARROW_DIMENSIONS}
             width={SCROLL_ARROW_DIMENSIONS}
-            position="down"
+            position="bottom"
             fill="blue"
           />
           <FadingEdge
