@@ -7,10 +7,10 @@ import UserConfigurationProvider from 'containers/UserConfigurationProvider';
 import { BottomSheetConfiguration } from 'types';
 
 const BottomSheet: React.FC<BottomSheetConfiguration> = (props: BottomSheetConfiguration) => (
-  <UserConfigurationProvider configuration={props} type="bottomSheet">
+  <UserConfigurationProvider configuration={props}>
     <KeyboardProvider>
       <ReusablePropsProvider>
-        <Sheet {...props} />
+        <Sheet />
       </ReusablePropsProvider>
     </KeyboardProvider>
   </UserConfigurationProvider>

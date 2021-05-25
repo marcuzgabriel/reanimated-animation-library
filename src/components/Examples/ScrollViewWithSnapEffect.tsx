@@ -14,6 +14,8 @@ import Footer from './components/Footer';
 const SCROLL_EVENT_THROTTHLE = 16;
 const SCROLL_ARROW_DIMESIONS = 40;
 const SCROLL_ARROW_OFFSET = 5;
+const HEADER_HEIGHT = 50;
+const EXTRA_SNAP_POINT_OFFSET = 30;
 
 const fakeScrollItem = [
   {
@@ -49,7 +51,7 @@ const BackgroundContent = styled.View`
   z-index: 1;
 `;
 
-const TopArrow = styled.View`
+const Arrow = styled.View`
   width: 50px;
   height: 50px;
   background-color: black;
@@ -95,14 +97,16 @@ const ScrollViewWithSnapEffect: React.FC = () => {
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
+        header={{
+          height: HEADER_HEIGHT,
+        }}
+        extraSnapPointBottomOffset={EXTRA_SNAP_POINT_OFFSET}
+        scrollArrows={{
+          fill: 'dark',
+          dimensions: SCROLL_ARROW_DIMESIONS,
+        }}
         contentComponent={<Content />}
         footerComponent={<Footer />}
-        scrollArrow={{
-          fill: 'black',
-          dimensions: 40,
-          topArrowOffset: 5,
-          bottomArrowOffset: 5,
-        }}
       />
     </Wrapper>
   );

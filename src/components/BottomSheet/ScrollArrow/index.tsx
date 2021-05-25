@@ -1,16 +1,4 @@
-import React, { useMemo, useContext } from 'react';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  useAnimatedReaction,
-  interpolate,
-} from 'react-native-reanimated';
-import styled from 'styled-components/native';
-import SvgArrow from './SvgArrow';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
-import { onScrollArrowAppearanceReaction } from 'worklets';
-import { scrollTo as scrollToHelper } from 'helpers';
-import { ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from 'constants/animations';
+import React, { useContext } from 'react';
 import { UserConfigurationContext } from 'containers/UserConfigurationProvider';
 import ScrollArrowDefault from './ScrollArrowDefault';
 interface Props {
@@ -18,17 +6,19 @@ interface Props {
 }
 
 const ScrollArrow: React.FC<Props> = ({ position }) => {
-  const { scrollArrow } = useContext(UserConfigurationContext);
+  const { scrollArrows } = useContext(UserConfigurationContext);
 
   switch (true) {
-    case !scrollArrow:
+    case !scrollArrows:
       return null;
-    case !!scrollArrow.componentBottomArrow || !!scrollArrow.componentTopArrow:
+    case !!scrollArrows?.componentBottomArrow || !!scrollArrows?.componentTopArrow:
       return (
         <ScrollArrowDefault
           position={position}
           component={
-            position === 'top' ? scrollArrow.componentTopArrow : scrollArrow.componentBottomArrow
+            position === 'top'
+              ? scrollArrows?.componentTopArrow
+              : scrollArrows?.componentBottomArrow
           }
         />
       );

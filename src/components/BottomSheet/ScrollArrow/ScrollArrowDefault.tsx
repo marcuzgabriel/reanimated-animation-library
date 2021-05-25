@@ -19,8 +19,8 @@ interface Props {
 
 const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacity<{
   position: string;
-  topOffset: number;
-  bottomOffset: number;
+  topOffset?: number;
+  bottomOffset?: number;
 }>`
   position: absolute;
   align-items: center;
@@ -42,7 +42,7 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
     isScrolledToEnd,
     isScrollable,
   } = useContext(ReusablePropsContext);
-  const { scrollArrow } = useContext(UserConfigurationContext);
+  const { scrollArrows } = useContext(UserConfigurationContext);
 
   const isPositionedTop = useMemo(() => position === 'top', [position]);
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
@@ -82,8 +82,8 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
   return (
     <TouchableOpacity
       position={position}
-      topOffset={scrollArrow.topArrowOffset}
-      bottomOffset={scrollArrow.bottomArrowOffset}
+      topOffset={scrollArrows?.topArrowOffset}
+      bottomOffset={scrollArrows?.bottomArrowOffset}
       onPress={(): void =>
         scrollToHelper({ ref: scrollViewRef, to: isPositionedTop ? 'top' : 'end' })
       }
@@ -91,9 +91,9 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
       <Animated.View style={isPositionedTop ? animatedStyleUpArrow : animatedStyleDownArrow}>
         {component ?? (
           <SvgArrow
-            height={scrollArrow.dimensions}
-            width={scrollArrow.dimensions}
-            fill={scrollArrow.fill}
+            height={scrollArrows?.dimensions}
+            width={scrollArrows?.dimensions}
+            fill={scrollArrows?.fill}
           />
         )}
       </Animated.View>

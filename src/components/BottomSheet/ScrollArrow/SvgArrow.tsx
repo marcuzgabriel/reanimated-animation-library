@@ -2,9 +2,9 @@ import React from 'react';
 import Svg, { G, Circle, Path } from 'react-native-svg';
 
 interface Props {
-  height: number;
-  width: number;
-  fill: string;
+  height?: number;
+  width?: number;
+  fill?: string;
 }
 
 const arrowInCircle = {

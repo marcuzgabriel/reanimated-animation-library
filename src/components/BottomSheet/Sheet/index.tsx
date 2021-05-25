@@ -23,7 +23,7 @@ import {
 } from 'worklets';
 import { KeyboardContext } from 'containers/KeyboardProvider';
 import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
-import { BottomSheetConfiguration } from 'types';
+import { UserConfigurationContext } from 'containers/UserConfigurationProvider';
 
 const isAndroid = Platform.OS === 'android';
 interface AnimatedGHContext {
@@ -41,16 +41,19 @@ const View = styled.View`
   z-index: 2;
 `;
 
-const Sheet: React.FC<BottomSheetConfiguration> = ({
-  scrollY,
-  snapEffectDirection,
-  contentComponent,
-  footerComponent,
-  onLayoutRequest,
-}) => {
+const Sheet: React.FC = () => {
   const panGestureOuterRef = useRef<PanGestureHandler>();
   const keyboardContext = useContext(KeyboardContext);
   const { cardHeight, innerScrollY, translationY } = useContext(ReusablePropsContext);
+  const {
+    scrollY,
+    snapEffectDirection,
+    header,
+    contentComponent,
+    footerComponent,
+    onLayoutRequest,
+    extraSnapPointBottomOffset: configExtraSnapPointBottomOffset,
+  } = useContext(UserConfigurationContext);
 
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
@@ -70,14 +73,18 @@ const Sheet: React.FC<BottomSheetConfiguration> = ({
     [],
   );
 
-  const snapPointBottom = useDerivedValue(() =>
-    cardHeight.value > 0
+  const snapPointBottom = useDerivedValue(() => {
+    const configExtraSnapPointBottomOffsetExtract = configExtraSnapPointBottomOffset
+      ? configExtraSnapPointBottomOffset
+      : 0;
+
+    return cardHeight.value > 0
       ? cardHeight.value -
-        CLOSE_CARD_BUTTON_HEIGHT -
-        OFFSET_SNAP_POINT_BOTTOM +
-        extraSnapPointBottomOffset
-      : 0,
-  );
+          header.height -
+          configExtraSnapPointBottomOffsetExtract +
+          extraSnapPointBottomOffset
+      : 0;
+  });
 
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
