@@ -19,6 +19,7 @@ module.exports = {
           components: './src/components',
           helpers: './src/helpers',
           hoas: './src/hoas',
+          types: './src/types/index.d.ts',
         },
         extensions: ['.ts', '.tsx', '.js', 'cjs', '.ios.js', '.android.js', '.web.js'],
       },

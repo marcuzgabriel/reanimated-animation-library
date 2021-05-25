@@ -1,5 +1,4 @@
 import React, { createContext, useContext } from 'react';
-import { useWindowDimensions } from 'react-native';
 import Animated, { useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { KeyboardContext } from 'containers/KeyboardProvider';
 import { ReusablePropsContext } from 'containers/ReusablePropsProvider';

@@ -23,41 +23,9 @@ import {
 } from 'worklets';
 import { KeyboardContext } from 'containers/KeyboardProvider';
 import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
+import { BottomSheetConfiguration } from 'types';
 
 const isAndroid = Platform.OS === 'android';
-interface Props {
-  attachOuterScrollY?: Animated.Value<number>;
-  overdragResistanceFactor?: number;
-  borderTopRadius?: number;
-  height?: number;
-  width?: number;
-  scrollViewRef?: React.RefObject<Animated.ScrollView> | null;
-  previousScrollY?: Animated.SharedValue<number>;
-  scrollY: Animated.SharedValue<number>;
-  contentSize?: Animated.SharedValue<number>;
-  layoutHeight?: Animated.SharedValue<number>;
-  resetToDefaultPosition?: boolean;
-  hasPanGesture?: boolean;
-  autoSlideToTop?: boolean;
-  autoSlideToBottom?: boolean;
-  floatOnKeyboard?: boolean;
-  snapPoints?: { [key: string]: number };
-  innerScrolling?: {
-    hasInnerScrolling?: boolean;
-    hasFadingEdges?: boolean;
-    hasScrollingArrows?: boolean;
-    arrowBottomIcon?: React.ReactNode;
-    arrowTopIcon?: React.ReactNode;
-    maxHeightRatio?: number;
-  };
-  contentComponent: React.ReactNode;
-  footerComponent: React.ReactNode;
-  bottomActions?: React.ReactNode;
-  onAnimationDoneRequest?: void;
-  snapEffectDirection?: Animated.SharedValue<string>;
-  onLayoutRequest?: (height: number) => void;
-}
-
 interface AnimatedGHContext {
   [key: string]: number;
   startX: number;
@@ -73,7 +41,7 @@ const View = styled.View`
   z-index: 2;
 `;
 
-const Sheet: React.FC<Props> = ({
+const Sheet: React.FC<BottomSheetConfiguration> = ({
   scrollY,
   snapEffectDirection,
   contentComponent,

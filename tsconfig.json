@@ -21,6 +21,7 @@
       "helpers": ["src/helpers"],
       "hoas/*": ["src/hoas/*"],
       "worklets": ["src/worklets/index.ts"],
+      "types": ["src/types/index.d.ts"],
     },
   },
   "exclude": [

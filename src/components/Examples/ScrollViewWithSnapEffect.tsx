@@ -12,6 +12,9 @@ import Content from './components/Content';
 import Footer from './components/Footer';
 
 const SCROLL_EVENT_THROTTHLE = 16;
+const SCROLL_ARROW_DIMESIONS = 40;
+const SCROLL_ARROW_OFFSET = 5;
+
 const fakeScrollItem = [
   {
     text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
@@ -44,6 +47,13 @@ const BackgroundContent = styled.View`
   right: 0px;
   left: 0px;
   z-index: 1;
+`;
+
+const TopArrow = styled.View`
+  width: 50px;
+  height: 50px;
+  background-color: black;
+  border: 1px solid black;
 `;
 
 const ScrollViewWithSnapEffect: React.FC = () => {
@@ -81,12 +91,18 @@ const ScrollViewWithSnapEffect: React.FC = () => {
       </BackgroundContent>
       <BottomSheet
         scrollY={scrollY}
+        snapEffectDirection={snapEffectDirection}
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
-        snapEffectDirection={snapEffectDirection}
         contentComponent={<Content />}
         footerComponent={<Footer />}
+        scrollArrow={{
+          fill: 'black',
+          dimensions: 40,
+          topArrowOffset: 5,
+          bottomArrowOffset: 5,
+        }}
       />
     </Wrapper>
   );

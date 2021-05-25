@@ -13,12 +13,13 @@ import {
   PanGestureHandlerEventPayload,
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
-import { MAX_HEIGHT_RATIO, SCROLL_ARROW_DIMENSIONS } from 'constants/styles';
+import { MAX_HEIGHT_RATIO } from 'constants/styles';
 import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from 'constants/configs';
 import KeyboardAvoidingViewProvider from 'containers/KeyboardAvoidingViewProvider';
 import ScrollArrow from '../ScrollArrow';
 import FadingEdge from '../FadingEdge';
 import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
+import { UserConfigurationContext } from 'containers/UserConfigurationProvider';
 
 const FADING_EDGE_COLOR_NATIVE = 'grey';
 const FADING_EDGE_COLOR_WEB_TOP = { from: 'rgba(128,128,128,1)', to: 'rgba(128,128,128,0)' };
@@ -51,9 +52,10 @@ const Content: React.FC<Props> = ({
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
-    footerHeight,
-  ]);
+  const maxHeight = useDerivedValue(
+    () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
+    [footerHeight],
+  );
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -99,12 +101,7 @@ const Content: React.FC<Props> = ({
             nativeColor={FADING_EDGE_COLOR_NATIVE}
             webColor={FADING_EDGE_COLOR_WEB_TOP}
           />
-          <ScrollArrow
-            height={SCROLL_ARROW_DIMENSIONS}
-            width={SCROLL_ARROW_DIMENSIONS}
-            position="top"
-            fill="blue"
-          />
+          <ScrollArrow position="top" />
           <NativeViewGestureHandler
             ref={nativeViewGestureRef}
             shouldCancelWhenOutside={false}
@@ -136,12 +133,7 @@ const Content: React.FC<Props> = ({
               </KeyboardAvoidingViewProvider>
             </Animated.ScrollView>
           </NativeViewGestureHandler>
-          <ScrollArrow
-            height={SCROLL_ARROW_DIMENSIONS}
-            width={SCROLL_ARROW_DIMENSIONS}
-            position="bottom"
-            fill="blue"
-          />
+          <ScrollArrow position="bottom" />
           <FadingEdge
             position="bottom"
             nativeColor={FADING_EDGE_COLOR_NATIVE}

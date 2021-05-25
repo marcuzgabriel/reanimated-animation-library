@@ -1,15 +1,48 @@
+import React from 'react';
 import Animated from 'react-native-reanimated';
+interface ScrollArrowDefault {
+  fill: string;
+  dimensions: number;
+  topArrowOffset?: number;
+  bottomArrowOffset?: number;
+}
+interface ScrollArrowCustom {
+  componentTopArrow: React.ReactNode;
+  componentBottomArrow: React.ReactNode;
+}
 
-/* https://www.typescriptlang.org/docs/handbook/2/conditional-types.html */
-/* https://stackoverflow.com/questions/51521809/typescript-definitions-for-animated-views-style-prop */
-/* https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html */
-/* https://github.com/software-mansion/react-native-reanimated/blob/master/react-native-reanimated.d.ts */
-
-/* Playing around with typescript with reanimated */
-export type AnimatedStyles<T> = {
-  [K in keyof T]: K extends 'transform'
-    ? Animated.AnimatedTransform
-    : K extends 'shadowOffset'
-    ? { width: number; height: number }
-    : T[K];
-};
+type ScrollArrow = { enabled: boolean } extends ScrollArrowDefault | ScrollArrowCustom;
+export interface BottomSheetConfiguration {
+  /**
+   * @scrollY
+   * Required Animation.SharedValue of number that attaches
+   * to the BottomSheet and ensures it works properly
+   */
+  scrollY: Animated.SharedValue<number>;
+  /**
+   *  @snapEffectDirection
+   *  Prop that connects card to SnapEffect component.
+   *  Please see ScrollViewWithSnapEffect.tsx for implementation
+   */
+  snapEffectDirection?: Animated.SharedValue<string>;
+  extraOffset?: number;
+  contentComponent: React.ReactNode;
+  footerComponent: React.ReactNode;
+  headerComponent?: React.ReactNode;
+  scrollArrow?: ScrollArrow;
+  fadingEdge?: {};
+  cardStyle?: {
+    maxHeightRatio?: number;
+    maxHeightRatioWhenKeyboardIsVisible?: number;
+    borderTopRightRadius?: number;
+    borderTopLeftRadius?: number;
+  };
+  morphingArrow?: {
+    height?: number;
+    topOffset?: number;
+  };
+  headerStyle?: {
+    hitSlop?: number;
+  };
+  onLayoutRequest?: (cardHeight: number) => void;
+}
