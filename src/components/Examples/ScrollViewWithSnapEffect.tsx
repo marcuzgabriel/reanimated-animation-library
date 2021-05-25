@@ -104,6 +104,8 @@ const ScrollViewWithSnapEffect: React.FC = () => {
         scrollArrows={{
           fill: 'dark',
           dimensions: SCROLL_ARROW_DIMESIONS,
+          bottomArrowOffset: SCROLL_ARROW_OFFSET,
+          topArrowOffset: SCROLL_ARROW_OFFSET,
         }}
         contentComponent={<Content />}
         footerComponent={<Footer />}
