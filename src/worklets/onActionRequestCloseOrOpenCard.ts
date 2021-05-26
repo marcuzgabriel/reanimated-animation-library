@@ -1,5 +1,9 @@
 import Animated, { cancelAnimation, withSpring } from 'react-native-reanimated';
-import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG, SPRING_OFFSET } from 'constants/animations';
+import {
+  DEFAULT_SNAP_POINT_TOP,
+  DEFAULT_SPRING_CONFIG,
+  SPRING_OFFSET,
+} from '../constants/animations';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;

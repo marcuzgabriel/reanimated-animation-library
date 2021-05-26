@@ -6,10 +6,10 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedRef,
 } from 'react-native-reanimated';
-import BottomSheet from 'components/BottomSheet';
-import SnapEffect from 'components/BottomSheet/SnapEffect';
 import Content from './components/Content';
 import Footer from './components/Footer';
+import BottomSheet from '../../components/BottomSheet';
+import SnapEffect from '../../components/BottomSheet/SnapEffect';
 
 const SCROLL_EVENT_THROTTHLE = 16;
 const SCROLL_ARROW_DIMESIONS = 40;
@@ -94,19 +94,17 @@ const ScrollViewWithSnapEffect: React.FC = () => {
       <BottomSheet
         scrollY={scrollY}
         snapEffectDirection={snapEffectDirection}
+        snapPointBottom={HEADER_HEIGHT + EXTRA_SNAP_POINT_OFFSET}
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
-        header={{
-          height: HEADER_HEIGHT,
-        }}
-        extraSnapPointBottomOffset={EXTRA_SNAP_POINT_OFFSET}
         scrollArrows={{
           fill: 'dark',
           dimensions: SCROLL_ARROW_DIMESIONS,
           bottomArrowOffset: SCROLL_ARROW_OFFSET,
           topArrowOffset: SCROLL_ARROW_OFFSET,
         }}
+        headerComponent={<Arrow />}
         contentComponent={<Content />}
         footerComponent={<Footer />}
       />

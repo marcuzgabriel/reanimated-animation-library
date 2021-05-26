@@ -1,5 +1,5 @@
 import Animated from 'react-native-reanimated';
-import { CLOSE_OPEN_CARD_BUTTON_HITSLOP } from 'constants/styles';
+import { CLOSE_OPEN_CARD_BUTTON_HITSLOP } from '../constants/styles';
 
 interface Props {
   result: number;

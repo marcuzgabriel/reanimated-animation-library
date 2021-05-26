@@ -1,5 +1,5 @@
 import Animated, { withTiming } from 'react-native-reanimated';
-import { DEFAULT_TIMING_CONFIG, ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from 'constants/animations';
+import { DEFAULT_TIMING_CONFIG, ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../constants/animations';
 
 const SCROLL_TO_TOP_EXTRA_TRIGGER_AREA = 20;
 

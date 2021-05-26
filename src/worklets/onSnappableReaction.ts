@@ -1,5 +1,5 @@
 import Animated, { runOnJS } from 'react-native-reanimated';
-import { IS_SCROLLABLE_OFFSET } from 'constants/animations';
+import { IS_SCROLLABLE_OFFSET } from '../constants/animations';
 
 interface Props {
   result: boolean | undefined;

@@ -1,7 +1,7 @@
 import Animated, { withTiming, scrollTo } from 'react-native-reanimated';
-import { KEYBOARD_TIMING_EASING } from 'constants/animations';
-import { CLOSE_OPEN_CARD_BUTTON_HITSLOP, KEYBOARD_CARD_HEIGHT_RATIO } from 'constants/styles';
-import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
+import { KEYBOARD_TIMING_EASING } from '../constants/animations';
+import { CLOSE_OPEN_CARD_BUTTON_HITSLOP, KEYBOARD_CARD_HEIGHT_RATIO } from '../constants/styles';
+import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
 
 /* NOTE: Eliminating race condition and flickering effect: When an input
 is focused. Then one animation changes the card height where the

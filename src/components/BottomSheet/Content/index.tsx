@@ -13,13 +13,12 @@ import {
   PanGestureHandlerEventPayload,
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
-import { MAX_HEIGHT_RATIO } from 'constants/styles';
-import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from 'constants/configs';
-import KeyboardAvoidingViewProvider from 'containers/KeyboardAvoidingViewProvider';
 import ScrollArrow from '../ScrollArrow';
 import FadingEdge from '../FadingEdge';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
-import { UserConfigurationContext } from 'containers/UserConfigurationProvider';
+import { MAX_HEIGHT_RATIO } from '../../../constants/styles';
+import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
+import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
+import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 
 const FADING_EDGE_COLOR_NATIVE = 'grey';
 const FADING_EDGE_COLOR_WEB_TOP = { from: 'rgba(128,128,128,1)', to: 'rgba(128,128,128,0)' };

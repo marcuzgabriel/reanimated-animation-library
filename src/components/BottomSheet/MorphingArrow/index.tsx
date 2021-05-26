@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import { createPath, addCurve, interpolatePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
+import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 
 const START_Y = 30;
 const X_OFFSET = 25;

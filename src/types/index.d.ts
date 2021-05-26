@@ -26,9 +26,11 @@ export interface BottomSheetConfiguration {
    *  Please see ScrollViewWithSnapEffect.tsx for implementation
    */
   snapEffectDirection?: Animated.SharedValue<string>;
+  snapPointBottom: number;
   extraOffset?: number;
   contentComponent: React.ReactNode;
   footerComponent: React.ReactNode;
+  headerComponent?: React.ReactNode;
   /**
    * @scrollArrows ---
    * Minimum object structure requirement. The property
@@ -52,16 +54,11 @@ export interface BottomSheetConfiguration {
   morphingArrow?: {
     topOffset?: number;
   };
-  /**
-   * @header ---
-   * Required param used for snap point configuration:
-   * @param height
-   */
-  header: {
+  header?: {
     component?: React.ReactNode;
     hasMorphingArrow?: boolean;
     hitSlop?: number;
-    height: number;
+    height?: number;
     backgroundColor?: string;
   };
   onLayoutRequest?: (cardHeight: number) => void;

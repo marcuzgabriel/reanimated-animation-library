@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { UserConfigurationContext } from 'containers/UserConfigurationProvider';
 import ScrollArrowDefault from './ScrollArrowDefault';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 interface Props {
   position: string;
 }

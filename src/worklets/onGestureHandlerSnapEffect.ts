@@ -1,6 +1,6 @@
 import Animated, { withSpring } from 'react-native-reanimated';
-import { DEFAULT_SPRING_CONFIG } from 'constants/animations';
-import { withFriction } from 'hoas/withFriction';
+import { DEFAULT_SPRING_CONFIG } from '../constants/animations';
+import { withFriction } from '../hoas/withFriction';
 
 interface Props {
   translationY: Animated.SharedValue<number>;

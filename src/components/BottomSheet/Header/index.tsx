@@ -7,9 +7,10 @@ import {
   CLOSE_CARD_BUTTON_HEIGHT,
   CLOSE_OPEN_CARD_BUTTON_HITSLOP,
   HIT_SLOP,
-} from 'constants/styles';
-import MorphingArrow from 'components/BottomSheet/MorphingArrow';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
+} from '../../../constants/styles';
+import MorphingArrow from '../../../components/BottomSheet/MorphingArrow';
+import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
@@ -40,7 +41,10 @@ const MorphingArrowWrapper = styled.View`
   top: -${CLOSE_OPEN_CARD_BUTTON_HITSLOP}px;
 `;
 
+const Wrapper = styled.View``;
+
 const Header: React.FC<Props> = ({ snapPointBottom, scrollY, onPress }) => {
+  const { headerComponent } = useContext(UserConfigurationContext);
   const { headerHeight } = useContext(ReusablePropsContext);
 
   const onLayout = useCallback(
@@ -55,9 +59,13 @@ const Header: React.FC<Props> = ({ snapPointBottom, scrollY, onPress }) => {
   return (
     <TouchableOpacity activeOpacity={1} hitSlop={HIT_SLOP} onPress={onPress}>
       <HitSlopAreaWrapper />
-      <MorphingArrowWrapper onLayout={onLayout}>
-        <MorphingArrow snapPointBottom={snapPointBottom} scrollY={scrollY} />
-      </MorphingArrowWrapper>
+      <Wrapper onLayout={onLayout}>
+        {headerComponent ?? (
+          <MorphingArrowWrapper>
+            <MorphingArrow snapPointBottom={snapPointBottom} scrollY={scrollY} />
+          </MorphingArrowWrapper>
+        )}
+      </Wrapper>
     </TouchableOpacity>
   );
 };

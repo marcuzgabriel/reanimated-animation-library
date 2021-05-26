@@ -1,6 +1,6 @@
 import Animated, { withSpring } from 'react-native-reanimated';
-import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from 'constants/animations';
-import { SCROLL_EVENT_THROTTLE } from 'constants/configs';
+import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from '../constants/animations';
+import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
 
 interface Props {
   isInputFieldFocused: Animated.SharedValue<boolean>;

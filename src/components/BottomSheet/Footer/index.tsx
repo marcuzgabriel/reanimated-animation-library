@@ -2,9 +2,9 @@ import React, { useCallback, useContext } from 'react';
 import { LayoutChangeEvent, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedStyle, useAnimatedReaction } from 'react-native-reanimated';
-import { onPanGestureHitFooterReaction } from 'worklets';
-import { KeyboardContext } from 'containers/KeyboardProvider';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
+import { onPanGestureHitFooterReaction } from '../../../worklets';
+import { KeyboardContext } from '../../../containers/KeyboardProvider';
+import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 
 interface Props {
   children: React.ReactNode;
@@ -14,9 +14,8 @@ const Wrapper = Animated.createAnimatedComponent(styled.View``);
 
 const Footer: React.FC<Props> = ({ children }) => {
   const { isKeyboardVisible } = useContext(KeyboardContext);
-  const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } = useContext(
-    ReusablePropsContext,
-  );
+  const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } =
+    useContext(ReusablePropsContext);
 
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({

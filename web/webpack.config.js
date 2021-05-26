@@ -12,7 +12,7 @@ delete babelConfig.plugins[0][1].alias['^react-native$'];
 module.exports = {
   mode: dev ? 'development' : 'production',
   entry: {
-    app: path.join(__dirname, '../src/index.web.tsx'),
+    app: path.join(__dirname, '../src/index.web.ts'),
   },
   devServer: {
     disableHostCheck: true,

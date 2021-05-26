@@ -2,9 +2,9 @@ import React, { useMemo, useContext } from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
 import GradientToTopWhite from './GradientToTopWhite';
 import GradientToBottomWhite from './GradientToBottomWhite';
+import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 
 const isIOS = Platform.OS === 'ios';
 const isWeb = Platform.OS === 'web';

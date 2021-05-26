@@ -1,5 +1,5 @@
 import { AppRegistry } from 'react-native';
-import App from './App';
+import App from '.';
 
 const globalAny: any = global;
 const rootTag = globalAny.document.getElementById('root');

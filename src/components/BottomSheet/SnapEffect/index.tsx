@@ -8,8 +8,8 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import { DRAG_RESISTANCE_FACTOR } from 'constants/animations';
-import { onGestureHandlerSnapEffect, onSnappableReaction } from 'worklets';
+import { DRAG_RESISTANCE_FACTOR } from '../../../constants/animations';
+import { onGestureHandlerSnapEffect, onSnappableReaction } from '../../../worklets';
 
 interface Props {
   children: React.ReactNode;

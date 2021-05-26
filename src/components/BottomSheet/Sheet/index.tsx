@@ -13,17 +13,16 @@ import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-g
 import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
-import { OFFSET_SNAP_POINT_BOTTOM } from 'constants/animations';
-import { CLOSE_CARD_BUTTON_HEIGHT, CLOSE_OPEN_CARD_BUTTON_HITSLOP } from 'constants/styles';
+import { CLOSE_OPEN_CARD_BUTTON_HITSLOP } from '../../../constants/styles';
 import {
   onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
   getAnimatedCardStyles,
   onGestureHandlerCard,
-} from 'worklets';
-import { KeyboardContext } from 'containers/KeyboardProvider';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
-import { UserConfigurationContext } from 'containers/UserConfigurationProvider';
+} from '../../../worklets';
+import { KeyboardContext } from '../../../containers/KeyboardProvider';
+import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
 const isAndroid = Platform.OS === 'android';
 interface AnimatedGHContext {
@@ -48,11 +47,11 @@ const Sheet: React.FC = () => {
   const {
     scrollY,
     snapEffectDirection,
+    snapPointBottom: configSnapPointBottom,
     header,
     contentComponent,
     footerComponent,
     onLayoutRequest,
-    extraSnapPointBottomOffset: configExtraSnapPointBottomOffset,
   } = useContext(UserConfigurationContext);
 
   const isPanning = useSharedValue(false);
@@ -73,18 +72,11 @@ const Sheet: React.FC = () => {
     [],
   );
 
-  const snapPointBottom = useDerivedValue(() => {
-    const configExtraSnapPointBottomOffsetExtract = configExtraSnapPointBottomOffset
-      ? configExtraSnapPointBottomOffset
-      : 0;
-
-    return cardHeight.value > 0
-      ? cardHeight.value -
-          header.height -
-          configExtraSnapPointBottomOffsetExtract +
-          extraSnapPointBottomOffset
-      : 0;
-  });
+  const snapPointBottom = useDerivedValue(() =>
+    cardHeight.value > 0
+      ? cardHeight.value - configSnapPointBottom + extraSnapPointBottomOffset
+      : 0,
+  );
 
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {

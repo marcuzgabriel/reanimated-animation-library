@@ -1,8 +1,8 @@
 import React, { createContext, useContext } from 'react';
 import Animated, { useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
-import { KeyboardContext } from 'containers/KeyboardProvider';
-import { ReusablePropsContext } from 'containers/ReusablePropsProvider';
-import { onIsInputFieldFocusedReaction } from 'worklets';
+import { KeyboardContext } from '../containers/KeyboardProvider';
+import { ReusablePropsContext } from '../containers/ReusablePropsProvider';
+import { onIsInputFieldFocusedReaction } from '../worklets';
 
 export const KeyboardAvoidingViewContext = createContext<Record<string, any>>({});
 export const { Provider } = KeyboardAvoidingViewContext;

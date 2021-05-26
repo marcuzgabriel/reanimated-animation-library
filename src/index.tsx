@@ -1,5 +1,5 @@
 import React from 'react';
-import ScrollViewWithSnapEffect from 'components/Examples/ScrollViewWithSnapEffect';
+import ScrollViewWithSnapEffect from './components/Examples/ScrollViewWithSnapEffect';
 
 const App: React.FC = () => <ScrollViewWithSnapEffect />;
 

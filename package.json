@@ -2,7 +2,6 @@
   "name": "reanimated-animation-library",
   "version": "1.0.0",
   "private": true,
-  "types": "./src/types/index.d.ts",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -11,8 +10,22 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "web": "cross-env NODE_ENV=development webpack serve --config web/webpack.config.js",
     "web:clean": "rimraf web/vendor/ web/build",
-    "web:build": "rimraf web/build/; cross-env NODE_ENV=production webpack --config web/webpack.config.js"
+    "web:build": "rimraf web/build/; cross-env NODE_ENV=production webpack --config web/webpack.config.js",
+    "type:check": "yarn tsc --noEmit",
+    "type:generate": "yarn type:generate:clean && yarn type:generate:copy",
+    "type:generate:clean": "cross-env-shell rimraf lib",
+    "type:generate:copy": "cross-env-shell mkdir lib && Xcopy \"src\" lib /E /H /C /I"
   },
+  "main": "lib/ReanimatedAnimationLibrary.ts",
+  "module": "lib/ReanimatedAnimationLibrary",
+  "types": "reanimated-animation-library.d.ts",
+  "react-native": "src/ReanimatedAnimationLibrary.ts",
+  "files": [
+    "src/",
+    "lib/",
+    "!ios/build/",
+    "!android/build/"
+  ],
   "dependencies": {
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
@@ -54,6 +67,7 @@
     "babel-plugin-module-resolver": "^3.1.3",
     "babel-plugin-styled-components": "^1.12.0",
     "babel-plugin-transform-inline-environment-variables": "^0.4.3",
+    "copyfiles": "^2.4.1",
     "cross-env": "^5.1.4",
     "dotenv-webpack": "^7.0.2",
     "eslint": "^7.14.0",

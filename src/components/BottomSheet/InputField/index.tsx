@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { TextInputProps, LayoutChangeEvent, TextStyle } from 'react-native';
 import styled from 'styled-components/native';
-import { KeyboardAvoidingViewContext } from 'containers/KeyboardAvoidingViewProvider';
+import { KeyboardAvoidingViewContext } from '../../../containers/KeyboardAvoidingViewProvider';
 
 /* NOTE: There is a type bug when it comes to justifyContent and
 textAlign parsed directly from an object in react-native. */

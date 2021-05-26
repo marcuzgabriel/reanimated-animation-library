@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import { BottomSheetConfiguration } from 'types';
+import { BottomSheetConfiguration } from '../types';
 
 export const UserConfigurationContext = createContext<
   BottomSheetConfiguration | Record<string, never>
