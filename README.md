@@ -24,6 +24,7 @@ This library provides some nice animation features with the latest reanimated 2+
 - [ ] Unit tests
 
 ## Expo Typescript project
+npm install @marcuzgabriel/reanimated-animation-library@1.0.0
 https://github.com/marcuzgabriel/reanimated-animation-library/packages/813007
 
 Update app.json accordingly
