@@ -21,8 +21,10 @@
   "types": "reanimated-animation-library.d.ts",
   "react-native": "src/ReanimatedAnimationLibrary.ts",
   "files": [
-    "!ios/build/",
-    "!android/build/",
+    "src/",
+    "lib/",
+    "reanimated-animation-library.d.ts",
+    "README.md",
     "!__snapshots__",
     "!*.test.js"
   ],
