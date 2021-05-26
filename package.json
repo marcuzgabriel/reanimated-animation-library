@@ -16,7 +16,7 @@
     "type:generate:clean": "cross-env-shell rimraf lib",
     "type:generate:create": "cross-env-shell mkdir lib",
     "type:generate:tsc": "yarn tsc",
-    "type:generate:delete": "cross-env-shell del /S /Q \"lib\\*.d.ts" 
+    "type:generate:delete": "cross-env-shell del /S /Q \"lib\\*.d.ts && cross-env-shell del /S /Q \"lib\\*.web.js" 
   },
   "main": "lib/ReanimatedAnimationLibrary.ts",
   "module": "lib/ReanimatedAnimationLibrary",

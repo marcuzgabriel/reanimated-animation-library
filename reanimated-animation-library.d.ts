@@ -6,5 +6,6 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
   import type { BottomSheetConfiguration } from './src/types';
 
   // Components
-  export function BottomSheet<P extends BottomSheetConfiguration>(props: P): FunctionComponent<P>;
+  export function BottomSheet<P extends BottomSheetConfiguration>(props: P): React.FC<P>;
+  export function ScrollViewWithSnapEffect(): React.FC;
 }
