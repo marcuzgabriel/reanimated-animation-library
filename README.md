@@ -23,7 +23,7 @@ This library provides some nice animation features with the latest reanimated 2+
 - [ ] Morphing SVG Graph
 - [ ] Unit tests
 
-## Expo Typescript project
+## Expo integration
 npm install @marcuzgabriel/reanimated-animation-library@1.0.0
 https://github.com/marcuzgabriel/reanimated-animation-library/packages/813007
 
