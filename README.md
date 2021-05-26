@@ -23,8 +23,7 @@ This library provides some nice animation features with the latest reanimated 2+
 - [ ] Morphing SVG Graph
 - [ ] Unit tests
 
-## Integration
-Expo Typescript project
+## Expo Typescript project
 
 Update app.json accordingly
 ```Javascript
