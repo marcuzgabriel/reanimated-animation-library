@@ -15,6 +15,9 @@
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
     "declaration": true,
     "outDir": "lib",
+    "paths": {
+      "@reanimated-animation-library": ["./src/ReanimatedAnimationLibrary"]
+    },
   },
   "include": [
     "src/**/*.ts",
