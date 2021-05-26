@@ -72,6 +72,8 @@ const ScrollViewWithSnapEffect: React.FC = () => {
     },
   });
 
+  console.log(BottomSheet);
+
   return (
     <Wrapper windowHeight={windowHeight}>
       <BackgroundContent>
