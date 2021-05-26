@@ -1,5 +1,5 @@
 {
-  "name": "reanimated-animation-library",
+  "name": "@mgl/reanimated-animation-library",
   "author": "Marcuz Gabriel Larsen <marcuzgabriel@gmail.com>",
   "version": "1.0.0",
   "scripts": {
@@ -21,7 +21,7 @@
   "main": "lib/ReanimatedAnimationLibrary.ts",
   "module": "lib/ReanimatedAnimationLibrary",
   "types": "reanimated-animation-library.d.ts",
-  "react-native": "src/ReanimatedAnimationLibrary.ts",
+  "react-native": "src/ReanimatedAnimationLibrary",
   "files": [
     "src/",
     "lib/",
