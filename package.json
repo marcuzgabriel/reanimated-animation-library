@@ -2,6 +2,7 @@
   "name": "@marcuzgabriel/reanimated-animation-library",
   "author": "Marcuz Gabriel Larsen <marcuzgabriel@gmail.com>",
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -12,14 +13,15 @@
     "web:clean": "rimraf web/vendor/ web/build",
     "web:build": "rimraf web/build/; cross-env NODE_ENV=production webpack --config web/webpack.config.js",
     "type:check": "yarn tsc --noEmit",
-    "type:generate": "yarn type:generate:clean && yarn type:generate:create && yarn type:generate:tsc && yarn type:generate:delete",
+    "type:generate": "yarn type:generate:clean && yarn type:generate:create && yarn type:generate:tsc && yarn type:generate:delete && yarn type:generate:copy",
     "type:generate:clean": "cross-env-shell rimraf lib",
     "type:generate:create": "cross-env-shell mkdir lib",
     "type:generate:tsc": "yarn tsc",
-    "type:generate:delete": "cross-env-shell del /S /Q \"lib\\*.d.ts && cross-env-shell del /S /Q \"lib\\*.web.js" 
+    "type:generate:delete": "cross-env-shell del \"lib\\index.js && cross-env-shell del \"lib\\*.web.js && cross-env-shell && cross-env-shell del \"lib\\ReanimatedAnimationLibrary.js",
+    "type:generate:copy": "cross-env-shell Xcopy \"src\\ReanimatedAnimationLibrary.ts\" \"lib\\index.js*\""
   },
-  "main": "lib/ReanimatedAnimationLibrary.ts",
-  "module": "lib/ReanimatedAnimationLibrary",
+  "main": "lib/index.ts",
+  "module": "lib/index",
   "types": "reanimated-animation-library.d.ts",
   "react-native": "src/ReanimatedAnimationLibrary",
   "files": [
