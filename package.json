@@ -1,7 +1,7 @@
 {
-  "name": "reanimated-animation-library",
+  "name": "@marcuzgabriel/reanimated-animation-library",
+  "author": "Marcuz Gabriel Larsen <marcuzgabriel@gmail.com>",
   "version": "1.0.0",
-  "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -21,10 +21,10 @@
   "types": "reanimated-animation-library.d.ts",
   "react-native": "src/ReanimatedAnimationLibrary.ts",
   "files": [
-    "src/",
-    "lib/",
     "!ios/build/",
-    "!android/build/"
+    "!android/build/",
+    "!__snapshots__",
+    "!*.test.js"
   ],
   "dependencies": {
     "@react-navigation/native": "^5.9.3",
@@ -98,5 +98,9 @@
       "json",
       "node"
     ]
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry":"https://npm.pkg.github.com/"
   }
 }
