@@ -4,7 +4,7 @@ This library provides some nice animation features with the latest reanimated 2+
 ## Current progress
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
-  - [ ] Scroll arrows that appear / dissapear
+  - [x] Scroll arrows that appear / dissapear
   - [x] Fading scroll edges for alle platforms 
   - [x] Drag resistance when using the snap effect
   - [x] InputField component that accepts a unique id so no matter where the component is located then a nice scrollTo animation effect to the input field is achieved
@@ -22,6 +22,34 @@ This library provides some nice animation features with the latest reanimated 2+
 - [ ] Slider
 - [ ] Morphing SVG Graph
 - [ ] Unit tests
+
+## Integration
+Expo Typescript project
+
+Update app.json accordingly
+```Javascript
+{
+  "name": "MyTSProject",
+  "displayName": "MyTSProject",
+  "expo": {
+    "name": "MyTSProject",
+    "slug": "MyTSProject",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "web": {
+      "build": {
+        "babel": {
+          "include": [
+            "@marcuzgabriel/reanimated-animation-library"
+          ]
+        }
+      }
+    }
+  }
+}
+```
 
 ## Observations
 Latest react-native-gesture-handler version vs old and latest react-native-reanimated vs old
