@@ -1,8 +1,1 @@
-import * as reanimatedAnimationLibrary from '.';
-
-const ReanimatedAnimationLibrary = {
-  ...reanimatedAnimationLibrary,
-};
-
-export * from '.';
-export default ReanimatedAnimationLibrary;
+export { default as BottomSheet } from './components/BottomSheet';

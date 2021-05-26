@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import { BottomSheetConfiguration } from '../types';
+import type { BottomSheetConfiguration } from 'reanimated-animation-library';
 
 export const UserConfigurationContext = createContext<
   BottomSheetConfiguration | Record<string, never>
