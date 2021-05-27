@@ -47,10 +47,9 @@ const MorphingArrowWrapper = styled.View`
 const Wrapper = styled.View``;
 
 const Header: React.FC<Props> = ({ snapPointBottom, scrollY, onPress }) => {
-  const { headerComponent, borderTopRightRadius, borderTopLeftRadius } = useContext(
-    UserConfigurationContext,
-  );
-  const { headerHeight } = useContext(ReusablePropsContext);
+  const { headerComponent, borderTopRightRadius, borderTopLeftRadius } =
+    useContext(UserConfigurationContext);
+  const { headerHeight } = useContext(ReusablePropsContext.bottomSheet);
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent): void => {

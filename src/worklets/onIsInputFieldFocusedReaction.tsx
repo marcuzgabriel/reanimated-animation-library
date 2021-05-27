@@ -48,8 +48,6 @@ export const onIsInputFieldFocusedReaction = ({
         ? animationConfigIsScrollable
         : animationConfigIsNotScrollable;
 
-      console.log(scrollViewRef);
-
       // scrollTo(scrollViewRef, 0, res, true);
     }
   }

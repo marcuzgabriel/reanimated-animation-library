@@ -6,6 +6,7 @@ import Svg, { Path } from 'react-native-svg';
 import SvgArrowStraight from './SvgArrowStraight';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
+import { useWindowDimensions } from 'react-native';
 
 const START_Y = 30;
 const X_OFFSET = 25;
@@ -31,8 +32,10 @@ interface Props {
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
+  const windowWidth = useWindowDimensions().width;
+
   const { morphingArrow } = useContext(UserConfigurationContext);
-  const { translationY, windowWidth } = useContext(ReusablePropsContext);
+  const { translationY } = useContext(ReusablePropsContext.bottomSheet);
 
   const fill = useMemo(() => morphingArrow?.fill ?? 'white', [morphingArrow?.fill]);
   const height = useMemo(

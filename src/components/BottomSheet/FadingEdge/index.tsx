@@ -1,5 +1,5 @@
 import React, { useMemo, useContext } from 'react';
-import { Platform } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import GradientToTopWhite from './GradientToTopWhite';
@@ -35,7 +35,9 @@ const Wrapper = Animated.createAnimatedComponent(styled.View<{
 `);
 
 const FadingEdge: React.FC<Props> = ({ position, nativeColor, webColor }) => {
-  const { isScrolledToTop, isScrolledToEnd, windowWidth } = useContext(ReusablePropsContext);
+  const windowWidth = useWindowDimensions().width;
+
+  const { isScrolledToTop, isScrolledToEnd } = useContext(ReusablePropsContext.bottomSheet);
   const isPositionedTop = useMemo(() => position === 'top', [position]);
 
   const animatedStyleTop = useAnimatedStyle(() => ({

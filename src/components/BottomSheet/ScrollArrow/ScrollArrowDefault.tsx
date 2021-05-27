@@ -41,7 +41,7 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
     isScrolledToTop,
     isScrolledToEnd,
     isScrollable,
-  } = useContext(ReusablePropsContext);
+  } = useContext(ReusablePropsContext.bottomSheet);
   const { scrollArrows } = useContext(UserConfigurationContext);
 
   const isPositionedTop = useMemo(() => position === 'top', [position]);

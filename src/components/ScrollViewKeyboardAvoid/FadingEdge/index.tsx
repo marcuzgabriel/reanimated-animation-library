@@ -35,7 +35,9 @@ const Wrapper = Animated.createAnimatedComponent(styled.View<{
 `);
 
 const FadingEdge: React.FC<Props> = ({ position, nativeColor, webColor }) => {
-  const { isScrolledToTop, isScrolledToEnd, windowWidth } = useContext(ReusablePropsContext);
+  const { isScrolledToTop, isScrolledToEnd, windowWidth } = useContext(
+    ReusablePropsContext.bottomSheet,
+  );
   const isPositionedTop = useMemo(() => position === 'top', [position]);
 
   const animatedStyleTop = useAnimatedStyle(() => ({

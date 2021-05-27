@@ -1,5 +1,5 @@
 import React, { useRef, useContext, useCallback } from 'react';
-import { Platform, ViewStyle, LayoutChangeEvent } from 'react-native';
+import { Platform, ViewStyle, LayoutChangeEvent, useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
@@ -37,15 +37,10 @@ const Content: React.FC<Props> = ({
   isInputFieldFocused,
   children,
 }) => {
-  const { fadingScrollEdges } = useContext(UserConfigurationContext);
-  const {
-    scrollViewRef,
-    innerScrollY,
-    scrollViewHeight,
-    cardContentHeight,
-    footerHeight,
-    windowHeight,
-  } = useContext(ReusablePropsContext);
+  const windowHeight = useWindowDimensions().height;
+  const { fadingScrollEdges, scrollArrows } = useContext(UserConfigurationContext);
+  const { scrollViewRef, innerScrollY, scrollViewHeight, cardContentHeight, footerHeight } =
+    useContext(ReusablePropsContext.bottomSheet);
 
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
@@ -113,6 +108,7 @@ const Content: React.FC<Props> = ({
               bounces={false}
               alwaysBounceVertical={false}
               directionalLockEnabled={true}
+              scrollArrows={scrollArrows}
               fadingEdgeLength={ANDROID_FADING_EDGE_LENGTH}
               onScroll={onScrollHandler}
               onContentSizeChange={(_, height): void => {
@@ -127,6 +123,7 @@ const Content: React.FC<Props> = ({
               }}
             >
               <KeyboardAvoidingViewProvider
+                type="bottomSheet"
                 isInputFieldFocused={isInputFieldFocused}
                 cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
               >

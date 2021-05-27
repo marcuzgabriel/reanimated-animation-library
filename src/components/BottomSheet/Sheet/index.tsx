@@ -43,7 +43,7 @@ const View = styled.View`
 const Sheet: React.FC = () => {
   const panGestureOuterRef = useRef<PanGestureHandler>();
   const keyboardContext = useContext(KeyboardContext);
-  const { cardHeight, innerScrollY, translationY } = useContext(ReusablePropsContext);
+  const { cardHeight, innerScrollY, translationY } = useContext(ReusablePropsContext.bottomSheet);
   const {
     scrollY,
     snapEffectDirection,

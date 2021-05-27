@@ -24,8 +24,9 @@ const Wrapper = Animated.createAnimatedComponent(styled.View``);
 const Footer: React.FC = () => {
   const { isKeyboardVisible } = useContext(KeyboardContext);
   const { footerComponent } = useContext(UserConfigurationContext);
-  const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } =
-    useContext(ReusablePropsContext);
+  const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } = useContext(
+    ReusablePropsContext.bottomSheet,
+  );
 
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({

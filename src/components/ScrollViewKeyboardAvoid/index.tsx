@@ -3,23 +3,24 @@ import Animated from 'react-native-reanimated';
 import ScrollView from './ScrollView';
 import KeyboardProvider from '../../containers/KeyboardProvider';
 import type { MixedScrollViewProps } from '../../types';
+import ReusablePropsProvider from '../../containers/ReusablePropsProvider';
 
 type Ref = Animated.ScrollView;
 
-/* Note: Enables resuability of the ScrollViewKeyboardAvoid component for single
-use cases */
 const ScrollViewKeyboardAvoid = React.forwardRef<Ref, MixedScrollViewProps>((props, ref) => {
   const { type, children } = props;
 
   return type === 'bottomSheet' ? (
-    <ScrollView ref={ref} {...props}>
+    <Animated.ScrollView ref={ref} {...props}>
       {children}
-    </ScrollView>
+    </Animated.ScrollView>
   ) : (
     <KeyboardProvider>
-      <ScrollView ref={ref} {...props}>
-        {children}
-      </ScrollView>
+      <ReusablePropsProvider type="scrollViewKeyboardAvoid">
+        <ScrollView scrollViewRef={ref} {...props}>
+          {children}
+        </ScrollView>
+      </ReusablePropsProvider>
     </KeyboardProvider>
   );
 });
