@@ -13,13 +13,13 @@ const FADING_EDGE_HEIGHT = 10;
 
 interface Props {
   position: string;
-  nativeColor: string;
-  webColor: Record<string, string>;
+  nativeColor?: string;
+  webColor?: Record<string, string>;
 }
 
 const Wrapper = Animated.createAnimatedComponent(styled.View<{
   position: string;
-  webColor: Record<string, string>;
+  webColor?: Record<string, string>;
 }>`
   position: absolute;
   justify-content: center;
@@ -28,7 +28,7 @@ const Wrapper = Animated.createAnimatedComponent(styled.View<{
   width: 100%;
   z-index: 3;
   ${({ webColor }): string =>
-    isWeb ? `background-image: linear-gradient(${webColor.from}, ${webColor.to});` : ``}
+    isWeb ? `background-image: linear-gradient(${webColor?.from}, ${webColor?.to});` : ``}
   ${({ position }): string => (position === 'top' ? `top: 0px;` : `bottom: 0px`)}
 `);
 

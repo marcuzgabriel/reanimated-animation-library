@@ -5,10 +5,10 @@ interface Props {
   height: number;
   width: number | string;
   viewBox: string;
-  stopColor: string;
+  stopColor?: string;
 }
 
-const svgConfig = (stopColor: string): Record<string, React.ReactElement> => ({
+const svgConfig = (stopColor?: string): Record<string, React.ReactElement> => ({
   svg: (
     <G>
       <Defs>

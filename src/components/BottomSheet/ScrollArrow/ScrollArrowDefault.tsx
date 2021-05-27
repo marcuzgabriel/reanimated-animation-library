@@ -89,7 +89,8 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
       }
     >
       <Animated.View style={isPositionedTop ? animatedStyleUpArrow : animatedStyleDownArrow}>
-        {component ?? (
+        {component && component}
+        {scrollArrows?.isEnabled && (
           <SvgArrow
             height={scrollArrows?.dimensions}
             width={scrollArrows?.dimensions}

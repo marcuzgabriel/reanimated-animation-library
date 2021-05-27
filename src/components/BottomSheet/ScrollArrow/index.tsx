@@ -6,25 +6,19 @@ interface Props {
 }
 
 const ScrollArrow: React.FC<Props> = ({ position }) => {
-  const { scrollArrows } = useContext(UserConfigurationContext);
+  const { scrollArrows, scrollArrowTopComponent, scrollArrowBottomComponent } =
+    useContext(UserConfigurationContext);
 
-  switch (true) {
-    case !scrollArrows:
-      return null;
-    case !!scrollArrows?.componentBottomArrow || !!scrollArrows?.componentTopArrow:
-      return (
-        <ScrollArrowDefault
-          position={position}
-          component={
-            position === 'top'
-              ? scrollArrows?.componentTopArrow
-              : scrollArrows?.componentBottomArrow
-          }
-        />
-      );
-    default:
-      return <ScrollArrowDefault position={position} />;
+  if (!!scrollArrowTopComponent || scrollArrowBottomComponent) {
+    return (
+      <ScrollArrowDefault
+        position={position}
+        component={position === 'top' ? scrollArrowTopComponent : scrollArrowBottomComponent}
+      />
+    );
   }
+
+  return <ScrollArrowDefault position={position} />;
 };
 
 export default ScrollArrow;

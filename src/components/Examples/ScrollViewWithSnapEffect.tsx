@@ -7,7 +7,6 @@ import Animated, {
   useAnimatedRef,
 } from 'react-native-reanimated';
 import Content from './components/Content';
-import Footer from './components/Footer';
 import BottomSheet from '../../components/BottomSheet';
 import SnapEffect from '../../components/BottomSheet/SnapEffect';
 
@@ -72,8 +71,6 @@ const ScrollViewWithSnapEffect: React.FC = () => {
     },
   });
 
-  console.log(BottomSheet);
-
   return (
     <Wrapper windowHeight={windowHeight}>
       <BackgroundContent>
@@ -100,15 +97,10 @@ const ScrollViewWithSnapEffect: React.FC = () => {
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
-        scrollArrows={{
-          fill: 'dark',
-          dimensions: SCROLL_ARROW_DIMESIONS,
-          bottomArrowOffset: SCROLL_ARROW_OFFSET,
-          topArrowOffset: SCROLL_ARROW_OFFSET,
+        header={{
+          height: 20,
         }}
-        headerComponent={<Arrow />}
         contentComponent={<Content />}
-        footerComponent={<Footer />}
       />
     </Wrapper>
   );

@@ -1,19 +1,26 @@
-import React, { useContext } from 'react';
+import React, { useMemo, useContext } from 'react';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import { createPath, addCurve, interpolatePath } from 'react-native-redash';
 import Svg, { Path } from 'react-native-svg';
+import SvgArrowStraight from './SvgArrowStraight';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
 const START_Y = 30;
 const X_OFFSET = 25;
 const Y_OFFSET = 15;
 const EDGE_OFFSET = 5;
 
+const STATIC_ARROW_WIDTH = 100;
+const STATIC_ARROW_HEIGHT = 50;
+
 const Wrapper = styled.View`
   position: relative;
   width: 100%;
   height: 100%;
+  justify-content: center;
+  align-items: center;
 `;
 
 interface Props {
@@ -24,7 +31,15 @@ interface Props {
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
+  const { morphingArrow } = useContext(UserConfigurationContext);
   const { translationY, windowWidth } = useContext(ReusablePropsContext);
+
+  const fill = useMemo(() => morphingArrow?.fill ?? 'white', [morphingArrow?.fill]);
+  const height = useMemo(
+    () => morphingArrow?.height ?? STATIC_ARROW_HEIGHT,
+    [morphingArrow?.height],
+  );
+  const width = useMemo(() => morphingArrow?.width ?? STATIC_ARROW_WIDTH, [morphingArrow?.width]);
 
   const animatedProps = useAnimatedProps(() => {
     const startX = windowWidth / 2;
@@ -50,16 +65,20 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
 
   return (
     <Wrapper>
-      <Svg>
-        <AnimatedPath
-          animatedProps={animatedProps}
-          fill="none"
-          fillRule="evenodd"
-          stroke="white"
-          strokeWidth="5"
-          strokeLinecap="round"
-        />
-      </Svg>
+      {morphingArrow?.isEnabled ? (
+        <Svg>
+          <AnimatedPath
+            animatedProps={animatedProps}
+            fill={fill}
+            stroke={fill}
+            fillRule="evenodd"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+        </Svg>
+      ) : (
+        <SvgArrowStraight fill={fill} height={height} width={width} />
+      )}
     </Wrapper>
   );
 };

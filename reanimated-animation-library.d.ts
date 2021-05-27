@@ -3,21 +3,6 @@
 
 declare module '@marcuzgabriel/reanimated-animation-library' {
   import React from 'react';
-
-  // BottomSheet component types
-  interface ScrollArrowsDefaultProps extends Partial<ScrollArrowsCustomProps> {
-    fill: string;
-    dimensions: number;
-    topArrowOffset?: number;
-    bottomArrowOffset?: number;
-  }
-  interface ScrollArrowsCustomProps extends Partial<ScrollArrowsDefaultProps> {
-    componentTopArrow: React.ReactNode;
-    componentBottomArrow: React.ReactNode;
-  }
-
-  type ScrollArrows = ScrollArrowsDefaultProps | ScrollArrowsCustomProps;
-
   export interface BottomSheetConfiguration {
     /**
      * @scrollY ---
@@ -34,30 +19,23 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     snapPointBottom: number;
     extraOffset?: number;
     contentComponent: React.ReactNode;
-    footerComponent: React.ReactNode;
+    footerComponent?: React.ReactNode;
     headerComponent?: React.ReactNode;
-    /**
-     * @scrollArrows ---
-     * Minimum object structure requirement. The property
-     * has to be one of the following objects:
-     *  @param scrollArrow
-     * ```JSON
-     ** { fill, dimensions, ... } or
-     ** { componentTopArrow, componentBottomArrow }
-     * ```
-     *
-     */
-    scrollArrows?: ScrollArrows;
+    scrollArrowTopComponent?: React.ReactNode;
+    scrollArrowBottomComponent?: React.ReactNode;
+    scrollArrows?: {
+      isEnabled?: boolean;
+      fill?: string;
+      dimensions?: number;
+      topArrowOffset?: number;
+      bottomArrowOffset?: number;
+    };
     extraSnapPointBottomOffset?: number;
-    fadingEdge?: {};
     cardStyle?: {
       maxHeightRatio?: number;
       maxHeightRatioWhenKeyboardIsVisible?: number;
       borderTopRightRadius?: number;
       borderTopLeftRadius?: number;
-    };
-    morphingArrow?: {
-      topOffset?: number;
     };
     header?: {
       component?: React.ReactNode;
@@ -66,8 +44,23 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       height?: number;
       backgroundColor?: string;
     };
+    morphingArrow?: {
+      isEnabled?: boolean;
+      height?: number;
+      width?: number;
+      fill?: string;
+    };
+    fadingScrollEdges?: {
+      isEnabled: boolean;
+      androidFadingEdgeLength?: number;
+      iOSandWebFadingEdgeHeight?: number;
+      nativeBackgroundColor: string;
+      webBackgroundColorTop: Record<string, string>;
+      webBackgroundColorBottom: Record<string, string>;
+    };
+    getCurrentConfigRequest?: (config: Record<string, any>) => void;
     onLayoutRequest?: (cardHeight: number) => void;
-  };
+  }
 
   // Input field component types
   type StyleTypeFix<T> = {

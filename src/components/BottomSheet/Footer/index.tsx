@@ -5,15 +5,25 @@ import Animated, { useAnimatedStyle, useAnimatedReaction } from 'react-native-re
 import { onPanGestureHitFooterReaction } from '../../../worklets';
 import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
-interface Props {
-  children: React.ReactNode;
-}
+const Content = styled.View`
+  height: 100px;
+  witdth: 100%;
+  background: black;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Text = styled.Text`
+  color: white;
+`;
 
 const Wrapper = Animated.createAnimatedComponent(styled.View``);
 
-const Footer: React.FC<Props> = ({ children }) => {
+const Footer: React.FC = () => {
   const { isKeyboardVisible } = useContext(KeyboardContext);
+  const { footerComponent } = useContext(UserConfigurationContext);
   const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } =
     useContext(ReusablePropsContext);
 
@@ -54,7 +64,11 @@ const Footer: React.FC<Props> = ({ children }) => {
 
   return (
     <Wrapper onLayout={onLayout} style={animatedParentStyle}>
-      {children}
+      {footerComponent ?? (
+        <Content>
+          <Text>Footer component</Text>
+        </Content>
+      )}
     </Wrapper>
   );
 };

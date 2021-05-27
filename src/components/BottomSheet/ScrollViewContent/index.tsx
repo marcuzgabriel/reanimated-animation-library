@@ -19,10 +19,8 @@ import { MAX_HEIGHT_RATIO } from '../../../constants/styles';
 import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
-const FADING_EDGE_COLOR_NATIVE = 'grey';
-const FADING_EDGE_COLOR_WEB_TOP = { from: 'rgba(128,128,128,1)', to: 'rgba(128,128,128,0)' };
-const FADING_EDGE_COLOR_WEB_BOTTOM = { from: 'rgba(128,128,128,0)', to: 'rgba(128,128,128,1)' };
 interface Props {
   panGestureType: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
@@ -32,13 +30,14 @@ interface Props {
 
 const ContentWrapper = styled.View``;
 
-const Content: React.FC<Props> = ({
+const ScrollViewContent: React.FC<Props> = ({
   gestureHandler,
   panGestureType,
   isScrollingCard,
   isInputFieldFocused,
   children,
 }) => {
+  const { fadingScrollEdges, scrollArrows } = useContext(UserConfigurationContext);
   const {
     scrollViewRef,
     innerScrollY,
@@ -95,11 +94,13 @@ const Content: React.FC<Props> = ({
         }}
       >
         <Animated.View onLayout={onLayout} style={maxHeightStyle}>
-          <FadingEdge
-            position="top"
-            nativeColor={FADING_EDGE_COLOR_NATIVE}
-            webColor={FADING_EDGE_COLOR_WEB_TOP}
-          />
+          {fadingScrollEdges?.isEnabled && (
+            <FadingEdge
+              position="top"
+              nativeColor={fadingScrollEdges.nativeBackgroundColor}
+              webColor={fadingScrollEdges.webBackgroundColorTop}
+            />
+          )}
           <ScrollArrow position="top" />
           <NativeViewGestureHandler
             ref={nativeViewGestureRef}
@@ -133,15 +134,17 @@ const Content: React.FC<Props> = ({
             </Animated.ScrollView>
           </NativeViewGestureHandler>
           <ScrollArrow position="bottom" />
-          <FadingEdge
-            position="bottom"
-            nativeColor={FADING_EDGE_COLOR_NATIVE}
-            webColor={FADING_EDGE_COLOR_WEB_BOTTOM}
-          />
+          {fadingScrollEdges?.isEnabled && (
+            <FadingEdge
+              position="bottom"
+              nativeColor={fadingScrollEdges.nativeBackgroundColor}
+              webColor={fadingScrollEdges.webBackgroundColorBottom}
+            />
+          )}
         </Animated.View>
       </PanGestureHandler>
     </ContentWrapper>
   );
 };
 
-export default Content;
+export default ScrollViewContent;
