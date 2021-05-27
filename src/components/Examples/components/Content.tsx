@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import InputField from '../../../components/BottomSheet/InputField';
+import InputField from '../../InputField';
 
 const BottomSheetContentWrapper = styled.View`
   margin: 32px;
