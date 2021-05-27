@@ -8,7 +8,7 @@ interface Props {
   stopColor?: string;
 }
 
-/* NOTE: Type satisfaction: Undefined allowance from a user configuration perspective
+/* NOTE: stopColor -> type satisfaction: Undefined allowance from a user configuration perspective
 but will always be defined in the default config: containers/UserConfigurationProvider.tsx */
 const svgConfig = (stopColor?: string): Record<string, React.ReactElement> => ({
   svg: (

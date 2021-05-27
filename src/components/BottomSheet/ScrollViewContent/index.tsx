@@ -37,7 +37,7 @@ const ScrollViewContent: React.FC<Props> = ({
   isInputFieldFocused,
   children,
 }) => {
-  const { fadingScrollEdges, scrollArrows } = useContext(UserConfigurationContext);
+  const { fadingScrollEdges } = useContext(UserConfigurationContext);
   const {
     scrollViewRef,
     innerScrollY,

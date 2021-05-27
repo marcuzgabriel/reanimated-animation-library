@@ -18,6 +18,8 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     snapEffectDirection?: Animated.SharedValue<string>;
     snapPointBottom: number;
     extraOffset?: number;
+    borderTopRightRadius?: number;
+    borderTopLeftRadius?: number;
     contentComponent: React.ReactNode;
     footerComponent?: React.ReactNode;
     headerComponent?: React.ReactNode;

@@ -17,6 +17,8 @@ interface Props {
   webColor?: Record<string, string>;
 }
 
+/* NOTE: webColor -> type satisfaction: Undefined allowance from a user configuration perspective
+but will always be defined in the default config: containers/UserConfigurationProvider.tsx */
 const Wrapper = Animated.createAnimatedComponent(styled.View<{
   position: string;
   webColor?: Record<string, string>;

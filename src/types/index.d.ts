@@ -13,6 +13,8 @@ export interface BottomSheetConfiguration {
   snapEffectDirection?: Animated.SharedValue<string>;
   snapPointBottom: number;
   extraOffset?: number;
+  borderTopRightRadius?: number;
+  borderTopLeftRadius?: number;
   contentComponent: React.ReactNode;
   footerComponent?: React.ReactNode;
   headerComponent?: React.ReactNode;
@@ -20,10 +22,10 @@ export interface BottomSheetConfiguration {
   scrollArrowBottomComponent?: React.ReactNode;
   scrollArrows?: {
     isEnabled?: boolean;
-    fill?: string;
-    dimensions?: number;
-    topArrowOffset?: number;
-    bottomArrowOffset?: number;
+    fill: string;
+    dimensions: number;
+    topArrowOffset: number;
+    bottomArrowOffset: number;
   };
   extraSnapPointBottomOffset?: number;
   cardStyle?: {

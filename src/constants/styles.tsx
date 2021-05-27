@@ -14,6 +14,7 @@ export const HIT_SLOP = {
 
 export const SCROLL_ARROW_DIMENSIONS = 40;
 export const SCROLL_ARROW_OFFSET = 5;
+export const SCROLL_ARROW_FILL = 'black';
 
 export const ANDROID_FADING_EDGE_LENGTH = 50;
 export const FADING_EDGE_HEIGHT = 10;

@@ -6,7 +6,7 @@ interface Props {
 }
 
 const ScrollArrow: React.FC<Props> = ({ position }) => {
-  const { scrollArrows, scrollArrowTopComponent, scrollArrowBottomComponent } =
+  const { scrollArrowTopComponent, scrollArrowBottomComponent } =
     useContext(UserConfigurationContext);
 
   if (!!scrollArrowTopComponent || scrollArrowBottomComponent) {

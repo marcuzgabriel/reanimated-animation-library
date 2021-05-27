@@ -1,7 +1,9 @@
 import React, { useMemo, createContext, useEffect } from 'react';
 import {
+  DEFAULT_BORDER_RADIUS,
   SCROLL_ARROW_DIMENSIONS,
   SCROLL_ARROW_OFFSET,
+  SCROLL_ARROW_FILL,
   ANDROID_FADING_EDGE_LENGTH,
   FADING_EDGE_HEIGHT,
   FADING_EDGE_COLOR_NATIVE,
@@ -23,6 +25,8 @@ interface Props {
 
 const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, children }) => {
   const {
+    borderTopLeftRadius,
+    borderTopRightRadius,
     scrollArrowTopComponent,
     scrollArrowBottomComponent,
     scrollArrows,
@@ -30,12 +34,23 @@ const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, c
     getCurrentConfigRequest,
   } = configuration;
 
+  const configBorderTopRightRadius = useMemo(
+    () => borderTopRightRadius ?? DEFAULT_BORDER_RADIUS,
+    [borderTopRightRadius],
+  );
+
+  const configBorderTopLeftRadius = useMemo(
+    () => borderTopLeftRadius ?? DEFAULT_BORDER_RADIUS,
+    [borderTopLeftRadius],
+  );
+
   const configScrollArrows = useMemo(() => {
-    const { isEnabled, dimensions, bottomArrowOffset, topArrowOffset } = scrollArrows ?? {};
+    const { isEnabled, fill, dimensions, bottomArrowOffset, topArrowOffset } = scrollArrows ?? {};
     const enable = (ENABLE_FEATURE_WHEN_UNDEFINED && typeof isEnabled === 'undefined') ?? isEnabled;
 
     return {
       isEnabled: !!scrollArrowBottomComponent || !!scrollArrowTopComponent ? false : enable,
+      fill: fill ?? SCROLL_ARROW_FILL,
       dimensions: dimensions ?? SCROLL_ARROW_DIMENSIONS,
       topArrowOffset: topArrowOffset ?? SCROLL_ARROW_OFFSET,
       bottomArrowOffset: bottomArrowOffset ?? SCROLL_ARROW_OFFSET,
@@ -66,10 +81,18 @@ const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, c
   const config = useMemo(
     () => ({
       ...configuration,
+      borderTopRightRadius: configBorderTopRightRadius,
+      borderTopLeftRadius: configBorderTopLeftRadius,
       scrollArrows: configScrollArrows,
       fadingScrollEdges: configFadingScrollEdges,
     }),
-    [configuration, configScrollArrows, configFadingScrollEdges],
+    [
+      configuration,
+      configBorderTopRightRadius,
+      configBorderTopLeftRadius,
+      configScrollArrows,
+      configFadingScrollEdges,
+    ],
   );
 
   useEffect(() => {
