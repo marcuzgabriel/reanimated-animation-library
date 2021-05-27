@@ -62,7 +62,13 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
     }),
     (result: AnimatedReaction, previous: AnimatedReaction | null | undefined) => {
       if (!isTypeBottomSheet && result?.contentHeight && result.contentHeight.value > 0) {
-        return onIsInputFieldFocusedReaction({ windowHeight, contentHeight: result.contentHeight });
+        return onIsInputFieldFocusedReaction({
+          result,
+          previous,
+          windowHeight,
+          contentHeight: result.contentHeight,
+          scrollViewRef,
+        });
       } else if (isTypeBottomSheet) {
         return onIsInputFieldFocusedReactionBottomSheet({
           result,

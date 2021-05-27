@@ -1,17 +1,60 @@
-import Animated from 'react-native-reanimated';
-import { resourceLimits } from 'worker_threads';
+import Animated, { scrollTo } from 'react-native-reanimated';
+import { KEYBOARD_TIMING_EASING } from '../constants/animations';
+import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
 
+interface ResultCurrentAndPreviousProps {
+  contentHeight?: Animated.SharedValue<number> | undefined;
+  isKeyboardVisible: Animated.SharedValue<boolean>;
+  keyboardHeight: Animated.SharedValue<number>;
+  keyboardDuration: Animated.SharedValue<number>;
+  selectedInputFieldPositionY: Animated.SharedValue<number>;
+}
 interface Props {
+  result: ResultCurrentAndPreviousProps;
+  previous: ResultCurrentAndPreviousProps | null | undefined;
   windowHeight: number;
+  scrollViewRef: React.RefObject<Animated.ScrollView>;
   contentHeight: Animated.SharedValue<number>;
 }
 
-export const onIsInputFieldFocusedReaction = ({ windowHeight, contentHeight }: Props): void => {
+/* NOTE: Eliminating race condition and flickering effect: When an input
+is focused. Then one animation changes the card height where the
+other animation translates the y position of the card so that the card
+will float above the keyboard. This fix ensures that translation of the card
+respects the change of height before it animates. 1 ms. wait time is enough. */
+const AVOID_FLICKERING_MS = 0.1;
+
+export const onIsInputFieldFocusedReaction = ({
+  result,
+  previous,
+  windowHeight,
+  contentHeight,
+  scrollViewRef,
+}: Props): void => {
   'worklet';
 
-  const isScrollable = contentHeight.value > windowHeight;
+  if (result !== previous) {
+    if (result.keyboardHeight.value) {
+      const res = result.selectedInputFieldPositionY.value;
+      const height = windowHeight - contentHeight.value;
+      const isScrollable = contentHeight.value > height;
 
-  console.log(contentHeight.value, windowHeight);
+      const animationConfigIsScrollable = { duration: SCROLL_EVENT_THROTTLE };
+      const animationConfigIsNotScrollable = {
+        duration: result.keyboardDuration.value,
+        KEYBOARD_TIMING_EASING,
+      };
+      const animationConfig = isScrollable
+        ? animationConfigIsScrollable
+        : animationConfigIsNotScrollable;
+
+      console.log(scrollViewRef);
+
+      // scrollTo(scrollViewRef, 0, res, true);
+    }
+  }
+
+  // console.log(contentHeight.value, windowHeight);
 
   // if (derivedContentHeight?.value && e > 0) {
   //   console.log('i am working...', windowHeight, derivedContentHeight.value);

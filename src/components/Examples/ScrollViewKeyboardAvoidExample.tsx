@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
+import InputField from '../InputField';
 import ScrollViewKeyboardAvoid from '../ScrollViewKeyboardAvoid';
 import { SCROLL_EVENT_THROTTLE } from '../../constants/configs';
+
+const inputStyle = {
+  width: '100%',
+  height: 50,
+  textAlign: 'center',
+  justifyContent: 'center',
+  borderRadius: 6,
+  borderWidth: 2,
+  borderColor: 'black',
+  backgroundColor: 'white',
+};
 
 const fakeScrollItem = [
   {
@@ -50,8 +62,8 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
           isEnabled: true,
           dimensions: 40,
           fill: 'black',
-          topArrowOffset: 10,
-          bottomArrowOffset: 10,
+          topArrowOffset: 40,
+          bottomArrowOffset: 40,
         }}
         contentHeight={contentHeight}
         onContentSizeChange={(_, height): void => {
@@ -60,9 +72,14 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
         scrollEventThrottle={SCROLL_EVENT_THROTTLE}
       >
         {fakeScrollItem.map(({ text }, i) => (
-          <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
-            <Text>{text}</Text>
-          </FakeContentWrapper>
+          <Fragment key={i}>
+            <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
+              <Text>
+                {text} <InputField uniqueId="wtf" style={inputStyle} />
+              </Text>
+            </FakeContentWrapper>
+            <InputField uniqueId="wtf" style={inputStyle} />
+          </Fragment>
         ))}
       </ScrollViewKeyboardAvoid>
     </Wrapper>

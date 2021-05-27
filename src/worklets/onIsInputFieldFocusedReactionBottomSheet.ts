@@ -10,7 +10,7 @@ will float above the keyboard. This fix ensures that translation of the card
 respects the change of height before it animates. 1 ms. wait time is enough. */
 const AVOID_FLICKERING_MS = 0.1;
 
-interface ResultPreviousProps {
+interface ResultCurrentAndPreviousProps {
   contentHeight?: Animated.SharedValue<number> | undefined;
   isKeyboardVisible: Animated.SharedValue<boolean>;
   keyboardHeight: Animated.SharedValue<number>;
@@ -18,8 +18,8 @@ interface ResultPreviousProps {
   selectedInputFieldPositionY: Animated.SharedValue<number>;
 }
 interface Props {
-  result: ResultPreviousProps;
-  previous: ResultPreviousProps | null | undefined;
+  result: ResultCurrentAndPreviousProps;
+  previous: ResultCurrentAndPreviousProps | null | undefined;
   translationY: Animated.SharedValue<number>;
   footerTranslationY: Animated.SharedValue<number>;
   isInputFieldFocused: Animated.SharedValue<boolean>;

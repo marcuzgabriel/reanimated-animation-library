@@ -29,7 +29,7 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
   z-index: 4;
   width: 100%;
   ${({ position, topOffset, bottomOffset }): string =>
-    position === 'top' ? `top: ${topOffset}` : `bottom: ${bottomOffset}px`}
+    position === 'top' ? `top: ${topOffset}px` : `bottom: ${bottomOffset}px`}
 `);
 
 const ScrollArrowDefault: React.FC<Props> = props => {
