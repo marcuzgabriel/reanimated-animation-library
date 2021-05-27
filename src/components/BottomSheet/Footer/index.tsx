@@ -7,15 +7,15 @@ import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
-const Content = styled.View`
+const ComponentWhenUndefined = styled.View`
   height: 100px;
-  witdth: 100%;
+  width: 100%;
   background: black;
   justify-content: center;
   align-items: center;
 `;
 
-const Text = styled.Text`
+const TextWhenUndefined = styled.Text`
   color: white;
 `;
 
@@ -65,9 +65,9 @@ const Footer: React.FC = () => {
   return (
     <Wrapper onLayout={onLayout} style={animatedParentStyle}>
       {footerComponent ?? (
-        <Content>
-          <Text>Footer component</Text>
-        </Content>
+        <ComponentWhenUndefined>
+          <TextWhenUndefined>Footer component</TextWhenUndefined>
+        </ComponentWhenUndefined>
       )}
     </Wrapper>
   );
