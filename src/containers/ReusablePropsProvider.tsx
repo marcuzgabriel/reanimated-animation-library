@@ -7,8 +7,9 @@ export const ReusablePropsContext = {
 };
 
 export const { Provider: BottomSheetProvider } = ReusablePropsContext.bottomSheet;
-export const { Provider: ScrollViewKeyboardAvoidProvider } =
-  ReusablePropsContext.scrollViewKeyboardAvoid;
+export const {
+  Provider: ScrollViewKeyboardAvoidProvider,
+} = ReusablePropsContext.scrollViewKeyboardAvoid;
 
 interface Props {
   type: string;

@@ -12,7 +12,11 @@ import {
 } from '../constants/styles';
 import type { BottomSheetConfiguration } from '../types';
 
-const ENABLE_FEATURE_WHEN_UNDEFINED = true;
+/* NOTE: Initially the bottom sheet will present itself
+with default configuration if the user havent entered
+and configuration. If disabled, then the user will be required
+to configure the bottom sheet from scratch */
+const DEFAULT_CONFIGURATION = true;
 
 export const UserConfigurationContext = createContext<
   BottomSheetConfiguration | Record<string, never>
@@ -34,19 +38,17 @@ const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, c
     getCurrentConfigRequest,
   } = configuration;
 
-  const configBorderTopRightRadius = useMemo(
-    () => borderTopRightRadius ?? DEFAULT_BORDER_RADIUS,
-    [borderTopRightRadius],
-  );
+  const configBorderTopRightRadius = useMemo(() => borderTopRightRadius ?? DEFAULT_BORDER_RADIUS, [
+    borderTopRightRadius,
+  ]);
 
-  const configBorderTopLeftRadius = useMemo(
-    () => borderTopLeftRadius ?? DEFAULT_BORDER_RADIUS,
-    [borderTopLeftRadius],
-  );
+  const configBorderTopLeftRadius = useMemo(() => borderTopLeftRadius ?? DEFAULT_BORDER_RADIUS, [
+    borderTopLeftRadius,
+  ]);
 
   const configScrollArrows = useMemo(() => {
     const { isEnabled, fill, dimensions, bottomArrowOffset, topArrowOffset } = scrollArrows ?? {};
-    const enable = (ENABLE_FEATURE_WHEN_UNDEFINED && typeof isEnabled === 'undefined') ?? isEnabled;
+    const enable = (DEFAULT_CONFIGURATION && typeof isEnabled === 'undefined') ?? isEnabled;
 
     return {
       isEnabled: !!scrollArrowBottomComponent || !!scrollArrowTopComponent ? false : enable,
@@ -66,7 +68,7 @@ const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, c
       webBackgroundColorTop,
       webBackgroundColorBottom,
     } = fadingScrollEdges ?? {};
-    const enable = ENABLE_FEATURE_WHEN_UNDEFINED && typeof isEnabled === 'undefined';
+    const enable = DEFAULT_CONFIGURATION && typeof isEnabled === 'undefined';
 
     return {
       isEnabled: isEnabled ?? enable,

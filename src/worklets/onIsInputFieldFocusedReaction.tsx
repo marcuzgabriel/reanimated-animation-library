@@ -13,7 +13,7 @@ interface Props {
   result: ResultCurrentAndPreviousProps;
   previous: ResultCurrentAndPreviousProps | null | undefined;
   windowHeight: number;
-  scrollViewRef: React.RefObject<Animated.ScrollView>;
+  scrollViewRef: React.RefObject<Animated.ScrollView> | any;
   contentHeight: Animated.SharedValue<number>;
 }
 
@@ -48,7 +48,7 @@ export const onIsInputFieldFocusedReaction = ({
         ? animationConfigIsScrollable
         : animationConfigIsNotScrollable;
 
-      // scrollTo(scrollViewRef, 0, res, true);
+      scrollTo(scrollViewRef, 0, 500, true);
     }
   }
 

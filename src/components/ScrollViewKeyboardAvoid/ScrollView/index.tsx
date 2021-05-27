@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedScrollHandler } from 'react-native-reanimated';
 import ScrollArrow from '../ScrollArrow';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
@@ -10,8 +10,13 @@ interface Props extends MixedScrollViewProps {
 }
 
 const ScrollViewStandAlone: React.FC<Props> = props => {
-  const { contentHeight, scrollArrows, scrollViewRef, cardHeightWhenKeyboardIsVisible, children } =
-    props;
+  const {
+    contentHeight,
+    scrollArrows,
+    scrollViewRef,
+    cardHeightWhenKeyboardIsVisible,
+    children,
+  } = props;
 
   const {
     isInputFieldFocused,
@@ -76,6 +81,7 @@ const ScrollViewStandAlone: React.FC<Props> = props => {
           isInputFieldFocused={isInputFieldFocused}
           contentHeight={contentHeight}
           cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
+          scrollViewRef={scrollViewRef}
         >
           {children}
         </KeyboardAvoidingViewProvider>

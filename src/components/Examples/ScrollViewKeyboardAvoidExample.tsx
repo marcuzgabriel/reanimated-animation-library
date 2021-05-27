@@ -58,6 +58,7 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
     <Wrapper windowHeight={windowHeight}>
       <ScrollViewKeyboardAvoid
         ref={scrollViewRef}
+        bounces={false}
         scrollArrows={{
           isEnabled: true,
           dimensions: 40,

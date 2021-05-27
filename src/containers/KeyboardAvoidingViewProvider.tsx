@@ -1,4 +1,4 @@
-import React, { useMemo, createContext, useContext } from 'react';
+import React, { useMemo, createContext, useContext, useEffect } from 'react';
 import { useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -16,6 +16,7 @@ export const KeyboardAvoidingViewContext = createContext<Record<string, any>>({}
 export const { Provider } = KeyboardAvoidingViewContext;
 
 interface Props {
+  scrollViewRef?: React.RefObject<Animated.ScrollView>;
   contentHeight?: Animated.SharedValue<number>;
   cardHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
@@ -33,6 +34,8 @@ interface AnimatedReaction {
 const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   isInputFieldFocused,
   cardHeightWhenKeyboardIsVisible,
+  contentHeight,
+  scrollViewRef,
   type,
   children,
 }) => {
@@ -51,10 +54,6 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
     footerHeight,
   } = useContext(ReusablePropsContext.bottomSheet);
 
-  const { scrollViewRef: scrollViewKeyboardAvoidScrollViewRef, contentHeight } = useContext(
-    ReusablePropsContext.scrollViewKeyboardAvoid,
-  );
-
   useAnimatedReaction(
     () => ({
       isKeyboardVisible,
@@ -70,7 +69,7 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
           previous,
           windowHeight,
           contentHeight: result.contentHeight,
-          scrollViewRef: scrollViewKeyboardAvoidScrollViewRef,
+          scrollViewRef,
         });
       } else if (isTypeBottomSheet) {
         return onIsInputFieldFocusedReactionBottomSheet({

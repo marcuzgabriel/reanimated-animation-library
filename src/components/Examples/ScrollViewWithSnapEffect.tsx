@@ -92,13 +92,11 @@ const ScrollViewWithSnapEffect: React.FC = () => {
       </BackgroundContent>
       <BottomSheet
         scrollY={scrollY}
+        morphingArrow={{ isEnabled: true }}
         snapEffectDirection={snapEffectDirection}
         snapPointBottom={HEADER_HEIGHT + EXTRA_SNAP_POINT_OFFSET}
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
-        }}
-        header={{
-          height: 20,
         }}
         contentComponent={<Content />}
       />

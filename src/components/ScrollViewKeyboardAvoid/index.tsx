@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import ScrollView from './ScrollView';
 import KeyboardProvider from '../../containers/KeyboardProvider';
