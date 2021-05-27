@@ -20,7 +20,7 @@ import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../cons
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
-
+import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
 interface Props {
   panGestureType: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
@@ -107,8 +107,9 @@ const ScrollViewContent: React.FC<Props> = ({
             shouldCancelWhenOutside={false}
             simultaneousHandlers={panGestureInnerRef}
           >
-            <Animated.ScrollView
+            <ScrollViewKeyboardAvoid
               ref={scrollViewRef}
+              type="bottomSheet"
               bounces={false}
               alwaysBounceVertical={false}
               directionalLockEnabled={true}
@@ -131,7 +132,7 @@ const ScrollViewContent: React.FC<Props> = ({
               >
                 {children}
               </KeyboardAvoidingViewProvider>
-            </Animated.ScrollView>
+            </ScrollViewKeyboardAvoid>
           </NativeViewGestureHandler>
           <ScrollArrow position="bottom" />
           {fadingScrollEdges?.isEnabled && (

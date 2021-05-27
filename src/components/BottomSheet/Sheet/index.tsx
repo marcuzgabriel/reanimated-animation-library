@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LayoutChangeEvent, ViewStyle, Platform, Keyboard } from 'react-native';
 import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
-import ScrollViewContent from '../ScrollViewContent';
+import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
 import { CLOSE_OPEN_CARD_BUTTON_HITSLOP } from '../../../constants/styles';
@@ -197,14 +197,14 @@ const Sheet: React.FC = () => {
               />
             </Animated.View>
           </PanGestureHandler>
-          <ScrollViewContent
+          <Content
             gestureHandler={gestureHandler}
             panGestureType={panGestureType}
             isScrollingCard={isScrollingCard}
             isInputFieldFocused={isInputFieldFocused}
           >
             {contentComponent}
-          </ScrollViewContent>
+          </Content>
         </Animated.View>
       </View>
       <Footer />
