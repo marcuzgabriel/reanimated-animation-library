@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,14 +7,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import SvgArrow from './SvgArrow';
-import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { onScrollArrowAppearanceReaction } from '../../../worklets';
 import { scrollTo as scrollToHelper } from '../../../helpers';
 import { ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../../../constants/animations';
-import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
-interface Props {
-  position: string;
+import type { MixedScrollViewProps, ScrollProps } from '../../../types';
+
+interface Props extends Pick<MixedScrollViewProps, 'contentHeight' | 'scrollArrows'>, ScrollProps {
+  scrollViewRef: React.RefObject<Animated.ScrollView>;
   component?: React.ReactNode;
+  position: string;
 }
 
 const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacity<{
@@ -31,42 +32,42 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
     position === 'top' ? `top: ${topOffset}` : `bottom: ${bottomOffset}px`}
 `);
 
-const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
+const ScrollArrowDefault: React.FC<Props> = props => {
   const {
+    scrollArrows,
+    scrollY,
     scrollViewRef,
     scrollViewHeight,
-    cardContentHeight,
-    innerScrollY,
+    contentHeight,
+    position,
     scrollingLength,
     isScrolledToTop,
     isScrolledToEnd,
     isScrollable,
-  } = useContext(ReusablePropsContext);
-  const { scrollArrows } = useContext(UserConfigurationContext);
-
+  } = props;
   const isPositionedTop = useMemo(() => position === 'top', [position]);
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
   const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
 
   useAnimatedReaction(
     () => ({
-      isScrollable: cardContentHeight.value > scrollViewHeight.value,
-      innerScrollY: innerScrollY.value,
+      isScrollable: contentHeight.value > scrollViewHeight.value,
+      innerScrollY: scrollY.value,
     }),
     (result: Record<string, any>, _previous: Record<string, any> | null | undefined) => {
       onScrollArrowAppearanceReaction({
         result,
-        cardContentHeight,
-        scrollViewHeight,
+        cardContentHeight: contentHeight,
         translationYUpArrow,
         translationYDownArrow,
+        scrollViewHeight,
         scrollingLength,
         isScrolledToTop,
         isScrolledToEnd,
         isScrollable,
       });
     },
-    [innerScrollY, cardContentHeight, scrollViewHeight],
+    [scrollY, contentHeight, scrollViewHeight],
   );
 
   const animatedStyleUpArrow = useAnimatedStyle(() => ({
@@ -89,7 +90,6 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
       }
     >
       <Animated.View style={isPositionedTop ? animatedStyleUpArrow : animatedStyleDownArrow}>
-        {component && component}
         {scrollArrows?.isEnabled && (
           <SvgArrow
             height={scrollArrows.dimensions}

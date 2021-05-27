@@ -1,28 +1,19 @@
 import React from 'react';
-import Animated, { useSharedValue } from 'react-native-reanimated';
-import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
+import Animated from 'react-native-reanimated';
+import ScrollViewStandAlone from './ScrollViewStandAlone';
+import type { MixedScrollViewProps } from '../../../types';
 
 type Ref = Animated.ScrollView;
-type Props = any;
+type Props = MixedScrollViewProps;
 
-const ScrollView = React.forwardRef<Ref, Props>((props, ref) => {
-  const { type } = props;
-  const isInputFieldFocused = useSharedValue(false);
-
-  return type === 'bottomSheet' ? (
+const ScrollView = React.forwardRef<Ref, Props>((props, ref) =>
+  props.type === 'bottomSheet' ? (
     <Animated.ScrollView ref={ref} {...props}>
       {props.children}
     </Animated.ScrollView>
   ) : (
-    <Animated.ScrollView ref={ref} {...props}>
-      <KeyboardAvoidingViewProvider
-        isInputFieldFocused={isInputFieldFocused}
-        cardHeightWhenKeyboardIsVisible={props.cardHeightWhenKeyboardIsVisible}
-      >
-        {props.children}
-      </KeyboardAvoidingViewProvider>
-    </Animated.ScrollView>
-  );
-});
+    <ScrollViewStandAlone scrollViewRef={ref} {...props} />
+  ),
+);
 
 export default ScrollView;

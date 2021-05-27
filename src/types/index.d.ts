@@ -1,3 +1,12 @@
+import { ScrollViewProps } from 'react-native';
+import { GestureEvent, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
+interface scrollArrows {
+  isEnabled?: boolean;
+  fill: string;
+  dimensions: number;
+  topArrowOffset: number;
+  bottomArrowOffset: number;
+}
 export interface BottomSheetConfiguration {
   /**
    * @scrollY ---
@@ -20,13 +29,7 @@ export interface BottomSheetConfiguration {
   headerComponent?: React.ReactNode;
   scrollArrowTopComponent?: React.ReactNode;
   scrollArrowBottomComponent?: React.ReactNode;
-  scrollArrows?: {
-    isEnabled?: boolean;
-    fill: string;
-    dimensions: number;
-    topArrowOffset: number;
-    bottomArrowOffset: number;
-  };
+  scrollArrows?: scrollArrows;
   extraSnapPointBottomOffset?: number;
   cardStyle?: {
     maxHeightRatio?: number;
@@ -57,4 +60,23 @@ export interface BottomSheetConfiguration {
   };
   getCurrentConfigRequest?: (config: Record<string, any>) => void;
   onLayoutRequest?: (cardHeight: number) => void;
+}
+export interface MixedScrollViewProps extends ScrollViewProps {
+  panGestureType?: Animated.SharedValue<number>;
+  contentHeight?: Animated.SharedValue<number>;
+  isScrollingCard?: Animated.SharedValue<boolean>;
+  isInputFieldFocused?: Animated.SharedValue<boolean>;
+  cardHeightWhenKeyboardIsVisible?: Animated.SharedValue<number>;
+  type?: string;
+  scrollArrows?: scrollArrows;
+  children: React.ReactNode;
+  gestureHandler?: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
+}
+export interface ScrollProps {
+  scrollY?: Animated.SharedValue<number>;
+  scrollViewHeight?: Animated.SharedValue<number>;
+  scrollingLength?: Animated.SharedValue<number>;
+  isScrolledToTop?: Animated.SharedValue<boolean>;
+  isScrolledToEnd?: Animated.SharedValue<boolean>;
+  isScrollable?: Animated.SharedValue<boolean>;
 }

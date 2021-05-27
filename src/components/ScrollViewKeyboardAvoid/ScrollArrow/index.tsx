@@ -1,24 +1,28 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import Animated from 'react-native-reanimated';
 import ScrollArrowDefault from './ScrollArrowDefault';
-import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
-interface Props {
+import type { ScrollProps } from '../../../types';
+
+interface Props extends ScrollProps {
+  scrollViewRef: React.RefObject<Animated.ScrollView>;
+  scrollArrowTopComponent?: React.ReactNode;
+  scrollArrowBottomComponent?: React.ReactNode;
   position: string;
 }
 
-const ScrollArrow: React.FC<Props> = ({ position }) => {
-  const { scrollArrowTopComponent, scrollArrowBottomComponent } =
-    useContext(UserConfigurationContext);
+const ScrollArrow: React.FC<Props> = props => {
+  const { scrollArrowTopComponent, scrollArrowBottomComponent, position } = props;
 
   if (!!scrollArrowTopComponent || scrollArrowBottomComponent) {
     return (
       <ScrollArrowDefault
-        position={position}
+        {...props}
         component={position === 'top' ? scrollArrowTopComponent : scrollArrowBottomComponent}
       />
     );
   }
 
-  return <ScrollArrowDefault position={position} />;
+  return <ScrollArrowDefault {...props} />;
 };
 
 export default ScrollArrow;
