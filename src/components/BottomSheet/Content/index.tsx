@@ -30,7 +30,7 @@ interface Props {
 
 const ContentWrapper = styled.View``;
 
-const ScrollViewContent: React.FC<Props> = ({
+const Content: React.FC<Props> = ({
   gestureHandler,
   panGestureType,
   isScrollingCard,
@@ -148,4 +148,4 @@ const ScrollViewContent: React.FC<Props> = ({
   );
 };
 
-export default ScrollViewContent;
+export default Content;
