@@ -36,7 +36,7 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
     scrollViewRef,
     scrollViewHeight,
     cardContentHeight,
-    innerScrollY,
+    scrollY,
     scrollingLength,
     isScrolledToTop,
     isScrolledToEnd,
@@ -51,7 +51,7 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
   useAnimatedReaction(
     () => ({
       isScrollable: cardContentHeight.value > scrollViewHeight.value,
-      innerScrollY: innerScrollY.value,
+      innerScrollY: scrollY.value,
     }),
     (result: Record<string, any>, _previous: Record<string, any> | null | undefined) => {
       onScrollArrowAppearanceReaction({
@@ -66,7 +66,7 @@ const ScrollArrowDefault: React.FC<Props> = ({ position, component }) => {
         isScrollable,
       });
     },
-    [innerScrollY, cardContentHeight, scrollViewHeight],
+    [scrollY, cardContentHeight, scrollViewHeight],
   );
 
   const animatedStyleUpArrow = useAnimatedStyle(() => ({

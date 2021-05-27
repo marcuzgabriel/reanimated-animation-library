@@ -1,32 +1,24 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import Animated, { useAnimatedScrollHandler } from 'react-native-reanimated';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import ScrollArrow from '../ScrollArrow';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
-import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import type { MixedScrollViewProps } from '../../../types';
 interface Props extends MixedScrollViewProps {
   scrollViewRef: React.RefObject<Animated.ScrollView> | any;
 }
 
 const ScrollViewStandAlone: React.FC<Props> = props => {
-  const {
-    contentHeight,
-    scrollArrows,
-    scrollViewRef,
-    cardHeightWhenKeyboardIsVisible,
-    children,
-  } = props;
+  const { contentHeight, scrollArrows, scrollViewRef, cardHeightWhenKeyboardIsVisible, children } =
+    props;
 
-  const {
-    isInputFieldFocused,
-    scrollViewHeight,
-    scrollY,
-    scrollingLength,
-    isScrolledToTop,
-    isScrolledToEnd,
-    isScrollable,
-  } = useContext(ReusablePropsContext.scrollViewKeyboardAvoid);
+  const scrollViewHeight = useSharedValue(0);
+  const scrollY = useSharedValue(0);
+  const scrollingLength = useSharedValue(0);
+  const isInputFieldFocused = useSharedValue(false);
+  const isScrolledToTop = useSharedValue(false);
+  const isScrolledToEnd = useSharedValue(false);
+  const isScrollable = useSharedValue(false);
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -70,7 +62,7 @@ const ScrollViewStandAlone: React.FC<Props> = props => {
 
   return (
     <>
-      <ScrollArrow {...scrollArrowProps} position="top" />
+      <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="top" />
       <Animated.ScrollView
         ref={scrollViewRef}
         onLayout={onLayout}
@@ -86,7 +78,7 @@ const ScrollViewStandAlone: React.FC<Props> = props => {
           {children}
         </KeyboardAvoidingViewProvider>
       </Animated.ScrollView>
-      <ScrollArrow {...scrollArrowProps} position="bottom" />
+      <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="bottom" />
     </>
   );
 };

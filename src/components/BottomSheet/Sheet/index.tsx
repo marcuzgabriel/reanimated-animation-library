@@ -43,14 +43,16 @@ const View = styled.View`
 const Sheet: React.FC = () => {
   const panGestureOuterRef = useRef<PanGestureHandler>();
   const keyboardContext = useContext(KeyboardContext);
-  const { cardHeight, innerScrollY, translationY } = useContext(ReusablePropsContext.bottomSheet);
   const {
-    scrollY,
-    snapEffectDirection,
+    scrollY: innerScrollY,
+    cardHeight,
+    translationY,
+  } = useContext(ReusablePropsContext.bottomSheet);
+  const {
+    scrollY: configBackgroundContentScrollY,
     snapPointBottom: configSnapPointBottom,
-    header,
+    snapEffectDirection,
     contentComponent,
-    footerComponent,
     onLayoutRequest,
   } = useContext(UserConfigurationContext);
 
@@ -154,7 +156,7 @@ const Sheet: React.FC = () => {
   );
 
   useAnimatedReaction(
-    () => scrollY?.value,
+    () => configBackgroundContentScrollY?.value,
     (result: number | undefined, previous: number | null | undefined) => {
       if (!isInputFieldFocused.value) {
         onOuterScrollReaction({
@@ -169,7 +171,7 @@ const Sheet: React.FC = () => {
         });
       }
     },
-    [scrollY],
+    [configBackgroundContentScrollY],
   );
 
   const panGestureStyle = useAnimatedStyle(
@@ -191,7 +193,7 @@ const Sheet: React.FC = () => {
           >
             <Animated.View>
               <Header
-                scrollY={scrollY}
+                scrollY={configBackgroundContentScrollY}
                 snapPointBottom={snapPointBottom}
                 onPress={actionRequestCloseOrOpenCard}
               />

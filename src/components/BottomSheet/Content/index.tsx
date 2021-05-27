@@ -13,14 +13,15 @@ import {
   PanGestureHandlerEventPayload,
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
-import ScrollArrow from '../ScrollArrow';
 import FadingEdge from '../FadingEdge';
 import { MAX_HEIGHT_RATIO } from '../../../constants/styles';
+import ScrollArrow from '../../ScrollViewKeyboardAvoid/ScrollArrow';
+import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
 import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
-import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
+
 interface Props {
   panGestureType: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
@@ -39,8 +40,9 @@ const Content: React.FC<Props> = ({
 }) => {
   const windowHeight = useWindowDimensions().height;
   const { fadingScrollEdges, scrollArrows } = useContext(UserConfigurationContext);
-  const { scrollViewRef, innerScrollY, scrollViewHeight, cardContentHeight, footerHeight } =
-    useContext(ReusablePropsContext.bottomSheet);
+  const { scrollViewRef, scrollY, scrollViewHeight, contentHeight, footerHeight } = useContext(
+    ReusablePropsContext.bottomSheet,
+  );
 
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
@@ -52,7 +54,7 @@ const Content: React.FC<Props> = ({
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
-      innerScrollY.value = e.contentOffset.y;
+      scrollY.value = e.contentOffset.y;
     },
   });
 
@@ -96,7 +98,7 @@ const Content: React.FC<Props> = ({
               webColor={fadingScrollEdges.webBackgroundColorTop}
             />
           )}
-          <ScrollArrow position="top" />
+          <ScrollArrow contextName="bottomSheet" position="top" />
           <NativeViewGestureHandler
             ref={nativeViewGestureRef}
             shouldCancelWhenOutside={false}
@@ -112,7 +114,7 @@ const Content: React.FC<Props> = ({
               fadingEdgeLength={ANDROID_FADING_EDGE_LENGTH}
               onScroll={onScrollHandler}
               onContentSizeChange={(_, height): void => {
-                cardContentHeight.value = height;
+                contentHeight.value = height;
               }}
               scrollEventThrottle={SCROLL_EVENT_THROTTLE}
               onTouchMove={(): void => {
@@ -131,7 +133,7 @@ const Content: React.FC<Props> = ({
               </KeyboardAvoidingViewProvider>
             </ScrollViewKeyboardAvoid>
           </NativeViewGestureHandler>
-          <ScrollArrow position="bottom" />
+          <ScrollArrow contextName="bottomSheet" position="bottom" />
           {fadingScrollEdges?.isEnabled && (
             <FadingEdge
               position="bottom"

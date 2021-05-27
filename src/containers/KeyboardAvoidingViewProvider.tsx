@@ -1,10 +1,6 @@
-import React, { useMemo, createContext, useContext, useEffect } from 'react';
+import React, { useMemo, createContext, useContext } from 'react';
 import { useWindowDimensions } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedReaction,
-  useDerivedValue,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { KeyboardContext } from '../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../containers/ReusablePropsProvider';
 import {
@@ -16,7 +12,7 @@ export const KeyboardAvoidingViewContext = createContext<Record<string, any>>({}
 export const { Provider } = KeyboardAvoidingViewContext;
 
 interface Props {
-  scrollViewRef?: React.RefObject<Animated.ScrollView>;
+  scrollViewRef?: React.RefObject<Animated.ScrollView> | any;
   contentHeight?: Animated.SharedValue<number>;
   cardHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
   isInputFieldFocused: Animated.SharedValue<boolean>;

@@ -2,15 +2,20 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import ScrollArrowDefault from './ScrollArrowDefault';
 import type { ScrollProps } from '../../../types';
-
 interface Props extends ScrollProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   scrollArrowTopComponent?: React.ReactNode;
   scrollArrowBottomComponent?: React.ReactNode;
   position: string;
+  contextName: string;
 }
 
-const ScrollArrow: React.FC<Props> = props => {
+interface ContextProps extends Partial<Props> {
+  position: string;
+  contextName: string;
+}
+
+const ScrollArrow: React.FC<Props | ContextProps> = props => {
   const { scrollArrowTopComponent, scrollArrowBottomComponent, position } = props;
 
   if (!!scrollArrowTopComponent || scrollArrowBottomComponent) {

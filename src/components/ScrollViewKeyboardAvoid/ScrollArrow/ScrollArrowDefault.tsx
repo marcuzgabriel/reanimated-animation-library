@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useContext } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,6 +7,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import SvgArrow from './SvgArrow';
+import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 import { onScrollArrowAppearanceReaction } from '../../../worklets';
 import { scrollTo as scrollToHelper } from '../../../helpers';
 import { ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../../../constants/animations';
@@ -14,7 +16,13 @@ import type { MixedScrollViewProps, ScrollProps } from '../../../types';
 
 interface Props extends Pick<MixedScrollViewProps, 'contentHeight' | 'scrollArrows'>, ScrollProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
+  position: string;
+  contextName: string;
   component?: React.ReactNode;
+}
+
+interface ContextProps extends Partial<Props> {
+  contextName: string;
   position: string;
 }
 
@@ -32,19 +40,24 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
     position === 'top' ? `top: ${topOffset}px` : `bottom: ${bottomOffset}px`}
 `);
 
-const ScrollArrowDefault: React.FC<Props> = props => {
+const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
+  const { contextName, position } = props;
+  const isContextNameBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
+  const reusablePropsContextBottomSheet = useContext(ReusablePropsContext.bottomSheet);
+  const userConfigurationContext = useContext(UserConfigurationContext);
+
   const {
-    scrollArrows,
-    scrollY,
     scrollViewRef,
     scrollViewHeight,
     contentHeight,
-    position,
+    scrollY,
     scrollingLength,
     isScrolledToTop,
     isScrolledToEnd,
     isScrollable,
-  } = props;
+  } = isContextNameBottomSheet ? reusablePropsContextBottomSheet : props;
+  const { scrollArrows } = isContextNameBottomSheet ? userConfigurationContext : props;
+
   const isPositionedTop = useMemo(() => position === 'top', [position]);
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
   const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
