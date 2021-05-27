@@ -24,7 +24,7 @@ interface Props {
   footerHeight: Animated.SharedValue<number>;
 }
 
-export const onIsInputFieldFocusedReaction = ({
+export const onIsInputFieldFocusedReactionBottomSheet = ({
   result,
   previous,
   cardHeightWhenKeyboardIsVisible,

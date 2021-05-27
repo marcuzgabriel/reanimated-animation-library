@@ -5,6 +5,7 @@ export { getAnimatedCardStyles } from './getAnimatedCardStyles';
 export { onGestureHandlerCard } from './onGestureHandlerCard';
 export { onGestureHandlerSnapEffect } from './onGestureHandlerSnapEffect';
 export { onSnappableReaction } from './onSnappableReaction';
+export { onIsInputFieldFocusedReactionBottomSheet } from './onIsInputFieldFocusedReactionBottomSheet';
 export { onIsInputFieldFocusedReaction } from './onIsInputFieldFocusedReaction';
 export { onPanGestureHitFooterReaction } from './onPanGestureHitFooterReaction';
 export { onScrollArrowAppearanceReaction } from './onScrollArrowAppearanceReaction';
