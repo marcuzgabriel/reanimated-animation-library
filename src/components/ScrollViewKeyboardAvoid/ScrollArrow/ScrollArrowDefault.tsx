@@ -4,6 +4,7 @@ import Animated, {
   useAnimatedStyle,
   useAnimatedReaction,
   interpolate,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import SvgArrow from './SvgArrow';
@@ -13,6 +14,7 @@ import { onScrollArrowAppearanceReaction } from '../../../worklets';
 import { scrollTo as scrollToHelper } from '../../../helpers';
 import { ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../../../constants/animations';
 import type { MixedScrollViewProps, ScrollProps } from '../../../types';
+import { useWindowDimensions } from 'react-native';
 
 interface Props extends Pick<MixedScrollViewProps, 'contentHeight' | 'scrollArrows'>, ScrollProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
@@ -64,21 +66,27 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
 
   useAnimatedReaction(
     () => ({
-      isScrollable: contentHeight.value > scrollViewHeight.value,
-      innerScrollY: scrollY.value,
+      contentHeight,
+      scrollViewHeight,
+      scrollY,
     }),
-    (result: Record<string, any>, _previous: Record<string, any> | null | undefined) => {
-      onScrollArrowAppearanceReaction({
-        result,
-        cardContentHeight: contentHeight,
-        translationYUpArrow,
-        translationYDownArrow,
-        scrollViewHeight,
-        scrollingLength,
-        isScrolledToTop,
-        isScrolledToEnd,
-        isScrollable,
-      });
+    (
+      result: Record<string, Animated.SharedValue<number>>,
+      _previous: Record<string, Animated.SharedValue<number>> | null | undefined,
+    ) => {
+      if (result.contentHeight?.value > 0 && result.scrollViewHeight?.value > 0) {
+        onScrollArrowAppearanceReaction({
+          result,
+          contentHeight,
+          translationYUpArrow,
+          translationYDownArrow,
+          scrollViewHeight,
+          scrollingLength,
+          isScrolledToTop,
+          isScrolledToEnd,
+          isScrollable,
+        });
+      }
     },
     [scrollY, contentHeight, scrollViewHeight],
   );
@@ -98,9 +106,9 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
       position={position}
       topOffset={scrollArrows?.isEnabled ? scrollArrows.topArrowOffset : 0}
       bottomOffset={scrollArrows?.isEnabled ? scrollArrows.bottomArrowOffset : 0}
-      onPress={(): void =>
-        scrollToHelper({ ref: scrollViewRef, to: isPositionedTop ? 'top' : 'end' })
-      }
+      onPress={(): void => {
+        scrollToHelper({ ref: scrollViewRef, to: isPositionedTop ? 'top' : 'end' });
+      }}
     >
       <Animated.View style={isPositionedTop ? animatedStyleUpArrow : animatedStyleDownArrow}>
         {scrollArrows?.isEnabled && (

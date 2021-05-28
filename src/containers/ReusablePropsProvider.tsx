@@ -11,11 +11,11 @@ export const { Provider: ScrollViewKeyboardAvoidProvider } =
   ReusablePropsContext.scrollViewKeyboardAvoid;
 
 interface Props {
-  type: string;
+  contextName: string;
   children: React.ReactNode;
 }
 
-const ReusablePropsProvider: React.FC<Props> = ({ type, children }) => {
+const ReusablePropsProvider: React.FC<Props> = ({ contextName, children }) => {
   const bottomSheet = {
     headerHeight: useSharedValue(0),
     footerHeight: useSharedValue(0),
@@ -43,11 +43,11 @@ const ReusablePropsProvider: React.FC<Props> = ({ type, children }) => {
     isScrolledToEnd: useSharedValue(false),
   };
 
-  if (type === 'bottomSheet') {
+  if (contextName === 'bottomSheet') {
     return <BottomSheetProvider value={{ ...bottomSheet }}>{children}</BottomSheetProvider>;
   }
 
-  if (type === 'scrollViewKeyboardAvoid') {
+  if (contextName === 'scrollViewKeyboardAvoid') {
     return (
       <ScrollViewKeyboardAvoidProvider value={{ ...scrollViewKeyboardAvoid }}>
         {children}

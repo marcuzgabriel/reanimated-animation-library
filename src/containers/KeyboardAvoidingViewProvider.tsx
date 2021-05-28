@@ -14,9 +14,9 @@ export const { Provider } = KeyboardAvoidingViewContext;
 interface Props {
   scrollViewRef?: React.RefObject<Animated.ScrollView> | any;
   contentHeight?: Animated.SharedValue<number>;
-  cardHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
+  contentHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
-  type?: string;
+  contextName?: string;
   children: React.ReactNode;
 }
 interface AnimatedReaction {
@@ -29,15 +29,15 @@ interface AnimatedReaction {
 
 const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   isInputFieldFocused,
-  cardHeightWhenKeyboardIsVisible,
+  contentHeightWhenKeyboardIsVisible,
   contentHeight,
   scrollViewRef,
-  type,
+  contextName,
   children,
 }) => {
   const inputFields = useSharedValue<Record<string, any>>([]);
   const selectedInputFieldPositionY = useSharedValue(0);
-  const isTypeBottomSheet = useMemo(() => type === 'bottomSheet', [type]);
+  const isTypeBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
   const windowHeight = useWindowDimensions().height;
 
   const { isKeyboardVisible, keyboardHeight, keyboardDuration } = useContext(KeyboardContext);
@@ -76,7 +76,7 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
           translationY,
           footerTranslationY,
           isInputFieldFocused,
-          cardHeightWhenKeyboardIsVisible,
+          contentHeightWhenKeyboardIsVisible,
           cardContentHeight,
           headerHeight,
           footerHeight,

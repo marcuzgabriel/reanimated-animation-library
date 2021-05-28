@@ -8,15 +8,15 @@ import ReusablePropsProvider from '../../containers/ReusablePropsProvider';
 type Ref = Animated.ScrollView;
 
 const ScrollViewKeyboardAvoid = React.forwardRef<Ref, MixedScrollViewProps>((props, ref) => {
-  const { type, children } = props;
+  const { contextName, children } = props;
 
-  return type === 'bottomSheet' ? (
+  return contextName === 'bottomSheet' ? (
     <Animated.ScrollView ref={ref} {...props}>
       {children}
     </Animated.ScrollView>
   ) : (
     <KeyboardProvider>
-      <ReusablePropsProvider type="scrollViewKeyboardAvoid">
+      <ReusablePropsProvider contextName="scrollViewKeyboardAvoid">
         <ScrollView scrollViewRef={ref} {...props}>
           {children}
         </ScrollView>

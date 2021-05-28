@@ -4,8 +4,8 @@ import { DEFAULT_TIMING_CONFIG, ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../co
 const SCROLL_TO_TOP_EXTRA_TRIGGER_AREA = 20;
 
 interface Props {
-  result: Record<string, number | any>;
-  cardContentHeight: Animated.SharedValue<number>;
+  result: Record<string, Animated.SharedValue<number>>;
+  contentHeight: Animated.SharedValue<number>;
   scrollViewHeight: Animated.SharedValue<number>;
   translationYUpArrow: Animated.SharedValue<number>;
   translationYDownArrow: Animated.SharedValue<number>;
@@ -17,7 +17,7 @@ interface Props {
 
 export const onScrollArrowAppearanceReaction = ({
   result,
-  cardContentHeight,
+  contentHeight,
   scrollViewHeight,
   translationYUpArrow,
   translationYDownArrow,
@@ -28,11 +28,13 @@ export const onScrollArrowAppearanceReaction = ({
 }: Props): void => {
   'worklet';
 
-  if (result.isScrollable) {
+  const isResultScrollable = contentHeight?.value > scrollViewHeight?.value;
+
+  if (isResultScrollable) {
     isScrollable.value = true;
-    scrollingLength.value = cardContentHeight.value - scrollViewHeight.value;
-    isScrolledToTop.value = result.innerScrollY <= SCROLL_TO_TOP_EXTRA_TRIGGER_AREA;
-    isScrolledToEnd.value = Math.floor(result.innerScrollY) === Math.floor(scrollingLength.value);
+    scrollingLength.value = contentHeight.value - scrollViewHeight.value;
+    isScrolledToTop.value = result.scrollY.value <= SCROLL_TO_TOP_EXTRA_TRIGGER_AREA;
+    isScrolledToEnd.value = Math.floor(result.scrollY.value) === Math.floor(scrollingLength.value);
 
     if (isScrolledToTop.value && translationYUpArrow.value !== ARROW_UP_OFFSET) {
       translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);

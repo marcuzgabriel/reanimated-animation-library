@@ -46,7 +46,7 @@ const Content: React.FC<Props> = ({
 
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
-  const cardHeightWhenKeyboardIsVisible = useSharedValue(0);
+  const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
   const maxHeight = useDerivedValue(
     () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
     [footerHeight],
@@ -63,7 +63,9 @@ const Content: React.FC<Props> = ({
       marginBottom: footerHeight.value,
       maxHeight: maxHeight.value,
       height:
-        cardHeightWhenKeyboardIsVisible.value > 0 ? cardHeightWhenKeyboardIsVisible.value : '100%',
+        contentHeightWhenKeyboardIsVisible.value > 0
+          ? contentHeightWhenKeyboardIsVisible.value
+          : '100%',
     }),
   );
 
@@ -105,8 +107,8 @@ const Content: React.FC<Props> = ({
             simultaneousHandlers={panGestureInnerRef}
           >
             <ScrollViewKeyboardAvoid
+              contextName="bottomSheet"
               ref={scrollViewRef}
-              type="bottomSheet"
               bounces={false}
               alwaysBounceVertical={false}
               directionalLockEnabled={true}
@@ -125,9 +127,9 @@ const Content: React.FC<Props> = ({
               }}
             >
               <KeyboardAvoidingViewProvider
-                type="bottomSheet"
+                contextName="bottomSheet"
                 isInputFieldFocused={isInputFieldFocused}
-                cardHeightWhenKeyboardIsVisible={cardHeightWhenKeyboardIsVisible}
+                contentHeightWhenKeyboardIsVisible={contentHeightWhenKeyboardIsVisible}
               >
                 {children}
               </KeyboardAvoidingViewProvider>

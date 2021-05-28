@@ -64,10 +64,10 @@ export interface BottomSheetConfiguration {
 export interface MixedScrollViewProps extends ScrollViewProps {
   panGestureType?: Animated.SharedValue<number>;
   contentHeight?: Animated.SharedValue<number>;
+  contentHeightWHenKeyboardIsVisible?: Animated.SharedValue<number>;
   isScrollingCard?: Animated.SharedValue<boolean>;
   isInputFieldFocused?: Animated.SharedValue<boolean>;
-  cardHeightWhenKeyboardIsVisible?: Animated.SharedValue<number>;
-  type?: string;
+  contextName?: string;
   scrollArrows?: scrollArrows;
   children: React.ReactNode;
   gestureHandler?: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
