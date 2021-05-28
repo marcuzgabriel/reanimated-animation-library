@@ -1,5 +1,5 @@
 import React, { useMemo, createContext, useContext } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 import Animated, { useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { KeyboardContext } from '../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../containers/ReusablePropsProvider';
@@ -7,6 +7,9 @@ import {
   onIsInputFieldFocusedReactionBottomSheet,
   onIsInputFieldFocusedReaction,
 } from '../worklets';
+import { UserConfigurationContext } from './UserConfigurationProvider';
+
+const isIOS = Platform.OS === 'ios';
 
 export const KeyboardAvoidingViewContext = createContext<Record<string, any>>({});
 export const { Provider } = KeyboardAvoidingViewContext;
@@ -37,9 +40,9 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   translationY: defaultTranslationY,
   scrollViewRef: defaultScrollViewRef,
   scrollViewHeight: defaultScrollViewHeight,
+  keyboardAvoidBottomMargin: defaultKeyboardAvoidBottomMargin,
   contentHeightWhenKeyboardIsVisible,
   disableScrollAnimation,
-  keyboardAvoidBottomMargin,
   isInputFieldFocused,
   isKeyboardAvoidDisabled,
   contextName,
@@ -50,6 +53,10 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   const windowHeight = useWindowDimensions().height;
 
   const { isKeyboardVisible, keyboardHeight, keyboardDuration } = useContext(KeyboardContext);
+  const { keyboardAvoidBottomMargin: bottomSheetKeyboardAvoidBottomMargin } = useContext(
+    UserConfigurationContext,
+  );
+
   const {
     scrollViewRef: bottomSheetScrollViewRef,
     scrollViewHeight: bottomSheetScrollViewHeight,
@@ -66,6 +73,18 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
     () => (isContextNameBottomSheet ? bottomSheetScrollViewRef : defaultScrollViewRef),
     [isContextNameBottomSheet, bottomSheetScrollViewRef, defaultScrollViewRef],
   );
+  const keyboardAvoidBottomMargin = useMemo(
+    () =>
+      isContextNameBottomSheet
+        ? bottomSheetKeyboardAvoidBottomMargin
+        : defaultKeyboardAvoidBottomMargin,
+    [
+      isContextNameBottomSheet,
+      bottomSheetKeyboardAvoidBottomMargin,
+      defaultKeyboardAvoidBottomMargin,
+    ],
+  );
+
   const contentHeight = useMemo(
     () => (isContextNameBottomSheet ? bottomSheetContentHeight : defaultContentHeight),
     [isContextNameBottomSheet, bottomSheetContentHeight, defaultContentHeight],
@@ -110,6 +129,7 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
             scrollViewRef,
             scrollViewHeight,
             contentHeight: bottomSheetContentHeight,
+            keyboardAvoidBottomMargin,
             translationY,
             footerTranslationY,
             isInputFieldFocused,
@@ -120,7 +140,7 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
         }
       }
     },
-    [isKeyboardVisible, selectedInputFieldPositionY, contentHeight],
+    [isKeyboardVisible, selectedInputFieldPositionY, keyboardAvoidBottomMargin, contentHeight],
   );
 
   return <Provider value={{ inputFields, selectedInputFieldPositionY }}>{children}</Provider>;

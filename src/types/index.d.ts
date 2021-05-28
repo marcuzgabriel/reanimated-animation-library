@@ -31,6 +31,7 @@ export interface BottomSheetConfiguration {
   scrollArrowBottomComponent?: React.ReactNode;
   scrollArrows?: scrollArrows;
   extraSnapPointBottomOffset?: number;
+  keyboardAvoidBottomMargin?: number;
   cardStyle?: {
     maxHeightRatio?: number;
     maxHeightRatioWhenKeyboardIsVisible?: number;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
@@ -15,6 +15,8 @@ const SCROLL_ARROW_DIMESIONS = 40;
 const SCROLL_ARROW_OFFSET = 5;
 const HEADER_HEIGHT = 50;
 const EXTRA_SNAP_POINT_OFFSET = 30;
+
+const isAndroid = Platform.OS === 'android';
 
 const fakeScrollItem = [
   {
@@ -93,6 +95,7 @@ const ScrollViewWithSnapEffect: React.FC = () => {
       <BottomSheet
         scrollY={scrollY}
         morphingArrow={{ isEnabled: true }}
+        keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}
         snapPointBottom={HEADER_HEIGHT + EXTRA_SNAP_POINT_OFFSET}
         onLayoutRequest={(height: number): void => {

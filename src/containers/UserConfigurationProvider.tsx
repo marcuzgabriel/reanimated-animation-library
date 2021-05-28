@@ -38,15 +38,13 @@ const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, c
     getCurrentConfigRequest,
   } = configuration;
 
-  const configBorderTopRightRadius = useMemo(
-    () => borderTopRightRadius ?? DEFAULT_BORDER_RADIUS,
-    [borderTopRightRadius],
-  );
+  const configBorderTopRightRadius = useMemo(() => borderTopRightRadius ?? DEFAULT_BORDER_RADIUS, [
+    borderTopRightRadius,
+  ]);
 
-  const configBorderTopLeftRadius = useMemo(
-    () => borderTopLeftRadius ?? DEFAULT_BORDER_RADIUS,
-    [borderTopLeftRadius],
-  );
+  const configBorderTopLeftRadius = useMemo(() => borderTopLeftRadius ?? DEFAULT_BORDER_RADIUS, [
+    borderTopLeftRadius,
+  ]);
 
   const configScrollArrows = useMemo(() => {
     const { isEnabled, fill, dimensions, bottomArrowOffset, topArrowOffset } = scrollArrows ?? {};

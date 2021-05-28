@@ -2,8 +2,8 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import ScrollView from './ScrollView';
 import KeyboardProvider from '../../containers/KeyboardProvider';
-import type { MixedScrollViewProps } from '../../types';
 import ReusablePropsProvider from '../../containers/ReusablePropsProvider';
+import type { MixedScrollViewProps } from '../../types';
 
 type Ref = Animated.ScrollView;
 

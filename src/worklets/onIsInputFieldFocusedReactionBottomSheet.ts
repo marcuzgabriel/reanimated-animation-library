@@ -11,6 +11,7 @@ respects the change of height before it animates. 1 ms. wait time is enough. */
 const AVOID_FLICKERING_MS = 0.1;
 
 interface ResultCurrentAndPreviousProps {
+  keyboardAvoidBottomMargin?: number;
   contentHeight?: Animated.SharedValue<number> | undefined;
   isKeyboardVisible: Animated.SharedValue<boolean>;
   keyboardHeight: Animated.SharedValue<number>;
@@ -23,6 +24,7 @@ interface Props {
   translationY: Animated.SharedValue<number>;
   footerTranslationY: Animated.SharedValue<number>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
+  keyboardAvoidBottomMargin?: number;
   windowHeight: number;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   scrollViewHeight: Animated.SharedValue<number>;
@@ -38,6 +40,7 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
   contentHeightWhenKeyboardIsVisible,
   contentHeight,
   headerHeight,
+  keyboardAvoidBottomMargin,
   footerHeight,
   windowHeight,
   scrollViewRef,
@@ -71,21 +74,17 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
         ? animationConfigIsScrollable
         : animationConfigIsNotScrollable;
 
-      const someHeight = isScrollable ? height : contentHeight.value;
-
-      const scrollingLength = contentHeight.value - someHeight;
-      const test = scrollingLength + footerHeight.value + headerHeight.value;
-
-      const random = test - res;
-      console.log(random, res, scrollingLength + footerHeight.value + headerHeight.value);
+      const defaultKeyboardAvoidBottomMargin = keyboardAvoidBottomMargin ?? 0;
+      const scrollToNumber = res - height / 2 + defaultKeyboardAvoidBottomMargin;
 
       contentHeightWhenKeyboardIsVisible.value = withTiming(
-        someHeight,
+        isScrollable ? height : contentHeight.value,
         { duration: AVOID_FLICKERING_MS },
         () => {
           footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
-          translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {});
-          scrollTo(scrollViewRef, 0, random, true);
+          translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
+            scrollTo(scrollViewRef, 0, scrollToNumber, true);
+          });
         },
       );
 
