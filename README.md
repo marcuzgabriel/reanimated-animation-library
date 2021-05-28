@@ -2,7 +2,8 @@
 This library provides some nice animation features with the latest reanimated 2+ (hooks) update approach that is suitable for all platforms: Web, Android and iOS. The features are a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
 ## Current progress
-- [ ] ScrollViewKeyboardAvoid
+- [x] ScrollViewKeyboardAvoid
+  - [ ] Code example / integration description  
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
   - [x] Scroll arrows that appear / dissapear
