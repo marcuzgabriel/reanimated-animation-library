@@ -25,6 +25,7 @@ interface Props {
   isInputFieldFocused: Animated.SharedValue<boolean>;
   windowHeight: number;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
+  scrollViewHeight: Animated.SharedValue<number>;
   contentHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
   contentHeight: Animated.SharedValue<number>;
   headerHeight: Animated.SharedValue<number>;
@@ -40,6 +41,7 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
   footerHeight,
   windowHeight,
   scrollViewRef,
+  scrollViewHeight,
   translationY,
   footerTranslationY,
   isInputFieldFocused,
@@ -69,14 +71,21 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
         ? animationConfigIsScrollable
         : animationConfigIsNotScrollable;
 
+      const someHeight = isScrollable ? height : contentHeight.value;
+
+      const scrollingLength = contentHeight.value - someHeight;
+      const test = scrollingLength + footerHeight.value + headerHeight.value;
+
+      const random = test - res;
+      console.log(random, res, scrollingLength + footerHeight.value + headerHeight.value);
+
       contentHeightWhenKeyboardIsVisible.value = withTiming(
-        isScrollable ? height : contentHeight.value,
+        someHeight,
         { duration: AVOID_FLICKERING_MS },
         () => {
           footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
-          translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
-            scrollTo(scrollViewRef, 0, res, true);
-          });
+          translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {});
+          scrollTo(scrollViewRef, 0, random, true);
         },
       );
 

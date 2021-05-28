@@ -35,13 +35,13 @@ interface AnimatedReaction {
 const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   contentHeight: defaultContentHeight,
   translationY: defaultTranslationY,
+  scrollViewRef: defaultScrollViewRef,
+  scrollViewHeight: defaultScrollViewHeight,
   contentHeightWhenKeyboardIsVisible,
   disableScrollAnimation,
   keyboardAvoidBottomMargin,
   isInputFieldFocused,
   isKeyboardAvoidDisabled,
-  scrollViewRef,
-  scrollViewHeight,
   contextName,
   children,
 }) => {
@@ -52,6 +52,7 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   const { isKeyboardVisible, keyboardHeight, keyboardDuration } = useContext(KeyboardContext);
   const {
     scrollViewRef: bottomSheetScrollViewRef,
+    scrollViewHeight: bottomSheetScrollViewHeight,
     contentHeight: bottomSheetContentHeight,
     translationY: bottomSheetTranslationY,
     footerTranslationY,
@@ -59,14 +60,23 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
     footerHeight,
   } = useContext(ReusablePropsContext.bottomSheet);
 
-  const isTypeBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
+  const isContextNameBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
+
+  const scrollViewRef = useMemo(
+    () => (isContextNameBottomSheet ? bottomSheetScrollViewRef : defaultScrollViewRef),
+    [isContextNameBottomSheet, bottomSheetScrollViewRef, defaultScrollViewRef],
+  );
   const contentHeight = useMemo(
-    () => (isTypeBottomSheet ? bottomSheetContentHeight : defaultContentHeight),
-    [isTypeBottomSheet, bottomSheetContentHeight, defaultContentHeight],
+    () => (isContextNameBottomSheet ? bottomSheetContentHeight : defaultContentHeight),
+    [isContextNameBottomSheet, bottomSheetContentHeight, defaultContentHeight],
   );
   const translationY = useMemo(
-    () => (isTypeBottomSheet ? bottomSheetTranslationY : defaultTranslationY),
-    [isTypeBottomSheet, bottomSheetTranslationY, defaultTranslationY],
+    () => (isContextNameBottomSheet ? bottomSheetTranslationY : defaultTranslationY),
+    [isContextNameBottomSheet, bottomSheetTranslationY, defaultTranslationY],
+  );
+  const scrollViewHeight = useMemo(
+    () => (isContextNameBottomSheet ? bottomSheetScrollViewHeight : defaultScrollViewHeight),
+    [isContextNameBottomSheet, bottomSheetScrollViewHeight, defaultScrollViewHeight],
   );
 
   useAnimatedReaction(
@@ -79,7 +89,7 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
     }),
     (result: AnimatedReaction, previous: AnimatedReaction | null | undefined) => {
       if (!isKeyboardAvoidDisabled) {
-        if (!isTypeBottomSheet && result?.contentHeight && result.contentHeight.value > 0) {
+        if (!isContextNameBottomSheet && result?.contentHeight && result.contentHeight.value > 0) {
           return onIsInputFieldFocusedReaction({
             result,
             previous,
@@ -92,12 +102,13 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
             scrollViewRef,
             scrollViewHeight,
           });
-        } else if (isTypeBottomSheet) {
+        } else if (isContextNameBottomSheet) {
           return onIsInputFieldFocusedReactionBottomSheet({
             result,
             previous,
             windowHeight,
-            scrollViewRef: bottomSheetScrollViewRef,
+            scrollViewRef,
+            scrollViewHeight,
             contentHeight: bottomSheetContentHeight,
             translationY,
             footerTranslationY,
