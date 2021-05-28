@@ -3,7 +3,7 @@ This library provides some nice animation features with the latest reanimated 2+
 
 ## Current progress
 - [ ] ScrollViewKeyboardAvoid. Personally I have had a hard time using the KeyboardAvoidView from react-native or other libraries. This approach manipulates translationY position with reanimated. This ensures a very, consistent and reusable approach for all platforms
-  - [ ] A height needs to be set when it is not scrollable
+  - [ ] A height needs to be set when it is not scrollable. If its not scrollable then it wont scroll to the focused input field
   - [ ] Code example / integration description  
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
