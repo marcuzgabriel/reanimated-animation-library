@@ -4,7 +4,6 @@ import Animated, {
   useAnimatedStyle,
   useAnimatedReaction,
   interpolate,
-  useDerivedValue,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import SvgArrow from './SvgArrow';
@@ -32,12 +31,13 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
   position: string;
   topOffset: number;
   bottomOffset: number;
+  scrollArrowRatioOfWindowWidth?: number;
 }>`
   position: absolute;
   align-items: center;
   justify-content: center;
   z-index: 4;
-  width: 100%;
+  left: ${({ scrollArrowRatioOfWindowWidth }): number => scrollArrowRatioOfWindowWidth ?? 0}%;
   ${({ position, topOffset, bottomOffset }): string =>
     position === 'top' ? `top: ${topOffset}px` : `bottom: ${bottomOffset}px`}
 `);
@@ -60,7 +60,16 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   } = isContextNameBottomSheet ? reusablePropsContextBottomSheet : props;
   const { scrollArrows } = isContextNameBottomSheet ? userConfigurationContext : props;
 
+  const windowWidth = useWindowDimensions().width;
+
   const isPositionedTop = useMemo(() => position === 'top', [position]);
+  const scrollArrowRatioOfWindowWidth = useMemo(() => {
+    if (scrollArrows?.dimensions) {
+      const centerAlignedScrollArrowRatio = scrollArrows?.dimensions / 2;
+      return 50 - (centerAlignedScrollArrowRatio / windowWidth) * 100;
+    }
+  }, [scrollArrows?.dimensions, windowWidth]);
+
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
   const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
 
@@ -104,6 +113,7 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   return (
     <TouchableOpacity
       position={position}
+      scrollArrowRatioOfWindowWidth={scrollArrowRatioOfWindowWidth}
       topOffset={scrollArrows?.isEnabled ? scrollArrows.topArrowOffset : 0}
       bottomOffset={scrollArrows?.isEnabled ? scrollArrows.bottomArrowOffset : 0}
       onPress={(): void => {

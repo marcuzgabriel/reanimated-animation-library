@@ -7,7 +7,6 @@ interface ScrollTo {
 }
 
 export const scrollTo = ({ ref, to }: ScrollTo): void => {
-  console.log('...', ref);
   if (ref?.current) {
     const { scrollToEnd: fnEnd, scrollTo: fnTo }: any = ref.current;
     return to === 'end' ? fnEnd({ animated: true }) : fnTo({ y: 0, animated: true });

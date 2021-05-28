@@ -29,10 +29,8 @@ export const onSnappableReaction = ({
     const isSnapEffectActive = result && !isScrollable;
 
     if (isSnapEffectActive && !isSnapEffectActiveState) {
-      console.log('[ANIMATION REACTION #1]');
       runOnJS(setIsSnapEffectActiveState)(true);
     } else if (isSnapEffectActiveState) {
-      console.log('[ANIMATION REACTION #1]');
       runOnJS(setIsSnapEffectActiveState)(false);
     }
   }

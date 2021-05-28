@@ -51,10 +51,4 @@ export const onIsInputFieldFocusedReaction = ({
       scrollTo(scrollViewRef, 0, 500, true);
     }
   }
-
-  // console.log(contentHeight.value, windowHeight);
-
-  // if (derivedContentHeight?.value && e > 0) {
-  //   console.log('i am working...', windowHeight, derivedContentHeight.value);
-  // }
 };
