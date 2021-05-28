@@ -2,7 +2,7 @@
 This library provides some nice animation features with the latest reanimated 2+ (hooks) update approach that is suitable for all platforms: Web, Android and iOS. The features are a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
 ## Current progress
-- [x] ScrollViewKeyboardAvoid. Personally I have had a hard time using the KeyboardAvoidView from react-native or other libraries. Tis approach manipulates translationY position with reanimated. This ensures a very, consistent and reusable approach for all platforms 
+- [x] ScrollViewKeyboardAvoid. Personally I have had a hard time using the KeyboardAvoidView from react-native or other libraries. This approach manipulates translationY position with reanimated. This ensures a very, consistent and reusable approach for all platforms 
   - [ ] Code example / integration description  
 - [ ] BottomSheet
   - [ ] Aggressively scroll to top handler
