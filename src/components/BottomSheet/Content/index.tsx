@@ -47,10 +47,9 @@ const Content: React.FC<Props> = ({
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useDerivedValue(
-    () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
-    [footerHeight],
-  );
+  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
+    footerHeight,
+  ]);
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {

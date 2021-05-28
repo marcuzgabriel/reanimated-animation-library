@@ -13,14 +13,19 @@ export const { Provider } = KeyboardAvoidingViewContext;
 
 interface Props {
   scrollViewRef?: React.RefObject<Animated.ScrollView> | any;
+  scrollViewHeight?: Animated.SharedValue<number>;
   contentHeight?: Animated.SharedValue<number>;
   contentHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
+  disableScrollAnimation?: boolean;
+  keyboardAvoidBottomMargin?: number;
+  translationY?: Animated.SharedValue<number>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
+  isKeyboardAvoidDisabled?: boolean;
   contextName?: string;
   children: React.ReactNode;
 }
 interface AnimatedReaction {
-  contentHeight?: Animated.SharedValue<number> | undefined;
+  contentHeight?: Animated.SharedValue<number>;
   isKeyboardVisible: Animated.SharedValue<boolean>;
   keyboardHeight: Animated.SharedValue<number>;
   keyboardDuration: Animated.SharedValue<number>;
@@ -29,28 +34,40 @@ interface AnimatedReaction {
 
 const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   contentHeight: defaultContentHeight,
-  isInputFieldFocused,
+  translationY: defaultTranslationY,
   contentHeightWhenKeyboardIsVisible,
+  disableScrollAnimation,
+  keyboardAvoidBottomMargin,
+  isInputFieldFocused,
+  isKeyboardAvoidDisabled,
   scrollViewRef,
+  scrollViewHeight,
   contextName,
   children,
 }) => {
   const inputFields = useSharedValue<Record<string, any>>([]);
   const selectedInputFieldPositionY = useSharedValue(0);
-  const isTypeBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
   const windowHeight = useWindowDimensions().height;
 
   const { isKeyboardVisible, keyboardHeight, keyboardDuration } = useContext(KeyboardContext);
   const {
     scrollViewRef: bottomSheetScrollViewRef,
     contentHeight: bottomSheetContentHeight,
-    translationY,
+    translationY: bottomSheetTranslationY,
     footerTranslationY,
     headerHeight,
     footerHeight,
   } = useContext(ReusablePropsContext.bottomSheet);
 
-  const contentHeight = isTypeBottomSheet ? bottomSheetContentHeight : defaultContentHeight;
+  const isTypeBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
+  const contentHeight = useMemo(
+    () => (isTypeBottomSheet ? bottomSheetContentHeight : defaultContentHeight),
+    [isTypeBottomSheet, bottomSheetContentHeight, defaultContentHeight],
+  );
+  const translationY = useMemo(
+    () => (isTypeBottomSheet ? bottomSheetTranslationY : defaultTranslationY),
+    [isTypeBottomSheet, bottomSheetTranslationY, defaultTranslationY],
+  );
 
   useAnimatedReaction(
     () => ({
@@ -61,28 +78,35 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
       contentHeight,
     }),
     (result: AnimatedReaction, previous: AnimatedReaction | null | undefined) => {
-      if (!isTypeBottomSheet && result?.contentHeight && result.contentHeight.value > 0) {
-        return onIsInputFieldFocusedReaction({
-          result,
-          previous,
-          windowHeight,
-          contentHeight: result.contentHeight,
-          scrollViewRef,
-        });
-      } else if (isTypeBottomSheet) {
-        return onIsInputFieldFocusedReactionBottomSheet({
-          result,
-          previous,
-          windowHeight,
-          scrollViewRef: bottomSheetScrollViewRef,
-          contentHeight: bottomSheetContentHeight,
-          translationY,
-          footerTranslationY,
-          isInputFieldFocused,
-          contentHeightWhenKeyboardIsVisible,
-          headerHeight,
-          footerHeight,
-        });
+      if (!isKeyboardAvoidDisabled) {
+        if (!isTypeBottomSheet && result?.contentHeight && result.contentHeight.value > 0) {
+          return onIsInputFieldFocusedReaction({
+            result,
+            previous,
+            windowHeight,
+            contentHeight: result.contentHeight,
+            contentHeightWhenKeyboardIsVisible,
+            disableScrollAnimation,
+            keyboardAvoidBottomMargin,
+            translationY,
+            scrollViewRef,
+            scrollViewHeight,
+          });
+        } else if (isTypeBottomSheet) {
+          return onIsInputFieldFocusedReactionBottomSheet({
+            result,
+            previous,
+            windowHeight,
+            scrollViewRef: bottomSheetScrollViewRef,
+            contentHeight: bottomSheetContentHeight,
+            translationY,
+            footerTranslationY,
+            isInputFieldFocused,
+            contentHeightWhenKeyboardIsVisible,
+            headerHeight,
+            footerHeight,
+          });
+        }
       }
     },
     [isKeyboardVisible, selectedInputFieldPositionY, contentHeight],

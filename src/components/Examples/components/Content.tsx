@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import InputField from '../../InputField';
 
 const BottomSheetContentWrapper = styled.View`
-  margin: 32px;
+  padding: 32px;
 `;
 
 const inputStyle = {
@@ -43,7 +43,7 @@ const Content: React.FC = () => (
       voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
       non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     </Text>
-    <InputField uniqueId="1234" placeholder="useless placeholder" style={inputStyle} />
+    <InputField uniqueId="12345" placeholder="useless placeholder" style={inputStyle} />
   </BottomSheetContentWrapper>
 );
 

@@ -65,8 +65,11 @@ export interface MixedScrollViewProps extends ScrollViewProps {
   panGestureType?: Animated.SharedValue<number>;
   contentHeight?: Animated.SharedValue<number>;
   contentHeightWHenKeyboardIsVisible?: Animated.SharedValue<number>;
+  disableScrollAnimation?: boolean;
+  keyboardAvoidBottomMargin?: number;
   isScrollingCard?: Animated.SharedValue<boolean>;
   isInputFieldFocused?: Animated.SharedValue<boolean>;
+  isKeyboardAvoidDisabled?: boolean;
   contextName?: string;
   scrollArrows?: scrollArrows;
   children: React.ReactNode;

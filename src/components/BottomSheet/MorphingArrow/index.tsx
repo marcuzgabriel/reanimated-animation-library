@@ -38,10 +38,9 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
   const { translationY } = useContext(ReusablePropsContext.bottomSheet);
 
   const fill = useMemo(() => morphingArrow?.fill ?? 'white', [morphingArrow?.fill]);
-  const height = useMemo(
-    () => morphingArrow?.height ?? STATIC_ARROW_HEIGHT,
-    [morphingArrow?.height],
-  );
+  const height = useMemo(() => morphingArrow?.height ?? STATIC_ARROW_HEIGHT, [
+    morphingArrow?.height,
+  ]);
   const width = useMemo(() => morphingArrow?.width ?? STATIC_ARROW_WIDTH, [morphingArrow?.width]);
 
   const animatedProps = useAnimatedProps(() => {
@@ -69,7 +68,7 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
   return (
     <Wrapper>
       {morphingArrow?.isEnabled ? (
-        <Svg width="100%" viewBox={`0 0 ${windowWidth} 50`}>
+        <Svg>
           <AnimatedPath
             animatedProps={animatedProps}
             stroke={fill}

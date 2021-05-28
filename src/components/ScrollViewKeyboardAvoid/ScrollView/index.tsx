@@ -16,12 +16,21 @@ interface Props extends MixedScrollViewProps {
 const AnimatedWrapper = Animated.createAnimatedComponent(styled.View``);
 
 const ScrollView: React.FC<Props> = props => {
-  const { contentHeight, scrollArrows, scrollViewRef, children } = props;
+  const {
+    contentHeight,
+    scrollArrows,
+    scrollViewRef,
+    keyboardAvoidBottomMargin,
+    disableScrollAnimation,
+    isKeyboardAvoidDisabled,
+    children,
+  } = props;
 
   const scrollViewHeight = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const scrollingLength = useSharedValue(0);
   const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
+  const translationY = useSharedValue(0);
   const isInputFieldFocused = useSharedValue(false);
   const isScrolledToTop = useSharedValue(false);
   const isScrolledToEnd = useSharedValue(false);
@@ -34,12 +43,13 @@ const ScrollView: React.FC<Props> = props => {
   });
 
   const animatedStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> =>
-      contentHeightWhenKeyboardIsVisible?.value > 0
-        ? {
-            height: contentHeightWhenKeyboardIsVisible.value,
-          }
-        : {},
+    (): Animated.AnimatedStyleProp<ViewStyle> => ({
+      transform: [
+        {
+          translateY: translationY.value,
+        },
+      ],
+    }),
   );
 
   const onLayout = useCallback(
@@ -87,9 +97,14 @@ const ScrollView: React.FC<Props> = props => {
       >
         <KeyboardAvoidingViewProvider
           isInputFieldFocused={isInputFieldFocused}
+          isKeyboardAvoidDisabled={isKeyboardAvoidDisabled}
           contentHeight={contentHeight}
           contentHeightWhenKeyboardIsVisible={contentHeightWhenKeyboardIsVisible}
+          disableScrollAnimation={disableScrollAnimation}
+          keyboardAvoidBottomMargin={keyboardAvoidBottomMargin}
+          translationY={translationY}
           scrollViewRef={scrollViewRef}
+          scrollViewHeight={scrollViewHeight}
         >
           {children}
         </KeyboardAvoidingViewProvider>

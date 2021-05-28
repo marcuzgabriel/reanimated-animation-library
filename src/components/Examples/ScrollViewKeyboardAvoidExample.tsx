@@ -1,10 +1,12 @@
 import React, { Fragment } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, Platform } from 'react-native';
 import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import InputField from '../InputField';
 import ScrollViewKeyboardAvoid from '../ScrollViewKeyboardAvoid';
 import { SCROLL_EVENT_THROTTLE } from '../../constants/configs';
+
+const isIOS = Platform.OS === 'ios';
 
 const inputStyle = {
   width: '100%',
@@ -18,6 +20,13 @@ const inputStyle = {
 };
 
 const fakeScrollItem = [
+  {
+    text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+  laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+  cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
+  },
   {
     text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
   ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
@@ -59,8 +68,9 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
       <ScrollViewKeyboardAvoid
         ref={scrollViewRef}
         bounces={false}
+        keyboardAvoidBottomMargin={isIOS ? 64 : 100}
         scrollArrows={{
-          isEnabled: true,
+          isEnabled: false,
           dimensions: 40,
           fill: 'black',
           topArrowOffset: 40,
@@ -79,7 +89,7 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
                 {text} <InputField uniqueId="wtf" style={inputStyle} />
               </Text>
             </FakeContentWrapper>
-            <InputField uniqueId="wtf" style={inputStyle} />
+            <InputField uniqueId={i} style={inputStyle} />
           </Fragment>
         ))}
       </ScrollViewKeyboardAvoid>
