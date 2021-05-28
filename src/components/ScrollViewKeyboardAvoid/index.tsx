@@ -7,6 +7,9 @@ import ReusablePropsProvider from '../../containers/ReusablePropsProvider';
 
 type Ref = Animated.ScrollView;
 
+/* TODO: Cleanup proporsal. Not critical. Currently all props parsed into this component
+is parsed forward to Animated.ScrollView component. It does not affect performance or type
+assesment, but the component does have alot of unecessary props. */
 const ScrollViewKeyboardAvoid = React.forwardRef<Ref, MixedScrollViewProps>((props, ref) => {
   const { contextName, children } = props;
 
