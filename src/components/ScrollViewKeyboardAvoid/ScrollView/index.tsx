@@ -33,7 +33,14 @@ const ScrollView: React.FC<Props> = props => {
     },
   });
 
-  const animatedStyle = useAnimatedStyle((): Animated.AnimatedStyleProp<ViewStyle> => ({}));
+  const animatedStyle = useAnimatedStyle(
+    (): Animated.AnimatedStyleProp<ViewStyle> =>
+      contentHeightWhenKeyboardIsVisible?.value > 0
+        ? {
+            height: contentHeightWhenKeyboardIsVisible.value,
+          }
+        : {},
+  );
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent): void => {
@@ -70,7 +77,7 @@ const ScrollView: React.FC<Props> = props => {
   );
 
   return (
-    <>
+    <AnimatedWrapper style={animatedStyle}>
       <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="top" />
       <Animated.ScrollView
         ref={scrollViewRef}
@@ -88,7 +95,7 @@ const ScrollView: React.FC<Props> = props => {
         </KeyboardAvoidingViewProvider>
       </Animated.ScrollView>
       <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="bottom" />
-    </>
+    </AnimatedWrapper>
   );
 };
 

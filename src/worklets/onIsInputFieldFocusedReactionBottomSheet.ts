@@ -26,7 +26,7 @@ interface Props {
   windowHeight: number;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   contentHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
-  cardContentHeight: Animated.SharedValue<number>;
+  contentHeight: Animated.SharedValue<number>;
   headerHeight: Animated.SharedValue<number>;
   footerHeight: Animated.SharedValue<number>;
 }
@@ -35,7 +35,7 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
   result,
   previous,
   contentHeightWhenKeyboardIsVisible,
-  cardContentHeight,
+  contentHeight,
   headerHeight,
   footerHeight,
   windowHeight,
@@ -59,7 +59,7 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
         CLOSE_OPEN_CARD_BUTTON_HITSLOP;
 
       const height = availableContentSpace * KEYBOARD_CARD_HEIGHT_RATIO;
-      const isScrollable = cardContentHeight.value > height;
+      const isScrollable = contentHeight.value > height;
       const animationConfigIsScrollable = { duration: SCROLL_EVENT_THROTTLE };
       const animationConfigIsNotScrollable = {
         duration: result.keyboardDuration.value,
@@ -70,7 +70,7 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
         : animationConfigIsNotScrollable;
 
       contentHeightWhenKeyboardIsVisible.value = withTiming(
-        isScrollable ? height : cardContentHeight.value,
+        isScrollable ? height : contentHeight.value,
         { duration: AVOID_FLICKERING_MS },
         () => {
           footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);

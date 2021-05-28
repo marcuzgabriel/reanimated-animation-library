@@ -28,9 +28,9 @@ interface AnimatedReaction {
 }
 
 const KeyboardAvoidingViewProvider: React.FC<Props> = ({
+  contentHeight: defaultContentHeight,
   isInputFieldFocused,
   contentHeightWhenKeyboardIsVisible,
-  contentHeight,
   scrollViewRef,
   contextName,
   children,
@@ -43,12 +43,14 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   const { isKeyboardVisible, keyboardHeight, keyboardDuration } = useContext(KeyboardContext);
   const {
     scrollViewRef: bottomSheetScrollViewRef,
+    contentHeight: bottomSheetContentHeight,
     translationY,
     footerTranslationY,
-    cardContentHeight,
     headerHeight,
     footerHeight,
   } = useContext(ReusablePropsContext.bottomSheet);
+
+  const contentHeight = isTypeBottomSheet ? bottomSheetContentHeight : defaultContentHeight;
 
   useAnimatedReaction(
     () => ({
@@ -73,11 +75,11 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
           previous,
           windowHeight,
           scrollViewRef: bottomSheetScrollViewRef,
+          contentHeight: bottomSheetContentHeight,
           translationY,
           footerTranslationY,
           isInputFieldFocused,
           contentHeightWhenKeyboardIsVisible,
-          cardContentHeight,
           headerHeight,
           footerHeight,
         });
