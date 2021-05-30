@@ -7,7 +7,7 @@ This library provides some nice animation features with the latest reanimated 2+
   - [ ] Code example / integration description  
 - [x] InputField. This is a component that is connected to the above ScrollViewKeyboardAvoid. When focused and the minimum requirements for ScrollViewKeyboardAvoid is met, then a smooth scroll-to-focused-input field event will trigger.
 - [ ] BottomSheet
-  - [ ] Aggressively scroll to top handler
+  - [ ] Static event: When background content is not scrollable then the background content should not be snappable
   - [x] Scroll arrows that appear / dissapear
   - [x] Fading scroll edges for alle platforms 
   - [x] Drag resistance when using the snap effect
