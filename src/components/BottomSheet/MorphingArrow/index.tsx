@@ -1,4 +1,5 @@
 import React, { useMemo, useContext } from 'react';
+import { useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import { createPath, addCurve, interpolatePath } from 'react-native-redash';
@@ -6,7 +7,6 @@ import Svg, { Path } from 'react-native-svg';
 import SvgArrowStraight from './SvgArrowStraight';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
-import { useWindowDimensions } from 'react-native';
 
 const START_Y = 30;
 const X_OFFSET = 25;
@@ -38,9 +38,10 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
   const { translationY } = useContext(ReusablePropsContext.bottomSheet);
 
   const fill = useMemo(() => morphingArrow?.fill ?? 'white', [morphingArrow?.fill]);
-  const height = useMemo(() => morphingArrow?.height ?? STATIC_ARROW_HEIGHT, [
-    morphingArrow?.height,
-  ]);
+  const height = useMemo(
+    () => morphingArrow?.height ?? STATIC_ARROW_HEIGHT,
+    [morphingArrow?.height],
+  );
   const width = useMemo(() => morphingArrow?.width ?? STATIC_ARROW_WIDTH, [morphingArrow?.width]);
 
   const animatedProps = useAnimatedProps(() => {
@@ -68,7 +69,7 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
   return (
     <Wrapper>
       {morphingArrow?.isEnabled ? (
-        <Svg>
+        <Svg width="100%">
           <AnimatedPath
             animatedProps={animatedProps}
             stroke={fill}

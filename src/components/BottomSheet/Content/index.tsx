@@ -47,9 +47,10 @@ const Content: React.FC<Props> = ({
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
-    footerHeight,
-  ]);
+  const maxHeight = useDerivedValue(
+    () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
+    [footerHeight],
+  );
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -78,73 +79,71 @@ const Content: React.FC<Props> = ({
   );
 
   return (
-    <ContentWrapper>
-      <PanGestureHandler
-        enabled={Platform.OS !== 'web'}
-        ref={panGestureInnerRef}
-        shouldCancelWhenOutside={false}
-        simultaneousHandlers={nativeViewGestureRef}
-        onGestureEvent={gestureHandler}
-        onHandlerStateChange={(): void => {
-          if (panGestureType.value !== 1) {
-            panGestureType.value = 1;
-          }
-        }}
-      >
-        <Animated.View onLayout={onLayout} style={maxHeightStyle}>
-          {fadingScrollEdges?.isEnabled && (
-            <FadingEdge
-              position="top"
-              nativeColor={fadingScrollEdges.nativeBackgroundColor}
-              webColor={fadingScrollEdges.webBackgroundColorTop}
-            />
-          )}
-          <ScrollArrow contextName="bottomSheet" position="top" />
-          <NativeViewGestureHandler
-            ref={nativeViewGestureRef}
-            shouldCancelWhenOutside={false}
-            simultaneousHandlers={panGestureInnerRef}
+    <PanGestureHandler
+      enabled={Platform.OS !== 'web'}
+      ref={panGestureInnerRef}
+      shouldCancelWhenOutside={false}
+      simultaneousHandlers={nativeViewGestureRef}
+      onGestureEvent={gestureHandler}
+      onHandlerStateChange={(): void => {
+        if (panGestureType.value !== 1) {
+          panGestureType.value = 1;
+        }
+      }}
+    >
+      <Animated.View onLayout={onLayout} style={maxHeightStyle}>
+        {fadingScrollEdges?.isEnabled && (
+          <FadingEdge
+            position="top"
+            nativeColor={fadingScrollEdges.nativeBackgroundColor}
+            webColor={fadingScrollEdges.webBackgroundColorTop}
+          />
+        )}
+        <ScrollArrow contextName="bottomSheet" position="top" />
+        <NativeViewGestureHandler
+          ref={nativeViewGestureRef}
+          shouldCancelWhenOutside={false}
+          simultaneousHandlers={panGestureInnerRef}
+        >
+          <ScrollViewKeyboardAvoid
+            contextName="bottomSheet"
+            ref={scrollViewRef}
+            bounces={false}
+            alwaysBounceVertical={false}
+            directionalLockEnabled={true}
+            scrollArrows={scrollArrows}
+            fadingEdgeLength={ANDROID_FADING_EDGE_LENGTH}
+            onScroll={onScrollHandler}
+            onContentSizeChange={(_, height): void => {
+              contentHeight.value = height;
+            }}
+            scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+            onTouchMove={(): void => {
+              isScrollingCard.value = true;
+            }}
+            onTouchEnd={(): void => {
+              isScrollingCard.value = false;
+            }}
           >
-            <ScrollViewKeyboardAvoid
+            <KeyboardAvoidingViewProvider
               contextName="bottomSheet"
-              ref={scrollViewRef}
-              bounces={false}
-              alwaysBounceVertical={false}
-              directionalLockEnabled={true}
-              scrollArrows={scrollArrows}
-              fadingEdgeLength={ANDROID_FADING_EDGE_LENGTH}
-              onScroll={onScrollHandler}
-              onContentSizeChange={(_, height): void => {
-                contentHeight.value = height;
-              }}
-              scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-              onTouchMove={(): void => {
-                isScrollingCard.value = true;
-              }}
-              onTouchEnd={(): void => {
-                isScrollingCard.value = false;
-              }}
+              isInputFieldFocused={isInputFieldFocused}
+              contentHeightWhenKeyboardIsVisible={contentHeightWhenKeyboardIsVisible}
             >
-              <KeyboardAvoidingViewProvider
-                contextName="bottomSheet"
-                isInputFieldFocused={isInputFieldFocused}
-                contentHeightWhenKeyboardIsVisible={contentHeightWhenKeyboardIsVisible}
-              >
-                {children}
-              </KeyboardAvoidingViewProvider>
-            </ScrollViewKeyboardAvoid>
-          </NativeViewGestureHandler>
-          <ScrollArrow contextName="bottomSheet" position="bottom" />
-          {fadingScrollEdges?.isEnabled && (
-            <FadingEdge
-              position="bottom"
-              nativeColor={fadingScrollEdges.nativeBackgroundColor}
-              webColor={fadingScrollEdges.webBackgroundColorBottom}
-            />
-          )}
-        </Animated.View>
-      </PanGestureHandler>
-    </ContentWrapper>
+              {children}
+            </KeyboardAvoidingViewProvider>
+          </ScrollViewKeyboardAvoid>
+        </NativeViewGestureHandler>
+        <ScrollArrow contextName="bottomSheet" position="bottom" />
+        {fadingScrollEdges?.isEnabled && (
+          <FadingEdge
+            position="bottom"
+            nativeColor={fadingScrollEdges.nativeBackgroundColor}
+            webColor={fadingScrollEdges.webBackgroundColorBottom}
+          />
+        )}
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 

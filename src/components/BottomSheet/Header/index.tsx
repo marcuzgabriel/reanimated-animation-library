@@ -3,7 +3,6 @@ import { LayoutChangeEvent } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {
-  DEFAULT_BORDER_RADIUS,
   CLOSE_CARD_BUTTON_HEIGHT,
   CLOSE_OPEN_CARD_BUTTON_HITSLOP,
   HIT_SLOP,
@@ -47,9 +46,8 @@ const MorphingArrowWrapper = styled.View`
 const Wrapper = styled.View``;
 
 const Header: React.FC<Props> = ({ snapPointBottom, scrollY, onPress }) => {
-  const { headerComponent, borderTopRightRadius, borderTopLeftRadius } = useContext(
-    UserConfigurationContext,
-  );
+  const { headerComponent, borderTopRightRadius, borderTopLeftRadius } =
+    useContext(UserConfigurationContext);
   const { headerHeight } = useContext(ReusablePropsContext.bottomSheet);
 
   const onLayout = useCallback(

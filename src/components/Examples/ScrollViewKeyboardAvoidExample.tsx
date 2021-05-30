@@ -44,7 +44,7 @@ const fakeScrollItem = [
 ];
 
 const Wrapper = styled.View<{ windowHeight: number }>`
-  position: relative;
+  position: absolute;
   height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
 `;

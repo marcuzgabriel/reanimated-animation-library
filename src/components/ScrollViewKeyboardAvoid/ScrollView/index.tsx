@@ -13,7 +13,11 @@ interface Props extends MixedScrollViewProps {
   scrollViewRef: React.RefObject<Animated.ScrollView> | any;
 }
 
-const AnimatedWrapper = Animated.createAnimatedComponent(styled.View``);
+const AnimatedWrapper = Animated.createAnimatedComponent(
+  styled.View`
+    flex: 1;
+  `,
+);
 
 const ScrollView: React.FC<Props> = props => {
   const {
