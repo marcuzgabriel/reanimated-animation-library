@@ -58,11 +58,6 @@ const IPadRotationExmaple: React.FC = () => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const windowHeight = useWindowDimensions().height;
 
-  // * needed to determine scrollability...
-  const contentHeight = useSharedValue(0);
-
-  const test = '';
-
   return (
     <Wrapper height={windowHeight}>
       <Left />
