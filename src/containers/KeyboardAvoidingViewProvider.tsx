@@ -1,6 +1,10 @@
 import React, { useMemo, createContext, useContext } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
-import Animated, { useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedReaction,
+  useDerivedValue,
+} from 'react-native-reanimated';
 import { KeyboardContext } from '../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../containers/ReusablePropsProvider';
 import {
@@ -117,6 +121,7 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
             contentHeightWhenKeyboardIsVisible,
             disableScrollAnimation,
             keyboardAvoidBottomMargin,
+            isInputFieldFocused,
             translationY,
             scrollViewRef,
             scrollViewHeight,

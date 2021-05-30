@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   useAnimatedScrollHandler,
   useSharedValue,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import ScrollArrow from '../ScrollArrow';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
@@ -76,6 +77,7 @@ const ScrollView: React.FC<Props> = props => {
       isScrolledToTop,
       isScrolledToEnd,
       isScrollable,
+      isInputFieldFocused,
     }),
     [
       scrollViewRef,
@@ -87,6 +89,7 @@ const ScrollView: React.FC<Props> = props => {
       isScrolledToTop,
       isScrolledToEnd,
       isScrollable,
+      isInputFieldFocused,
     ],
   );
 

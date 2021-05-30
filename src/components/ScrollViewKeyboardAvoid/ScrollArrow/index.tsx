@@ -6,11 +6,13 @@ interface Props extends ScrollProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   scrollArrowTopComponent?: React.ReactNode;
   scrollArrowBottomComponent?: React.ReactNode;
+  isInputFieldFocused: Animated.SharedValue<boolean>;
   position: string;
   contextName: string;
 }
 
 interface ContextProps extends Partial<Props> {
+  isInputFieldFocused: Animated.SharedValue<boolean>;
   position: string;
   contextName: string;
 }

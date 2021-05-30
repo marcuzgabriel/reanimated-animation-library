@@ -11,8 +11,16 @@ import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider'
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 import { onScrollArrowAppearanceReaction } from '../../../worklets';
 import { scrollTo as scrollToHelper } from '../../../helpers';
-import { ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../../../constants/animations';
-import type { MixedScrollViewProps, ScrollProps } from '../../../types';
+import {
+  ARROW_UP_OFFSET,
+  ARROW_DOWN_OFFSET,
+  DEFAULT_TIMING_CONFIG,
+} from '../../../constants/animations';
+import type {
+  MixedScrollViewProps,
+  ScrollProps,
+  OnScrollArrowAppearanceReaction,
+} from '../../../types';
 import { useWindowDimensions } from 'react-native';
 
 interface Props extends Pick<MixedScrollViewProps, 'contentHeight' | 'scrollArrows'>, ScrollProps {
@@ -20,11 +28,13 @@ interface Props extends Pick<MixedScrollViewProps, 'contentHeight' | 'scrollArro
   position: string;
   contextName: string;
   component?: React.ReactNode;
+  isInputFieldFocused: Animated.SharedValue<boolean>;
 }
 
 interface ContextProps extends Partial<Props> {
   contextName: string;
   position: string;
+  isInputFieldFocused: Animated.SharedValue<boolean>;
 }
 
 const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacity<{
@@ -43,7 +53,8 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
 `);
 
 const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
-  const { contextName, position } = props;
+  const { contextName, position, isInputFieldFocused } = props;
+
   const isContextNameBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
   const reusablePropsContextBottomSheet = useContext(ReusablePropsContext.bottomSheet);
   const userConfigurationContext = useContext(UserConfigurationContext);
@@ -78,10 +89,11 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
       contentHeight,
       scrollViewHeight,
       scrollY,
+      isInputFieldFocused,
     }),
     (
-      result: Record<string, Animated.SharedValue<number>>,
-      _previous: Record<string, Animated.SharedValue<number>> | null | undefined,
+      result: OnScrollArrowAppearanceReaction,
+      _previous: OnScrollArrowAppearanceReaction | null | undefined,
     ) => {
       if (result.contentHeight?.value > 0 && result.scrollViewHeight?.value > 0) {
         onScrollArrowAppearanceReaction({
@@ -94,10 +106,11 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
           isScrolledToTop,
           isScrolledToEnd,
           isScrollable,
+          isInputFieldFocused,
         });
       }
     },
-    [scrollY, contentHeight, scrollViewHeight],
+    [scrollY, contentHeight, scrollViewHeight, isInputFieldFocused],
   );
 
   const animatedStyleUpArrow = useAnimatedStyle(() => ({

@@ -47,10 +47,9 @@ const Content: React.FC<Props> = ({
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useDerivedValue(
-    () => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
-    [footerHeight],
-  );
+  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
+    footerHeight,
+  ]);
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {
@@ -99,7 +98,11 @@ const Content: React.FC<Props> = ({
             webColor={fadingScrollEdges.webBackgroundColorTop}
           />
         )}
-        <ScrollArrow contextName="bottomSheet" position="top" />
+        <ScrollArrow
+          isInputFieldFocused={isInputFieldFocused}
+          contextName="bottomSheet"
+          position="top"
+        />
         <NativeViewGestureHandler
           ref={nativeViewGestureRef}
           shouldCancelWhenOutside={false}
@@ -134,7 +137,11 @@ const Content: React.FC<Props> = ({
             </KeyboardAvoidingViewProvider>
           </ScrollViewKeyboardAvoid>
         </NativeViewGestureHandler>
-        <ScrollArrow contextName="bottomSheet" position="bottom" />
+        <ScrollArrow
+          isInputFieldFocused={isInputFieldFocused}
+          contextName="bottomSheet"
+          position="bottom"
+        />
         {fadingScrollEdges?.isEnabled && (
           <FadingEdge
             position="bottom"

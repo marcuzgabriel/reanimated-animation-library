@@ -84,3 +84,10 @@ export interface ScrollProps {
   isScrolledToEnd?: Animated.SharedValue<boolean>;
   isScrollable?: Animated.SharedValue<boolean>;
 }
+
+export interface OnScrollArrowAppearanceReaction {
+  contentHeight: Animated.SharedValue<number>;
+  scrollViewHeight: Animated.SharedValue<number>;
+  scrollY: Animated.SharedValue<number>;
+  isInputFieldFocused: Animated.SharedValue<boolean>;
+}

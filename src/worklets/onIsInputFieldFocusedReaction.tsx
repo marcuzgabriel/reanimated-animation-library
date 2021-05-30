@@ -23,6 +23,7 @@ interface Props {
   scrollViewHeight?: Animated.SharedValue<number>;
   contentHeight: Animated.SharedValue<number>;
   contentHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
+  isInputFieldFocused: Animated.SharedValue<boolean>;
   keyboardAvoidBottomMargin?: number;
   disableScrollAnimation?: boolean;
   translationY: Animated.SharedValue<number>;
@@ -35,6 +36,7 @@ export const onIsInputFieldFocusedReaction = ({
   contentHeight,
   disableScrollAnimation,
   keyboardAvoidBottomMargin,
+  isInputFieldFocused,
   scrollViewRef,
   scrollViewHeight,
   translationY,
@@ -62,8 +64,11 @@ export const onIsInputFieldFocusedReaction = ({
 
       translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {});
       scrollTo(scrollViewRef, 0, scrollToNumber, disableScrollAnimation ? false : true);
+
+      isInputFieldFocused.value = true;
     } else {
       translationY.value = 0;
+      isInputFieldFocused.value = false;
     }
   }
 };
