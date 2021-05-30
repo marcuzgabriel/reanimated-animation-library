@@ -1,23 +1,34 @@
 import React, { Fragment } from 'react';
-import { useWindowDimensions, Platform } from 'react-native';
-import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedRef } from 'react-native-reanimated';
+import { useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
-import InputField from '../InputField';
 import ScrollViewKeyboardAvoid from '../ScrollViewKeyboardAvoid';
-import { SCROLL_EVENT_THROTTLE } from '../../constants/configs';
 
-const isIOS = Platform.OS === 'ios';
+const Wrapper = styled.View<{ height: number }>`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: ${({ height }): number => height}px;
+`;
 
-const inputStyle = {
-  width: '100%',
-  height: 50,
-  textAlign: 'center',
-  justifyContent: 'center',
-  borderRadius: 6,
-  borderWidth: 2,
-  borderColor: 'black',
-  backgroundColor: 'white',
-};
+const Left = styled.View`
+  flex: 1;
+  height: 100%;
+`;
+const Right = styled.View`
+  flex: 1;
+  height: 100%;
+  border-left-width: 1px;
+`;
+
+const FakeContentWrapper = styled.View<{ height: number }>`
+  background: white;
+  height: ${({ height }): number => height}px;
+  width: 100%;
+  padding: 32px 16px;
+`;
+
+const Text = styled.Text``;
 
 const fakeScrollItem = [
   {
@@ -43,48 +54,35 @@ const fakeScrollItem = [
   },
 ];
 
-const Wrapper = styled.View<{ windowHeight: number }>`
-  position: absolute;
-  height: ${({ windowHeight }): number => windowHeight}px;
-  width: 100%;
-`;
-
-const FakeContentWrapper = styled.View<{ windowHeight: number }>`
-  background: white;
-  height: ${({ windowHeight }): number => windowHeight}px;
-  width: 100%;
-  padding: 32px 16px;
-`;
-
-const Text = styled.Text``;
-
-const ScrollViewKeyboardAvoidExample: React.FC = () => {
+const IPadRotationExmaple: React.FC = () => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const windowHeight = useWindowDimensions().height;
 
+  // * needed to determine scrollability...
+  const contentHeight = useSharedValue(0);
+
+  const test = '';
+
   return (
-    <Wrapper windowHeight={windowHeight}>
+    <Wrapper height={windowHeight}>
+      <Left />
       <ScrollViewKeyboardAvoid
         ref={scrollViewRef}
         bounces={false}
-        keyboardAvoidBottomMargin={isIOS ? 64 : 100}
         scrollArrows={{
-          isEnabled: false,
+          isEnabled: true,
           dimensions: 40,
           fill: 'black',
           topArrowOffset: 40,
           bottomArrowOffset: 40,
         }}
-        scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+        scrollEventThrottle={16}
       >
         {fakeScrollItem.map(({ text }, i) => (
           <Fragment key={i}>
-            <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
-              <Text>
-                {text} <InputField uniqueId="wtf" style={inputStyle} />
-              </Text>
+            <FakeContentWrapper height={windowHeight} key={`${i}_${text}`}>
+              <Text>{text}</Text>
             </FakeContentWrapper>
-            <InputField uniqueId={i} style={inputStyle} />
           </Fragment>
         ))}
       </ScrollViewKeyboardAvoid>
@@ -92,4 +90,4 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
   );
 };
 
-export default ScrollViewKeyboardAvoidExample;
+export default IPadRotationExmaple;

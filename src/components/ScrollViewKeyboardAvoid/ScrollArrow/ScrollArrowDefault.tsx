@@ -11,11 +11,7 @@ import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider'
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 import { onScrollArrowAppearanceReaction } from '../../../worklets';
 import { scrollTo as scrollToHelper } from '../../../helpers';
-import {
-  ARROW_UP_OFFSET,
-  ARROW_DOWN_OFFSET,
-  DEFAULT_TIMING_CONFIG,
-} from '../../../constants/animations';
+import { ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../../../constants/animations';
 import type {
   MixedScrollViewProps,
   ScrollProps,
@@ -23,7 +19,7 @@ import type {
 } from '../../../types';
 import { useWindowDimensions } from 'react-native';
 
-interface Props extends Pick<MixedScrollViewProps, 'contentHeight' | 'scrollArrows'>, ScrollProps {
+interface Props extends Pick<MixedScrollViewProps, 'scrollArrows'>, ScrollProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   position: string;
   contextName: string;

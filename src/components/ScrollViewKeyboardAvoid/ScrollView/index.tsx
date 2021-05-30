@@ -22,18 +22,19 @@ const AnimatedWrapper = Animated.createAnimatedComponent(
 
 const ScrollView: React.FC<Props> = props => {
   const {
-    contentHeight,
     scrollArrows,
     scrollViewRef,
     keyboardAvoidBottomMargin,
     disableScrollAnimation,
     isKeyboardAvoidDisabled,
+    onContentSizeChange,
     children,
   } = props;
 
   const scrollViewHeight = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const scrollingLength = useSharedValue(0);
+  const contentHeight = useSharedValue(0);
   const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
   const translationY = useSharedValue(0);
   const isInputFieldFocused = useSharedValue(false);
@@ -100,6 +101,13 @@ const ScrollView: React.FC<Props> = props => {
         ref={scrollViewRef}
         onLayout={onLayout}
         onScroll={onScrollHandler}
+        onContentSizeChange={(width, height): void => {
+          if (typeof onContentSizeChange === 'function') {
+            onContentSizeChange(width, height);
+          }
+
+          contentHeight.value = height;
+        }}
         {...props}
       >
         <KeyboardAvoidingViewProvider
