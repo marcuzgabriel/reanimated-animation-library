@@ -1,8 +1,8 @@
 # [WIP] Reanimated-animation-library
-This library provides some nice animation features with the latest reanimated 2+ (hooks) update approach that is suitable for all platforms: Web, Android and iOS. The features are a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
+This library provides some nice animation features with the latest reanimated 2+ (hooks) approach. The libraray is suitable for all platforms: Web, Android and iOS. Maximum performance is achieved by using animation reactions and eliminating useState events. This library consists of a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
 ## Current progress
-- [ ] ScrollViewKeyboardAvoid. Personally I have had a hard time using the KeyboardAvoidView from react-native or other libraries. This approach manipulates translationY position with reanimated. This ensures a very, consistent and reusable approach for all platforms
+- [ ] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Next it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```Javascript <InputField />``` component and ensure that the content container has a minimum height of windowHeight - keyboardHeight + 1px. Everything below windowHeight - keyboardHeight + 1px don't need a keyboard avoid approach when the keyboard is visible.
   - [ ] A height needs to be set when it is not scrollable. If its not scrollable then it wont scroll to the focused input field
   - [ ] Code example / integration description  
 - [ ] BottomSheet
