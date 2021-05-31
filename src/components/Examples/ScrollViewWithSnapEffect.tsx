@@ -8,10 +8,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Content from './components/Content';
 import BottomSheet from '../../components/BottomSheet';
-import SnapEffect from '../../components/BottomSheet/SnapEffect';
+import SnapEffect from '../SnapEffect';
 
-const SCROLL_EVENT_THROTTHLE = 16;
-const SCROLL_ARROW_DIMESIONS = 40;
 const SCROLL_ARROW_OFFSET = 5;
 const HEADER_HEIGHT = 50;
 const EXTRA_SNAP_POINT_OFFSET = 30;
@@ -24,7 +22,7 @@ const fakeScrollItem = [
   ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
   laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
   voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-  cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
+`,
   },
 ];
 
@@ -34,29 +32,20 @@ const Wrapper = styled.View<{ windowHeight: number }>`
   width: 100%;
 `;
 
+const Header = styled.View`
+  width: 100%;
+  height: 100px;
+  background: black;
+  justify
+`;
+
 const Text = styled.Text``;
 
 const FakeContentWrapper = styled.View<{ windowHeight: number }>`
   background: white;
-  height: ${({ windowHeight }): number => windowHeight}px;
+  height: 100%;
   width: 100%;
   padding: 32px 16px;
-`;
-
-const BackgroundContent = styled.View`
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  right: 0px;
-  left: 0px;
-  z-index: 1;
-`;
-
-const Arrow = styled.View`
-  width: 50px;
-  height: 50px;
-  background-color: black;
-  border: 1px solid black;
 `;
 
 const ScrollViewWithSnapEffect: React.FC = () => {
@@ -75,24 +64,23 @@ const ScrollViewWithSnapEffect: React.FC = () => {
 
   return (
     <Wrapper windowHeight={windowHeight}>
-      <BackgroundContent>
-        <Animated.ScrollView
-          ref={scrollViewRef}
-          bounces={false}
-          alwaysBounceVertical={false}
-          onScroll={onScrollHandler}
-          scrollEventThrottle={SCROLL_EVENT_THROTTHLE}
-        >
-          <SnapEffect cardHeight={cardHeight} snapEffectDirection={snapEffectDirection}>
-            {fakeScrollItem.map(({ text }, i) => (
-              <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
-                <Text>{text}</Text>
-              </FakeContentWrapper>
-            ))}
-          </SnapEffect>
-        </Animated.ScrollView>
-      </BackgroundContent>
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        bounces={false}
+        alwaysBounceVertical={false}
+        onScroll={onScrollHandler}
+        scrollEventThrottle={16}
+      >
+        <SnapEffect cardHeight={cardHeight} snapEffectDirection={snapEffectDirection}>
+          {fakeScrollItem.map(({ text }, i) => (
+            <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
+              <Text>{text}</Text>
+            </FakeContentWrapper>
+          ))}
+        </SnapEffect>
+      </Animated.ScrollView>
       <BottomSheet
+        scrollY={scrollY}
         morphingArrow={{ isEnabled: true }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}

@@ -54,6 +54,7 @@ export interface BottomSheetConfiguration {
     webBackgroundColorTop?: Record<string, string>;
     webBackgroundColorBottom?: Record<string, string>;
   };
+  offsetAddition?: number;
   getCurrentConfigRequest?: (config: Record<string, any>) => void;
   onLayoutRequest?: (cardHeight: number) => void;
 }

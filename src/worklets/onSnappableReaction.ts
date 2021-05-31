@@ -2,10 +2,11 @@ import Animated, { runOnJS } from 'react-native-reanimated';
 import { IS_SCROLLABLE_OFFSET } from '../constants/animations';
 
 interface Props {
-  result: boolean | undefined;
-  previous: boolean | undefined | null;
+  result: Record<string, Animated.SharedValue<number>>;
+  previous: Record<string, Animated.SharedValue<number>> | undefined | null;
   contentHeight: Animated.SharedValue<number>;
   isSnapEffectActiveState: boolean;
+  isCardOverlappingContent: boolean;
   windowHeight: number;
   setIsSnapEffectActiveState: (status: boolean) => void;
 }
@@ -16,19 +17,14 @@ export const onSnappableReaction = ({
   windowHeight,
   contentHeight,
   isSnapEffectActiveState,
+  isCardOverlappingContent,
   setIsSnapEffectActiveState,
 }: Props): void => {
   'worklet';
   if (result !== previous) {
-    /* Be aware: window height is a very easy way
-    of determing scrollability as in many cases there
-    are a header that needs to be a part of the calculation
-    as well */
-
     const isScrollable = contentHeight.value > windowHeight + IS_SCROLLABLE_OFFSET;
-    const isSnapEffectActive = result && !isScrollable;
 
-    if (isSnapEffectActive && !isSnapEffectActiveState) {
+    if (isCardOverlappingContent && !isScrollable) {
       runOnJS(setIsSnapEffectActiveState)(true);
     } else if (isSnapEffectActiveState) {
       runOnJS(setIsSnapEffectActiveState)(false);

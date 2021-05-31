@@ -40,7 +40,7 @@ const InputField: React.FC<Props> = props => {
       );
 
       if (hasSameIdentifier) {
-        throw new Error(`uniqueId: ${props.uniqueId} already exists. Please change it`);
+        console.warn(`uniqueId: ${props.uniqueId} already exists. Please change it`);
       }
     }
   };
@@ -51,7 +51,7 @@ const InputField: React.FC<Props> = props => {
         ({ identifier }: Record<string, number | string>) => identifier === props.uniqueId,
       ).y;
     } catch (err) {
-      throw new Error(
+      console.warn(
         'Please provide a uniqueId prop to the input field so the animation know what to look for',
       );
     }
