@@ -1,6 +1,6 @@
 import Animated, { withTiming, scrollTo } from 'react-native-reanimated';
 import { KEYBOARD_TIMING_EASING } from '../constants/animations';
-import { CLOSE_OPEN_CARD_BUTTON_HITSLOP, KEYBOARD_CARD_HEIGHT_RATIO } from '../constants/styles';
+import { CLOSE_OPEN_CARD_BUTTON_HITSLOP, MAX_HEIGHT_RATIO } from '../constants/styles';
 import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
 
 /* NOTE: Eliminating race condition and flickering effect: When an input
@@ -52,9 +52,7 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
   'worklet';
 
   if (result !== previous) {
-    const areAllLayoutsCalculated = headerHeight.value > 0 && footerHeight.value > 0;
-
-    if (result.keyboardHeight.value > 0 && areAllLayoutsCalculated) {
+    if (result.keyboardHeight.value > 0) {
       const res = result.selectedInputFieldPositionY.value;
       const availableContentSpace =
         windowHeight -
@@ -63,7 +61,7 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
         result.keyboardHeight.value -
         CLOSE_OPEN_CARD_BUTTON_HITSLOP;
 
-      const height = availableContentSpace * KEYBOARD_CARD_HEIGHT_RATIO;
+      const height = availableContentSpace * MAX_HEIGHT_RATIO;
       const isScrollable = contentHeight.value > height;
       const animationConfigIsScrollable = { duration: SCROLL_EVENT_THROTTLE };
       const animationConfigIsNotScrollable = {

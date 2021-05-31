@@ -29,8 +29,6 @@ interface Props {
   gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
 }
 
-const ContentWrapper = styled.View``;
-
 const Content: React.FC<Props> = ({
   gestureHandler,
   panGestureType,
@@ -39,7 +37,9 @@ const Content: React.FC<Props> = ({
   children,
 }) => {
   const windowHeight = useWindowDimensions().height;
-  const { fadingScrollEdges, scrollArrows } = useContext(UserConfigurationContext);
+  const { fadingScrollEdges, scrollArrows, maxHeight: configMaxHeight } = useContext(
+    UserConfigurationContext,
+  );
   const { scrollViewRef, scrollY, scrollViewHeight, contentHeight, footerHeight } = useContext(
     ReusablePropsContext.bottomSheet,
   );
@@ -47,9 +47,10 @@ const Content: React.FC<Props> = ({
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
   const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
-  const maxHeight = useDerivedValue(() => (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO, [
-    footerHeight,
-  ]);
+  const maxHeight = useDerivedValue(
+    () => configMaxHeight ?? (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
+    [footerHeight, configMaxHeight],
+  );
 
   const onScrollHandler = useAnimatedScrollHandler({
     onScroll: e => {

@@ -26,8 +26,6 @@ const TouchableOpacity = styled.TouchableOpacity<{
   border-top-left-radius: ${({ borderTopLeftRadius }): number => borderTopLeftRadius ?? 0}px;
   z-index: 2;
   background: transparent;
-  border-bottom-color: white;
-  border-bottom-width: 1px;
 `;
 
 const HitSlopAreaWrapper = styled.View`
@@ -46,8 +44,9 @@ const MorphingArrowWrapper = styled.View`
 const Wrapper = styled.View``;
 
 const Header: React.FC<Props> = ({ snapPointBottom, scrollY, onPress }) => {
-  const { headerComponent, borderTopRightRadius, borderTopLeftRadius } =
-    useContext(UserConfigurationContext);
+  const { headerComponent, borderTopRightRadius, borderTopLeftRadius } = useContext(
+    UserConfigurationContext,
+  );
   const { headerHeight } = useContext(ReusablePropsContext.bottomSheet);
 
   const onLayout = useCallback(

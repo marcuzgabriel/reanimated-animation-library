@@ -3,6 +3,8 @@
 
 declare module '@marcuzgabriel/reanimated-animation-library' {
   import React from 'react';
+  import { ScrollViewProps } from 'react-native';
+
   export interface BottomSheetConfiguration {
     /**
      * @scrollY ---
@@ -73,9 +75,34 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     uniqueId: number | string;
     style: StyleTypeFix<TextStyle>;
   }
+  interface ScrollViewKeyboardAvoidProps extends ScrollViewProps {
+    panGestureType?: Animated.SharedValue<number>;
+    contentHeightWHenKeyboardIsVisible?: Animated.SharedValue<number>;
+    disableScrollAnimation?: boolean;
+    keyboardAvoidBottomMargin?: number;
+    isScrollingCard?: Animated.SharedValue<boolean>;
+    isInputFieldFocused?: Animated.SharedValue<boolean>;
+    isKeyboardAvoidDisabled?: boolean;
+    contextName?: string;
+    scrollArrows?: scrollArrows;
+    children: React.ReactNode;
+    onIsInputFieldFocusedRequest?: (status: boolean, availableHeight: number) => void;
+    gestureHandler?: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
+  }
+
+  interface SnapEffectProps {
+    children: React.ReactNode;
+    cardHeight: Animated.SharedValue<number>;
+    snapEffectDirection: Animated.SharedValue<string>;
+    offsetAddition?: number;
+  }
 
   // Components
   export function BottomSheet<P extends BottomSheetConfiguration>(props: P): React.ReactElement<P>;
   export function InputField<P extends InputFieldProps>(props: P): React.ReactElement<P>;
+  export function SnapEffect<P extends SnapEffectProps>(props: P): React.ReactElement<P>;
   export function ScrollViewWithSnapEffect(): React.ReactElement;
+  export function ScrollViewKeyboardAvoid<P extends ScrollViewKeyboardAvoidProps>(
+    props: P,
+  ): React.ReactElement<P>;
 }

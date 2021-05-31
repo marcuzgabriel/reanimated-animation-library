@@ -27,6 +27,7 @@ export interface BottomSheetConfiguration {
   scrollArrows?: scrollArrows;
   extraSnapPointBottomOffset?: number;
   keyboardAvoidBottomMargin?: number;
+  maxHeight?: number;
   cardStyle?: {
     maxHeightRatio?: number;
     maxHeightRatioWhenKeyboardIsVisible?: number;
