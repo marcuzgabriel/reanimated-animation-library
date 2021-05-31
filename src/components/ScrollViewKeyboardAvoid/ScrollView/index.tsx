@@ -27,6 +27,7 @@ const ScrollView: React.FC<Props> = props => {
     disableScrollAnimation,
     isKeyboardAvoidDisabled,
     onContentSizeChange,
+    onIsInputFieldFocusedRequest,
     children,
   } = props;
 
@@ -119,6 +120,7 @@ const ScrollView: React.FC<Props> = props => {
           translationY={translationY}
           scrollViewRef={scrollViewRef}
           scrollViewHeight={scrollViewHeight}
+          onIsInputFieldFocusedRequest={onIsInputFieldFocusedRequest}
         >
           {children}
         </KeyboardAvoidingViewProvider>

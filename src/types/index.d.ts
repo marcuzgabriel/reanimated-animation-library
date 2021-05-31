@@ -68,6 +68,7 @@ export interface MixedScrollViewProps extends ScrollViewProps {
   contextName?: string;
   scrollArrows?: scrollArrows;
   children: React.ReactNode;
+  onIsInputFieldFocusedRequest?: (status: boolean, availableHeight: number) => void;
   gestureHandler?: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
 }
 export interface ScrollProps {

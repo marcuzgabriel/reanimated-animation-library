@@ -27,7 +27,7 @@ const svgConfig = (stopColor?: string): Record<string, React.ReactElement> => ({
 });
 
 const GradientToBottomWhite: React.FC<Props> = ({ height, width, stopColor, viewBox }) => (
-  <Svg height={height} width={width} viewBox={viewBox}>
+  <Svg height={height} width={width}>
     {svgConfig(stopColor).svg}
   </Svg>
 );

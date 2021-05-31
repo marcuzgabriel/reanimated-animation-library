@@ -1,5 +1,5 @@
 import Animated, { scrollTo } from 'react-native-reanimated';
-import { withTiming } from 'react-native-reanimated';
+import { withTiming, runOnJS } from 'react-native-reanimated';
 import { KEYBOARD_TIMING_EASING } from '../constants/animations';
 import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
 
@@ -27,6 +27,7 @@ interface Props {
   keyboardAvoidBottomMargin?: number;
   disableScrollAnimation?: boolean;
   translationY: Animated.SharedValue<number>;
+  onIsInputFieldFocusedRequest?: (status: boolean, availableHeight: number) => void;
 }
 
 export const onIsInputFieldFocusedReaction = ({
@@ -40,6 +41,7 @@ export const onIsInputFieldFocusedReaction = ({
   scrollViewRef,
   scrollViewHeight,
   translationY,
+  onIsInputFieldFocusedRequest,
 }: Props): void => {
   'worklet';
 
@@ -62,13 +64,21 @@ export const onIsInputFieldFocusedReaction = ({
       const defaultKeyboardAvoidBottomMargin = keyboardAvoidBottomMargin ?? 0;
       const scrollToNumber = res - scrollViewHeight.value + defaultKeyboardAvoidBottomMargin;
 
-      translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {});
-      scrollTo(scrollViewRef, 0, scrollToNumber, disableScrollAnimation ? false : true);
+      translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
+        scrollTo(scrollViewRef, 0, scrollToNumber, disableScrollAnimation ? false : true);
+        if (typeof onIsInputFieldFocusedRequest === 'function') {
+          runOnJS(onIsInputFieldFocusedRequest)(true, availableHeight);
+        }
+      });
 
       isInputFieldFocused.value = true;
     } else {
       translationY.value = 0;
       isInputFieldFocused.value = false;
+
+      if (typeof onIsInputFieldFocusedRequest === 'function') {
+        runOnJS(onIsInputFieldFocusedRequest)(false, 0);
+      }
     }
   }
 };
