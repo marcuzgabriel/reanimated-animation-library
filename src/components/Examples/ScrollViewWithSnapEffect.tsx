@@ -93,7 +93,6 @@ const ScrollViewWithSnapEffect: React.FC = () => {
         </Animated.ScrollView>
       </BackgroundContent>
       <BottomSheet
-        scrollY={scrollY}
         morphingArrow={{ isEnabled: true }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}

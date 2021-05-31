@@ -13,10 +13,10 @@ import {
   PanGestureHandlerEventPayload,
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
-import FadingEdge from '../FadingEdge';
-import { MAX_HEIGHT_RATIO } from '../../../constants/styles';
 import ScrollArrow from '../../ScrollViewKeyboardAvoid/ScrollArrow';
 import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
+import FadingEdge from '../../ScrollViewKeyboardAvoid/FadingEdge';
+import { MAX_HEIGHT_RATIO } from '../../../constants/styles';
 import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';

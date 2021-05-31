@@ -8,12 +8,7 @@ interface scrollArrows {
   bottomArrowOffset: number;
 }
 export interface BottomSheetConfiguration {
-  /**
-   * @scrollY ---
-   * Required Animation.SharedValue of number that attaches to
-   * the BottomSheet and ensures it works properly
-   */
-  scrollY: Animated.SharedValue<number>;
+  scrollY?: Animated.SharedValue<number>;
   /**
    *  @snapEffectDirection ---
    *  Prop that connects card to SnapEffect component.
