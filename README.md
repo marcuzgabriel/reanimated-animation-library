@@ -1,10 +1,12 @@
 # [WIP] Reanimated-animation-library
 This library provides some nice animation features with the latest reanimated 2+ (hooks) approach. The libraray is suitable for all platforms: Web, Android and iOS. Maximum performance is achieved by using animation reactions and eliminating useState events. This library consists of a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
-Please note that react-native-reanimated library has a bug when it comes to svg morphing on web which is currently being addressed: https://github.com/software-mansion/react-native-reanimated/issues/1951. An example on how to remove it from the BottomSheet until a fix is in place. Or fork my solution noticed in the link: 
+Please note that react-native-reanimated library has a bug when it comes to svg morphing on web which is currently being addressed: https://github.com/software-mansion/react-native-reanimated/issues/1951. An example on how to remove it from the BottomSheet until a fix is in place.
 ```Javascript
   <BottomSheet morphingArrow={{ isEnabled: Platform.OS !== 'web' }} />
 ```
+
+Or fork the react-native-reanimated and integrate my solution noticed in the link.
 
 <details>
   <summary>Gifs</summary>
