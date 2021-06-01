@@ -1,11 +1,23 @@
 import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { DEFAULT_BACKGROUND_COLOR } from '../constants/styles';
 
-/* It is not possible to put styles as a constant when
-running it on the UI thread */
-export const getAnimatedCardStyles = (
-  animatedValue: number,
-): Animated.AnimatedStyleProp<Record<string, unknown>> => {
+/* Borders will always be defined either by user config or
+default based on the provider. The interface concerning
+border is for type satisfaction */
+interface Props {
+  translationY: Animated.SharedValue<number>;
+  borderTopRightRadius?: number;
+  borderTopLeftRadius?: number;
+  backgroundColor?: string;
+}
+
+export const getAnimatedCardStyles = ({
+  translationY,
+  borderTopLeftRadius,
+  borderTopRightRadius,
+  backgroundColor,
+}: Props): Animated.AnimatedStyleProp<Record<string, unknown>> => {
   'worklet';
 
   return Platform.OS === 'ios'
@@ -13,25 +25,25 @@ export const getAnimatedCardStyles = (
         position: 'absolute',
         zIndex: 2,
         width: '100%',
-        borderTopRightRadius: 16,
-        borderTopLeftRadius: 16,
+        borderTopRightRadius,
+        borderTopLeftRadius,
         bottom: 0,
-        backgroundColor: 'lightgrey',
+        backgroundColor: backgroundColor ?? DEFAULT_BACKGROUND_COLOR,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 5,
-        transform: [{ translateY: animatedValue }],
+        transform: [{ translateY: translationY }],
       }
     : {
         position: 'absolute',
         zIndex: 2,
         width: '100%',
         bottom: 0,
-        borderTopRightRadius: 16,
-        borderTopLeftRadius: 16,
-        backgroundColor: 'lightgrey',
+        borderTopRightRadius,
+        borderTopLeftRadius,
+        backgroundColor: backgroundColor ?? DEFAULT_BACKGROUND_COLOR,
         elevation: 10,
-        transform: [{ translateY: animatedValue }],
+        transform: [{ translateY: translationY }],
       };
 };

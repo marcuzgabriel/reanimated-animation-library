@@ -6,11 +6,6 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
   import { ScrollViewProps } from 'react-native';
 
   export interface BottomSheetConfiguration {
-    /**
-     * @scrollY ---
-     * Required Animation.SharedValue of number that attaches to
-     * the BottomSheet and ensures it works properly
-     */
     scrollY: Animated.SharedValue<number>;
     /**
      *  @snapEffectDirection ---
@@ -22,6 +17,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     extraOffset?: number;
     borderTopRightRadius?: number;
     borderTopLeftRadius?: number;
+    backgroundColor?: string;
     contentComponent: React.ReactNode;
     footerComponent?: React.ReactNode;
     headerComponent?: React.ReactNode;
@@ -35,12 +31,6 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       bottomArrowOffset?: number;
     };
     extraSnapPointBottomOffset?: number;
-    cardStyle?: {
-      maxHeightRatio?: number;
-      maxHeightRatioWhenKeyboardIsVisible?: number;
-      borderTopRightRadius?: number;
-      borderTopLeftRadius?: number;
-    };
     header?: {
       component?: React.ReactNode;
       hasMorphingArrow?: boolean;
@@ -49,7 +39,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       backgroundColor?: string;
     };
     morphingArrow?: {
-      isEnabled?: boolean;
+      isEnabled: boolean;
       height?: number;
       width?: number;
       fill?: string;

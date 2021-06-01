@@ -49,6 +49,9 @@ const Sheet: React.FC = () => {
   const {
     scrollY: configBackgroundContentScrollY,
     snapPointBottom: configSnapPointBottom,
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    backgroundColor,
     snapEffectDirection,
     contentComponent,
     onLayoutRequest,
@@ -173,7 +176,13 @@ const Sheet: React.FC = () => {
   );
 
   const panGestureStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => getAnimatedCardStyles(translationY.value),
+    (): Animated.AnimatedStyleProp<ViewStyle> =>
+      getAnimatedCardStyles({
+        translationY: translationY.value,
+        borderTopLeftRadius,
+        borderTopRightRadius,
+        backgroundColor,
+      }),
   );
 
   return (

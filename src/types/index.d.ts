@@ -19,6 +19,7 @@ export interface BottomSheetConfiguration {
   extraOffset?: number;
   borderTopRightRadius?: number;
   borderTopLeftRadius?: number;
+  backgroundColor?: string;
   contentComponent: React.ReactNode;
   footerComponent?: React.ReactNode;
   headerComponent?: React.ReactNode;
@@ -28,12 +29,6 @@ export interface BottomSheetConfiguration {
   extraSnapPointBottomOffset?: number;
   keyboardAvoidBottomMargin?: number;
   maxHeight?: number;
-  cardStyle?: {
-    maxHeightRatio?: number;
-    maxHeightRatioWhenKeyboardIsVisible?: number;
-    borderTopRightRadius?: number;
-    borderTopLeftRadius?: number;
-  };
   header?: {
     component?: React.ReactNode;
     hasMorphingArrow?: boolean;
