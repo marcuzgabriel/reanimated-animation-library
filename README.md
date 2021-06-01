@@ -1,6 +1,12 @@
 # [WIP] Reanimated-animation-library
 This library provides some nice animation features with the latest reanimated 2+ (hooks) approach. The libraray is suitable for all platforms: Web, Android and iOS. Maximum performance is achieved by using animation reactions and eliminating useState events. This library consists of a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
+
+![Alt Text](https://media.giphy.com/media/Ik9LNWjdCMrvGg5ToJ/giphy.gif)
+![Alt Text](https://media.giphy.com/media/HF6U0tvtuE7UQra27j/giphy.gif)
+![Alt Text](https://media.giphy.com/media/z386AcY2dPdthZLJKz/giphy.gif)
+
+
 <details>
   <summary>Progress</summary>
   
