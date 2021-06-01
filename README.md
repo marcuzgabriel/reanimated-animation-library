@@ -68,11 +68,116 @@ This library provides some nice animation features with the latest reanimated 2+
 <details>
   <summary>Integration</summary>
   
+## React integration
+```Javascript
+import React from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
+import styled from 'styled-components/native';
+import Animated, {
+  useSharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedRef,
+} from 'react-native-reanimated';
+import { BottomSheet, snapEffect } from '@marcuzgabriel/reanimated-animation-library';
+  
+const HEADER_HEIGHT = 50;
+const EXTRA_SNAP_POINT_OFFSET = 30;
+
+const isAndroid = Platform.OS === 'android';
+
+const fakeScrollItem = [
+  {
+    text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+  laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+`,
+  },
+];
+
+const Wrapper = styled.View<{ windowHeight: number }>`
+  position: relative;
+  height: ${({ windowHeight }): number => windowHeight}px;
+  width: 100%;
+`;
+
+conte Content = styled.View`
+  width: 100%;
+  height: 400;
+  background-color: purple;
+`;
+
+const Header = styled.View`
+  width: 100%;
+  height: 100px;
+  background: black;
+  justify
+`;
+
+const Text = styled.Text``;
+
+const FakeContentWrapper = styled.View<{ windowHeight: number }>`
+  background: white;
+  height: ${({ windowHeight }): number => windowHeight}px;
+  width: 100%;
+  padding: 32px 16px;
+`;
+
+const ScrollViewWithSnapEffect: React.FC = () => {
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollY = useSharedValue(0);
+  const cardHeight = useSharedValue(0);
+  const snapEffectDirection = useSharedValue('');
+
+  const windowHeight = useWindowDimensions().height;
+
+  const onScrollHandler = useAnimatedScrollHandler({
+    onScroll: e => {
+      scrollY.value = e.contentOffset.y;
+    },
+  });
+
+  return (
+    <Wrapper windowHeight={windowHeight}>
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        bounces={false}
+        alwaysBounceVertical={false}
+        onScroll={onScrollHandler}
+        scrollEventThrottle={16}
+      >
+        <SnapEffect cardHeight={cardHeight} snapEffectDirection={snapEffectDirection}>
+          {fakeScrollItem.map(({ text }, i) => (
+            <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
+              <Text>{text}</Text>
+            </FakeContentWrapper>
+          ))}
+        </SnapEffect>
+      </Animated.ScrollView>
+      <BottomSheet
+        scrollY={scrollY}
+        fadingScrollEdges={{ isEnabled: false }}
+        morphingArrow={{ isEnabled: true, offset: 20 }}
+        keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
+        snapEffectDirection={snapEffectDirection}
+        snapPointBottom={HEADER_HEIGHT + EXTRA_SNAP_POINT_OFFSET}
+        onLayoutRequest={(height: number): void => {
+          cardHeight.value = height;
+        }}
+        contentComponent={<Content />}
+      />
+    </Wrapper>
+  );
+};
+
+export default ScrollViewWithSnapEffect;
+```
+  
 ## Expo integration
 npm install @marcuzgabriel/reanimated-animation-library@1.0.0
 https://github.com/marcuzgabriel/reanimated-animation-library/packages/813007
 
-Update app.json accordingly
+Update app.json accordingly and remember to pod install and build the projects properly.
 ```Javascript
 {
   "name": "MyTSProject",
