@@ -2,12 +2,12 @@
 This library provides some nice animation features with the latest reanimated 2+ (hooks) approach. The libraray is suitable for all platforms: Web, Android and iOS. Maximum performance is achieved by using animation reactions and eliminating useState events. This library consists of a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
 ## Current progress
-- [ ] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Next it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```<InputField />``` component and ensure that the content container has a minimum height of windowHeight - keyboardHeight + 1px. Everything below windowHeight - keyboardHeight + 1px don't need a keyboard avoid approach when the keyboard is visible. Multiple examples can be found in the project Example folder.
+- [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Next it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```<InputField />``` component and ensure that the content container has a minimum height of windowHeight - keyboardHeight + 1px. Everything below windowHeight - keyboardHeight + 1px don't need a keyboard avoid approach when the keyboard is visible. Multiple examples can be found in the project Example folder.
   - [ ] A height needs to be set when it is not scrollable. If its not scrollable then it wont scroll to the focused input field
   - [ ] Code example / integration description  
 - [x] InputField. This is a component that is connected to the above ScrollViewKeyboardAvoid. When focused and the minimum requirements for ScrollViewKeyboardAvoid is met, then a smooth scroll-to-focused-input field event will trigger.
-- [ ] BottomSheet
-  - [ ] Static event: When background content is not scrollable then the background content should not be snappable
+- [x] BottomSheet
+  - [x] Static event: When background content is not scrollable then the background content should not be snappable
   - [x] Scroll arrows that appear / dissapear
   - [x] Fading scroll edges for alle platforms 
   - [x] Drag resistance when using the snap effect
@@ -55,6 +55,9 @@ Update app.json accordingly
   }
 }
 ```
+
+## Performance observations
+The only time a performance decrease occours is when the native keyboad appears. This type of performance decrease will always happend with or without reanimated. If you experience any other performance decrease, please let me know :)
 
 ## Observations
 Latest react-native-gesture-handler version vs old and latest react-native-reanimated vs old
