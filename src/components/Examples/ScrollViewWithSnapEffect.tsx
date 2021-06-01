@@ -10,7 +10,6 @@ import Content from './components/Content';
 import BottomSheet from '../../components/BottomSheet';
 import SnapEffect from '../SnapEffect';
 
-const SCROLL_ARROW_OFFSET = 5;
 const HEADER_HEIGHT = 50;
 const EXTRA_SNAP_POINT_OFFSET = 30;
 
@@ -45,7 +44,7 @@ const Text = styled.Text``;
 
 const FakeContentWrapper = styled.View<{ windowHeight: number }>`
   background: white;
-  height: 100%;
+  height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
   padding: 32px 16px;
 `;
