@@ -23,9 +23,9 @@ export const onActionRequestCloseOrOpenCard = ({
   'worklet';
   cancelAnimation(translationY);
   isAnimationRunning.value = true;
-  isCardCollapsed.value = !isCardCollapsed.value;
 
   const isSnapping = direction === 'up' || direction === 'down';
+  isCardCollapsed.value = direction === 'up' || translationY.value <= SPRING_OFFSET;
 
   if (isSnapping) {
     translationY.value = withSpring(

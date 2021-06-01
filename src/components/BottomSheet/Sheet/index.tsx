@@ -7,6 +7,7 @@ import Animated, {
   useDerivedValue,
   useAnimatedGestureHandler,
   runOnJS,
+  interpolate,
 } from 'react-native-reanimated';
 import { LayoutChangeEvent, ViewStyle, Platform, Keyboard } from 'react-native';
 import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
@@ -24,6 +25,8 @@ import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
+const HIDE_CONTENT_INTERPOLATION = 5;
+
 const isAndroid = Platform.OS === 'android';
 interface AnimatedGHContext {
   [key: string]: number;
@@ -39,6 +42,8 @@ const View = styled.View`
   right: 0px;
   z-index: 2;
 `;
+
+const AnimatedContent = Animated.View;
 
 const Sheet: React.FC = () => {
   const panGestureOuterRef = useRef<PanGestureHandler>();
@@ -66,6 +71,7 @@ const Sheet: React.FC = () => {
   const isCardCollapsed = useSharedValue(false);
   const isInputFieldFocused = useSharedValue(false);
 
+  const hideContentInterpolation = useSharedValue(0);
   const panGestureType = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
@@ -89,6 +95,12 @@ const Sheet: React.FC = () => {
       : 0,
   );
 
+  const derivedIsPanningValue = useDerivedValue(() => isPanning.value, [isPanning]);
+
+  useDerivedValue(() => {
+    hideContentInterpolation.value = Animated.withTiming(isCardCollapsed.value ? 5 : 0);
+  }, [isCardCollapsed]);
+
   const actionRequestCloseOrOpenCard = useCallback(
     (direction?: string) => {
       'worklet';
@@ -97,15 +109,24 @@ const Sheet: React.FC = () => {
         runOnJS(Keyboard.dismiss)();
       }
 
-      onActionRequestCloseOrOpenCard({
-        translationY,
-        isAnimationRunning,
-        isCardCollapsed,
-        snapPointBottom,
-        direction,
-      });
+      if (!derivedIsPanningValue.value && !keyboardContext.isKeyboardVisible.value) {
+        onActionRequestCloseOrOpenCard({
+          translationY,
+          isAnimationRunning,
+          isCardCollapsed,
+          snapPointBottom,
+          direction,
+        });
+      }
     },
-    [keyboardContext, isCardCollapsed, isAnimationRunning, snapPointBottom, translationY],
+    [
+      derivedIsPanningValue,
+      keyboardContext,
+      isCardCollapsed,
+      isAnimationRunning,
+      snapPointBottom,
+      translationY,
+    ],
   );
 
   const onLayout = useCallback(
@@ -193,6 +214,13 @@ const Sheet: React.FC = () => {
       }),
   );
 
+  const animatedContentStyle = useAnimatedStyle(
+    (): Animated.AnimatedStyleProp<ViewStyle> => ({
+      opacity: interpolate(hideContentInterpolation.value, [0, HIDE_CONTENT_INTERPOLATION], [1, 0]),
+    }),
+    [hideContentInterpolation],
+  );
+
   return (
     <>
       <View pointerEvents="box-none">
@@ -214,14 +242,16 @@ const Sheet: React.FC = () => {
               />
             </Animated.View>
           </PanGestureHandler>
-          <Content
-            gestureHandler={gestureHandler}
-            panGestureType={panGestureType}
-            isScrollingCard={isScrollingCard}
-            isInputFieldFocused={isInputFieldFocused}
-          >
-            {contentComponent}
-          </Content>
+          <AnimatedContent style={animatedContentStyle}>
+            <Content
+              gestureHandler={gestureHandler}
+              panGestureType={panGestureType}
+              isScrollingCard={isScrollingCard}
+              isInputFieldFocused={isInputFieldFocused}
+            >
+              {contentComponent}
+            </Content>
+          </AnimatedContent>
         </Animated.View>
       </View>
       <Footer />
