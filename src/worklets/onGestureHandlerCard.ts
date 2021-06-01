@@ -15,6 +15,7 @@ interface Props {
   innerScrollY: Animated.SharedValue<number>;
   panGestureType: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
+  type: string;
 }
 
 export const onGestureHandlerCard = ({
@@ -30,11 +31,12 @@ export const onGestureHandlerCard = ({
   snapPointBottom,
   innerScrollY,
   panGestureType,
+  type,
 }: Props): Record<string, unknown> => ({
   onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {
     'worklet';
 
-    ctx.startY = translationY.value - innerScrollY.value;
+    ctx.startY = type === 'content' ? translationY.value - innerScrollY.value : translationY.value;
     isPanningDown.value = false;
   },
   onActive: (event: Record<string, number>, ctx: Record<string, number>): void => {

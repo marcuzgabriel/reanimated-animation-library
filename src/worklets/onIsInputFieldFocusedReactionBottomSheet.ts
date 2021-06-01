@@ -93,7 +93,6 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
       contentHeightWhenKeyboardIsVisible.value = 0;
       translationY.value = 0;
       footerTranslationY.value = 0;
-      scrollTo(scrollViewRef, 0, 0, false);
       isInputFieldFocused.value = false;
     }
   }

@@ -142,23 +142,39 @@ const Sheet: React.FC = () => {
     [cardHeight, onLayoutRequest],
   );
 
-  const gestureHandler = useAnimatedGestureHandler<
+  const gestureHandlerProps = {
+    isInputFieldFocused,
+    isScrollingCard,
+    isPanning,
+    isPanningDown,
+    isCardCollapsed,
+    isAnimationRunning,
+    prevDragY,
+    dragY,
+    translationY,
+    snapPointBottom,
+    panGestureType,
+    innerScrollY,
+  };
+
+  const gestureHandlerHeader = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
     AnimatedGHContext
   >(
     onGestureHandlerCard({
-      isInputFieldFocused,
-      isScrollingCard,
-      isPanning,
-      isPanningDown,
-      isCardCollapsed,
-      isAnimationRunning,
-      prevDragY,
-      dragY,
-      translationY,
-      snapPointBottom,
-      panGestureType,
-      innerScrollY,
+      ...gestureHandlerProps,
+      type: 'header',
+    }),
+    [cardHeight],
+  );
+
+  const gestureHandlerContent = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    AnimatedGHContext
+  >(
+    onGestureHandlerCard({
+      ...gestureHandlerProps,
+      type: 'content',
     }),
     [cardHeight],
   );
@@ -227,7 +243,7 @@ const Sheet: React.FC = () => {
         <Animated.View onLayout={onLayout} style={panGestureStyle}>
           <PanGestureHandler
             ref={panGestureOuterRef}
-            onGestureEvent={gestureHandler}
+            onGestureEvent={gestureHandlerHeader}
             onHandlerStateChange={(): void => {
               if (panGestureType.value !== 0) {
                 panGestureType.value = 0;
@@ -244,7 +260,7 @@ const Sheet: React.FC = () => {
           </PanGestureHandler>
           <AnimatedContent style={animatedContentStyle}>
             <Content
-              gestureHandler={gestureHandler}
+              gestureHandler={gestureHandlerContent}
               panGestureType={panGestureType}
               isScrollingCard={isScrollingCard}
               isInputFieldFocused={isInputFieldFocused}
