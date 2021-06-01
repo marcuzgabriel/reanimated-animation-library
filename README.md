@@ -4,7 +4,7 @@ This library provides some nice animation features with the latest reanimated 2+
 <details>
   <summary>
     
-    ##Current progress
+    ## Current progress
   
   </summary>
   
