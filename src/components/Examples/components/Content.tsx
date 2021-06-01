@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import InputField from '../../InputField';
 
 const BottomSheetContentWrapper = styled.View`
-  padding: 32px;
+  padding: 0px 16px 16px 16px;
 `;
 
 const inputStyle = {

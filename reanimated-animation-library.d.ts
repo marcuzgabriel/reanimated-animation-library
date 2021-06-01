@@ -24,7 +24,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     scrollArrowTopComponent?: React.ReactNode;
     scrollArrowBottomComponent?: React.ReactNode;
     scrollArrows?: {
-      isEnabled?: boolean;
+      isEnabled: boolean;
       fill?: string;
       dimensions?: number;
       topArrowOffset?: number;
@@ -42,6 +42,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       isEnabled: boolean;
       height?: number;
       width?: number;
+      offset?: number;
       fill?: string;
     };
     fadingScrollEdges?: {

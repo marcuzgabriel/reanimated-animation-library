@@ -1,11 +1,11 @@
 import { ScrollViewProps } from 'react-native';
 import { GestureEvent, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
 interface scrollArrows {
-  isEnabled?: boolean;
-  fill: string;
-  dimensions: number;
-  topArrowOffset: number;
-  bottomArrowOffset: number;
+  isEnabled: boolean;
+  fill?: string;
+  dimensions?: number;
+  topArrowOffset?: number;
+  bottomArrowOffset?: number;
 }
 export interface BottomSheetConfiguration {
   scrollY?: Animated.SharedValue<number>;
@@ -40,6 +40,7 @@ export interface BottomSheetConfiguration {
     isEnabled?: boolean;
     height?: number;
     width?: number;
+    offset?: number;
     fill?: string;
   };
   fadingScrollEdges?: {

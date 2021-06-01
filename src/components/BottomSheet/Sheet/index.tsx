@@ -13,7 +13,7 @@ import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-g
 import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
-import { CLOSE_OPEN_CARD_BUTTON_HITSLOP } from '../../../constants/styles';
+import { CLOSE_OPEN_CARD_BUTTON_HITSLOP, DEFAULT_BORDER_RADIUS } from '../../../constants/styles';
 import {
   onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
@@ -49,8 +49,8 @@ const Sheet: React.FC = () => {
   const {
     scrollY: configBackgroundContentScrollY,
     snapPointBottom: configSnapPointBottom,
-    borderTopLeftRadius,
-    borderTopRightRadius,
+    borderTopLeftRadius: configBorderTopLeftRadius,
+    borderTopRightRadius: configBorderTopRightRadius,
     backgroundColor,
     snapEffectDirection,
     contentComponent,
@@ -69,6 +69,14 @@ const Sheet: React.FC = () => {
   const panGestureType = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
+
+  const borderTopLeftRadius = useMemo(() => configBorderTopLeftRadius ?? DEFAULT_BORDER_RADIUS, [
+    configBorderTopLeftRadius,
+  ]);
+
+  const borderTopRightRadius = useMemo(() => configBorderTopRightRadius ?? DEFAULT_BORDER_RADIUS, [
+    configBorderTopRightRadius,
+  ]);
 
   const extraSnapPointBottomOffset = useMemo(
     () => (isAndroid ? 0 : CLOSE_OPEN_CARD_BUTTON_HITSLOP),

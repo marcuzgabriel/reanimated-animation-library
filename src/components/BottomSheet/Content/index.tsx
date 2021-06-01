@@ -1,6 +1,5 @@
-import React, { useRef, useContext, useCallback } from 'react';
+import React, { useMemo, useRef, useContext, useCallback } from 'react';
 import { Platform, ViewStyle, LayoutChangeEvent, useWindowDimensions } from 'react-native';
-import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -18,6 +17,11 @@ import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
 import FadingEdge from '../../ScrollViewKeyboardAvoid/FadingEdge';
 import { MAX_HEIGHT_RATIO } from '../../../constants/styles';
 import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
+import {
+  FADING_EDGE_COLOR_NATIVE,
+  FADING_EDGE_COLOR_WEB_BOTTOM,
+  FADING_EDGE_COLOR_WEB_TOP,
+} from '../../../constants/styles';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
@@ -36,6 +40,10 @@ const Content: React.FC<Props> = ({
   isInputFieldFocused,
   children,
 }) => {
+  const panGestureInnerRef = useRef<PanGestureHandler>();
+  const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
+  const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
+
   const windowHeight = useWindowDimensions().height;
   const { fadingScrollEdges, scrollArrows, maxHeight: configMaxHeight } = useContext(
     UserConfigurationContext,
@@ -43,10 +51,30 @@ const Content: React.FC<Props> = ({
   const { scrollViewRef, scrollY, scrollViewHeight, contentHeight, footerHeight } = useContext(
     ReusablePropsContext.bottomSheet,
   );
+  const {
+    isEnabled: isFadingScrollEdgeEnabled,
+    androidFadingEdgeLength,
+    nativeBackgroundColor,
+    webBackgroundColorBottom,
+    webBackgroundColorTop,
+  } = fadingScrollEdges ?? {};
 
-  const panGestureInnerRef = useRef<PanGestureHandler>();
-  const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
-  const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
+  const fadingEdgeAndroid = useMemo(() => androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH, [
+    androidFadingEdgeLength,
+  ]);
+  const fadingEdgeNativeBackgroundColor = useMemo(
+    () => nativeBackgroundColor ?? FADING_EDGE_COLOR_NATIVE,
+    [nativeBackgroundColor],
+  );
+  const fadingEdgeWebBackgroundColorTop = useMemo(
+    () => webBackgroundColorTop ?? FADING_EDGE_COLOR_WEB_TOP,
+    [webBackgroundColorTop],
+  );
+  const fadingEdgeWebBackgroundColorBottom = useMemo(
+    () => webBackgroundColorBottom ?? FADING_EDGE_COLOR_WEB_BOTTOM,
+    [webBackgroundColorBottom],
+  );
+
   const maxHeight = useDerivedValue(
     () => configMaxHeight ?? (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
     [footerHeight, configMaxHeight],
@@ -95,15 +123,17 @@ const Content: React.FC<Props> = ({
         {fadingScrollEdges?.isEnabled && (
           <FadingEdge
             position="top"
-            nativeColor={fadingScrollEdges.nativeBackgroundColor}
-            webColor={fadingScrollEdges.webBackgroundColorTop}
+            nativeColor={fadingEdgeNativeBackgroundColor}
+            webColor={fadingEdgeWebBackgroundColorTop}
           />
         )}
-        <ScrollArrow
-          isInputFieldFocused={isInputFieldFocused}
-          contextName="bottomSheet"
-          position="top"
-        />
+        {scrollArrows?.isEnabled && (
+          <ScrollArrow
+            isInputFieldFocused={isInputFieldFocused}
+            contextName="bottomSheet"
+            position="top"
+          />
+        )}
         <NativeViewGestureHandler
           ref={nativeViewGestureRef}
           shouldCancelWhenOutside={false}
@@ -116,7 +146,7 @@ const Content: React.FC<Props> = ({
             alwaysBounceVertical={false}
             directionalLockEnabled={true}
             scrollArrows={scrollArrows}
-            fadingEdgeLength={ANDROID_FADING_EDGE_LENGTH}
+            fadingEdgeLength={isFadingScrollEdgeEnabled ? fadingEdgeAndroid : 0}
             onScroll={onScrollHandler}
             onContentSizeChange={(_, height): void => {
               contentHeight.value = height;
@@ -138,16 +168,18 @@ const Content: React.FC<Props> = ({
             </KeyboardAvoidingViewProvider>
           </ScrollViewKeyboardAvoid>
         </NativeViewGestureHandler>
-        <ScrollArrow
-          isInputFieldFocused={isInputFieldFocused}
-          contextName="bottomSheet"
-          position="bottom"
-        />
+        {scrollArrows?.isEnabled && (
+          <ScrollArrow
+            isInputFieldFocused={isInputFieldFocused}
+            contextName="bottomSheet"
+            position="bottom"
+          />
+        )}
         {fadingScrollEdges?.isEnabled && (
           <FadingEdge
             position="bottom"
-            nativeColor={fadingScrollEdges.nativeBackgroundColor}
-            webColor={fadingScrollEdges.webBackgroundColorBottom}
+            nativeColor={fadingEdgeNativeBackgroundColor}
+            webColor={fadingEdgeWebBackgroundColorBottom}
           />
         )}
       </Animated.View>

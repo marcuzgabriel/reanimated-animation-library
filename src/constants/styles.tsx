@@ -17,6 +17,10 @@ export const SCROLL_ARROW_DIMENSIONS = 40;
 export const SCROLL_ARROW_OFFSET = 5;
 export const SCROLL_ARROW_FILL = 'black';
 
+export const MORPHING_ARROW_OFFSET = 20;
+
+export const HEADER_HEIGHT = 50;
+
 export const ANDROID_FADING_EDGE_LENGTH = 50;
 export const FADING_EDGE_HEIGHT = 10;
 export const FADING_EDGE_COLOR_NATIVE = 'grey';

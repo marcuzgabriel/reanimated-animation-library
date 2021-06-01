@@ -1,4 +1,5 @@
 import React, { useMemo, useContext } from 'react';
+import { useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -17,7 +18,11 @@ import type {
   ScrollProps,
   OnScrollArrowAppearanceReaction,
 } from '../../../types';
-import { useWindowDimensions } from 'react-native';
+import {
+  SCROLL_ARROW_FILL,
+  SCROLL_ARROW_DIMENSIONS,
+  SCROLL_ARROW_OFFSET,
+} from '../../../constants/styles';
 
 interface Props extends Pick<MixedScrollViewProps, 'scrollArrows'>, ScrollProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
@@ -66,16 +71,22 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
     isScrollable,
   } = isContextNameBottomSheet ? reusablePropsContextBottomSheet : props;
   const { scrollArrows } = isContextNameBottomSheet ? userConfigurationContext : props;
+  const { fill, dimensions, topArrowOffset, bottomArrowOffset } = scrollArrows ?? {};
+
+  const arrowFill = useMemo(() => fill ?? SCROLL_ARROW_FILL, [fill]);
+  const arrowDimensions = useMemo(() => dimensions ?? SCROLL_ARROW_DIMENSIONS, [dimensions]);
+  const arrowTopOffset = useMemo(() => topArrowOffset ?? SCROLL_ARROW_OFFSET, [topArrowOffset]);
+  const arrowBottomOffset = useMemo(() => bottomArrowOffset ?? SCROLL_ARROW_OFFSET, [
+    bottomArrowOffset,
+  ]);
 
   const windowWidth = useWindowDimensions().width;
 
   const isPositionedTop = useMemo(() => position === 'top', [position]);
   const scrollArrowRatioOfWindowWidth = useMemo(() => {
-    if (scrollArrows?.dimensions) {
-      const centerAlignedScrollArrowRatio = scrollArrows?.dimensions / 2;
-      return 50 - (centerAlignedScrollArrowRatio / windowWidth) * 100;
-    }
-  }, [scrollArrows?.dimensions, windowWidth]);
+    const centerAlignedScrollArrowRatio = arrowDimensions / 2;
+    return 50 - (centerAlignedScrollArrowRatio / windowWidth) * 100;
+  }, [arrowDimensions, windowWidth]);
 
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
   const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
@@ -123,20 +134,14 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
     <TouchableOpacity
       position={position}
       scrollArrowRatioOfWindowWidth={scrollArrowRatioOfWindowWidth}
-      topOffset={scrollArrows?.isEnabled ? scrollArrows.topArrowOffset : 0}
-      bottomOffset={scrollArrows?.isEnabled ? scrollArrows.bottomArrowOffset : 0}
+      topOffset={arrowTopOffset}
+      bottomOffset={arrowBottomOffset}
       onPress={(): void => {
         scrollToHelper({ ref: scrollViewRef, to: isPositionedTop ? 'top' : 'end' });
       }}
     >
       <Animated.View style={isPositionedTop ? animatedStyleUpArrow : animatedStyleDownArrow}>
-        {scrollArrows?.isEnabled && (
-          <SvgArrow
-            height={scrollArrows.dimensions}
-            width={scrollArrows.dimensions}
-            fill={scrollArrows.fill}
-          />
-        )}
+        <SvgArrow height={arrowDimensions} width={arrowDimensions} fill={arrowFill} />
       </Animated.View>
     </TouchableOpacity>
   );

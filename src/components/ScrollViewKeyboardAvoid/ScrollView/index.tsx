@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useContext, useCallback, useMemo } from 'react';
 import { LayoutChangeEvent, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
@@ -8,7 +8,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import ScrollArrow from '../ScrollArrow';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
+import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 import type { MixedScrollViewProps } from '../../../types';
+
 interface Props extends MixedScrollViewProps {
   scrollViewRef: React.RefObject<Animated.ScrollView> | any;
 }
@@ -20,8 +22,10 @@ const AnimatedWrapper = Animated.createAnimatedComponent(
 );
 
 const ScrollView: React.FC<Props> = props => {
+  const userConfigurationContext = useContext(UserConfigurationContext);
+
   const {
-    scrollArrows,
+    contextName,
     scrollViewRef,
     keyboardAvoidBottomMargin,
     disableScrollAnimation,
@@ -30,6 +34,9 @@ const ScrollView: React.FC<Props> = props => {
     onIsInputFieldFocusedRequest,
     children,
   } = props;
+
+  const isContextNameBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
+  const { scrollArrows } = isContextNameBottomSheet ? userConfigurationContext : props;
 
   const scrollViewHeight = useSharedValue(0);
   const scrollY = useSharedValue(0);
@@ -96,7 +103,9 @@ const ScrollView: React.FC<Props> = props => {
 
   return (
     <AnimatedWrapper style={animatedStyle}>
-      <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="top" />
+      {scrollArrows?.isEnabled && (
+        <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="top" />
+      )}
       <Animated.ScrollView
         ref={scrollViewRef}
         onLayout={onLayout}
@@ -125,7 +134,13 @@ const ScrollView: React.FC<Props> = props => {
           {children}
         </KeyboardAvoidingViewProvider>
       </Animated.ScrollView>
-      <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="bottom" />
+      {scrollArrows?.isEnabled && (
+        <ScrollArrow
+          contextName="scrollViewKeyboardAvoid"
+          {...scrollArrowProps}
+          position="bottom"
+        />
+      )}
     </AnimatedWrapper>
   );
 };

@@ -7,8 +7,8 @@ default based on the provider. The interface concerning
 border is for type satisfaction */
 interface Props {
   translationY: Animated.SharedValue<number>;
-  borderTopRightRadius?: number;
-  borderTopLeftRadius?: number;
+  borderTopRightRadius: number;
+  borderTopLeftRadius: number;
   backgroundColor?: string;
 }
 
