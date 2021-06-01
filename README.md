@@ -1,12 +1,42 @@
 # [WIP] Reanimated-animation-library
 This library provides some nice animation features with the latest reanimated 2+ (hooks) approach. The libraray is suitable for all platforms: Web, Android and iOS. Maximum performance is achieved by using animation reactions and eliminating useState events. This library consists of a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
-
+<details>
+  <summary>Gifs</summary>
+  
+  ## BottomSheet
 ![Alt Text](https://media.giphy.com/media/Ik9LNWjdCMrvGg5ToJ/giphy.gif)
 ![Alt Text](https://media.giphy.com/media/HF6U0tvtuE7UQra27j/giphy.gif)
 ![Alt Text](https://media.giphy.com/media/z386AcY2dPdthZLJKz/giphy.gif)
-
-
+</details>
+<details>
+  <summary>Props</summary>
+  
+  ## BottomSheet
+  
+  | Prop | Type | Description | 
+| :--- | :---: | :---:|
+  | scrollY | Animated.SharedValue<number> | An outside prop that can be connected to the BottomSheet. Then it reacts to other scroll events
+  | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information
+  | snapPointBottom | number |
+  | extraOffset | number | In some cases there is an extra offset that the BottomSheet needs to take into account. This prop helps to get the perfect offset
+  | borderTopRightRadius and borderTopLeftRadius | number | Sets the border top radius'
+  | backgroundColor | string | Sets the background color
+  | contentComponent | node | Content component
+  | footerComponent | node | Footer component
+  | headerComponent | node | Header component
+  | scrollArrowTopComponent | node | Scroll arrow top component
+  | scrollArrowBottomComponent | node | Scroll arrow bottom component
+  | scrollArrows = { isEnabled: boolean, fill: string, dimensions: number, topArrowOffset: number, bottomArrowOffset: number } | object | When there is no scrollArrowBottom- or top component then this object can be used for styling the scroll arrows.
+  | extraSnapPointBottomOffset | number | Minor differences occours depending on the Platform. This prop helps to get the perfect snap point on all platforms
+  | header = { height: number } | object | If there is no header component then this object can be used to style the header
+  | morphingArrow = { isEnabled: boolean, offset: number, fill: string } | object | As there currently is a bug on web when interpolating SVG's with reanimated, then the morphing arrow can be disabled for specific platforms using this prop
+  | fadingScrollEdges = { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: string, webBackgroundColorBottom: string | object | This prop ensures that there is a scrolling edge when the content is scrollable
+  | getCurrentConfigRequest(config) | function | This function will provide the current configuration
+  | onLayoutRequest(cardHeight) | function | In some use cases the card height of the BottomSheet might become useful
+  
+  
+</details>
 <details>
   <summary>Progress</summary>
   
