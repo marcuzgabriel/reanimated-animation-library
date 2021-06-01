@@ -40,19 +40,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(ts|tsx)$/,
-        use: [
-          {
-            loader: 'awesome-typescript-loader',
-            options: {
-              useBabel: true,
-              babelOptions: babelConfig,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.js?$/,
+        test: /\.(js|ts|tsx)$/,
         use: [
           {
             loader: 'babel-loader',

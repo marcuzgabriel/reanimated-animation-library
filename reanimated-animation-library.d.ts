@@ -1,7 +1,7 @@
 // Project: https://github.com/marcuzgabriel/reanimated-animation-library
 // Typescript Version: 3.7.4
 
-declare module '@marcuzgabriel/reanimated-animation-library' {
+declare module '@sampension/reanimated-animation-library' {
   import React from 'react';
   import { ScrollViewProps } from 'react-native';
 

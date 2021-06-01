@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedReaction,
   useDerivedValue,
   useAnimatedGestureHandler,
+  withTiming,
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
@@ -48,9 +49,11 @@ const AnimatedContent = Animated.View;
 const Sheet: React.FC = () => {
   const panGestureOuterRef = useRef<PanGestureHandler>();
   const keyboardContext = useContext(KeyboardContext);
-  const { scrollY: innerScrollY, cardHeight, translationY } = useContext(
-    ReusablePropsContext.bottomSheet,
-  );
+  const {
+    scrollY: innerScrollY,
+    cardHeight,
+    translationY,
+  } = useContext(ReusablePropsContext.bottomSheet);
   const {
     scrollY: configBackgroundContentScrollY,
     snapPointBottom: configSnapPointBottom,
@@ -76,13 +79,15 @@ const Sheet: React.FC = () => {
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
 
-  const borderTopLeftRadius = useMemo(() => configBorderTopLeftRadius ?? DEFAULT_BORDER_RADIUS, [
-    configBorderTopLeftRadius,
-  ]);
+  const borderTopLeftRadius = useMemo(
+    () => configBorderTopLeftRadius ?? DEFAULT_BORDER_RADIUS,
+    [configBorderTopLeftRadius],
+  );
 
-  const borderTopRightRadius = useMemo(() => configBorderTopRightRadius ?? DEFAULT_BORDER_RADIUS, [
-    configBorderTopRightRadius,
-  ]);
+  const borderTopRightRadius = useMemo(
+    () => configBorderTopRightRadius ?? DEFAULT_BORDER_RADIUS,
+    [configBorderTopRightRadius],
+  );
 
   const extraSnapPointBottomOffset = useMemo(
     () => (isAndroid ? 0 : CLOSE_OPEN_CARD_BUTTON_HITSLOP),
@@ -98,7 +103,7 @@ const Sheet: React.FC = () => {
   const derivedIsPanningValue = useDerivedValue(() => isPanning.value, [isPanning]);
 
   useDerivedValue(() => {
-    hideContentInterpolation.value = Animated.withTiming(isCardCollapsed.value ? 5 : 0);
+    hideContentInterpolation.value = withTiming(isCardCollapsed.value ? 5 : 0);
   }, [isCardCollapsed]);
 
   const actionRequestCloseOrOpenCard = useCallback(
