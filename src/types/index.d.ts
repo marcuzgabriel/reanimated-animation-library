@@ -30,16 +30,10 @@ export interface BottomSheetConfiguration {
   keyboardAvoidBottomMargin?: number;
   maxHeight?: number;
   header?: {
-    component?: React.ReactNode;
-    hasMorphingArrow?: boolean;
-    hitSlop?: number;
     height?: number;
-    backgroundColor?: string;
   };
   morphingArrow?: {
     isEnabled?: boolean;
-    height?: number;
-    width?: number;
     offset?: number;
     fill?: string;
   };

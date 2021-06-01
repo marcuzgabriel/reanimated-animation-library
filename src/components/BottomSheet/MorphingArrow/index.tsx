@@ -38,10 +38,8 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
   const { translationY } = useContext(ReusablePropsContext.bottomSheet);
 
   const fill = useMemo(() => morphingArrow?.fill ?? 'white', [morphingArrow?.fill]);
-  const height = useMemo(() => morphingArrow?.height ?? STATIC_ARROW_HEIGHT, [
-    morphingArrow?.height,
-  ]);
-  const width = useMemo(() => morphingArrow?.width ?? STATIC_ARROW_WIDTH, [morphingArrow?.width]);
+  const height = useMemo(() => STATIC_ARROW_HEIGHT, []);
+  const width = useMemo(() => STATIC_ARROW_WIDTH, []);
 
   const animatedProps = useAnimatedProps(() => {
     const startX = windowWidth / 2;
