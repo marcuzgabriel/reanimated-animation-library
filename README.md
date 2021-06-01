@@ -6,9 +6,7 @@ This library provides some nice animation features with the latest reanimated 2+
   
   ## Current progress
   
-- [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Next it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```<InputField />``` component and ensure that the content container has a minimum height of windowHeight - keyboardHeight + 1px. Everything below windowHeight - keyboardHeight + 1px don't need a keyboard avoid approach when the keyboard is visible. Multiple examples can be found in the project Example folder.
-  - [ ] A height needs to be set when it is not scrollable. If its not scrollable then it wont scroll to the focused input field
-  - [ ] Code example / integration description  
+- [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Secondly it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```<InputField />```. Multiple examples can be found in the project Example folder.
 - [x] InputField. This is a component that is connected to the above ScrollViewKeyboardAvoid. When focused and the minimum requirements for ScrollViewKeyboardAvoid is met, then a smooth scroll-to-focused-input field event will trigger.
 - [x] BottomSheet
   - [x] Static event: When background content is not scrollable then the background content should not be snappable
