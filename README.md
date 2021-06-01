@@ -101,7 +101,7 @@ const Wrapper = styled.View<{ windowHeight: number }>`
   width: 100%;
 `;
 
-conte Content = styled.View`
+const Content = styled.View`
   width: 100%;
   height: 400;
   background-color: purple;
