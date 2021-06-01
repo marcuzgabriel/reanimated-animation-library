@@ -2,6 +2,42 @@
 This library provides some nice animation features with the latest reanimated 2+ (hooks) approach. The libraray is suitable for all platforms: Web, Android and iOS. Maximum performance is achieved by using animation reactions and eliminating useState events. This library consists of a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
 
 <details>
+  <summary>Gifs</summary>
+  
+  ## BottomSheet
+![Alt Text](https://media.giphy.com/media/Ik9LNWjdCMrvGg5ToJ/giphy.gif)
+![Alt Text](https://media.giphy.com/media/HF6U0tvtuE7UQra27j/giphy.gif)
+![Alt Text](https://media.giphy.com/media/z386AcY2dPdthZLJKz/giphy.gif)
+</details>
+<details>
+  <summary>Props</summary>
+  
+  ## BottomSheet
+  
+  | Prop | Type | Description | 
+| :--- | :---: | :---:|
+  | scrollY | Animated.SharedValue<number> | An outside prop that can be connected to the BottomSheet. Then it reacts to other scroll events
+  | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information
+  | snapPointBottom | number |
+  | extraOffset | number | In some cases there is an extra offset that the BottomSheet needs to take into account. This prop helps to get the perfect offset
+  | borderTopRightRadius and borderTopLeftRadius | number | Sets the border top radius'
+  | backgroundColor | string | Sets the background color
+  | contentComponent | node | Content component
+  | footerComponent | node | Footer component
+  | headerComponent | node | Header component
+  | scrollArrowTopComponent | node | Scroll arrow top component
+  | scrollArrowBottomComponent | node | Scroll arrow bottom component
+  | scrollArrows = { isEnabled: boolean, fill: string, dimensions: number, topArrowOffset: number, bottomArrowOffset: number } | object | When there is no scrollArrowBottom- or top component then this object can be used for styling the scroll arrows.
+  | extraSnapPointBottomOffset | number | Minor differences occours depending on the Platform. This prop helps to get the perfect snap point on all platforms
+  | header = { height: number } | object | If there is no header component then this object can be used to style the header
+  | morphingArrow = { isEnabled: boolean, offset: number, fill: string } | object | As there currently is a bug on web when interpolating SVG's with reanimated, then the morphing arrow can be disabled for specific platforms using this prop
+  | fadingScrollEdges = { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: string, webBackgroundColorBottom: string | object | This prop ensures that there is a scrolling edge when the content is scrollable
+  | getCurrentConfigRequest(config) | function | This function will provide the current configuration
+  | onLayoutRequest(cardHeight) | function | In some use cases the card height of the BottomSheet might become useful
+  
+  
+</details>
+<details>
   <summary>Progress</summary>
   
   ## Current progress
@@ -32,11 +68,116 @@ This library provides some nice animation features with the latest reanimated 2+
 <details>
   <summary>Integration</summary>
   
+## React integration
+```Javascript
+import React from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
+import styled from 'styled-components/native';
+import Animated, {
+  useSharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedRef,
+} from 'react-native-reanimated';
+import { BottomSheet, snapEffect } from '@marcuzgabriel/reanimated-animation-library';
+  
+const HEADER_HEIGHT = 50;
+const EXTRA_SNAP_POINT_OFFSET = 30;
+
+const isAndroid = Platform.OS === 'android';
+
+const fakeScrollItem = [
+  {
+    text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+  laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+`,
+  },
+];
+
+const Wrapper = styled.View<{ windowHeight: number }>`
+  position: relative;
+  height: ${({ windowHeight }): number => windowHeight}px;
+  width: 100%;
+`;
+
+const Content = styled.View`
+  width: 100%;
+  height: 400;
+  background-color: purple;
+`;
+
+const Header = styled.View`
+  width: 100%;
+  height: 100px;
+  background: black;
+  justify
+`;
+
+const Text = styled.Text``;
+
+const FakeContentWrapper = styled.View<{ windowHeight: number }>`
+  background: white;
+  height: ${({ windowHeight }): number => windowHeight}px;
+  width: 100%;
+  padding: 32px 16px;
+`;
+
+const ScrollViewWithSnapEffect: React.FC = () => {
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollY = useSharedValue(0);
+  const cardHeight = useSharedValue(0);
+  const snapEffectDirection = useSharedValue('');
+
+  const windowHeight = useWindowDimensions().height;
+
+  const onScrollHandler = useAnimatedScrollHandler({
+    onScroll: e => {
+      scrollY.value = e.contentOffset.y;
+    },
+  });
+
+  return (
+    <Wrapper windowHeight={windowHeight}>
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        bounces={false}
+        alwaysBounceVertical={false}
+        onScroll={onScrollHandler}
+        scrollEventThrottle={16}
+      >
+        <SnapEffect cardHeight={cardHeight} snapEffectDirection={snapEffectDirection}>
+          {fakeScrollItem.map(({ text }, i) => (
+            <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
+              <Text>{text}</Text>
+            </FakeContentWrapper>
+          ))}
+        </SnapEffect>
+      </Animated.ScrollView>
+      <BottomSheet
+        scrollY={scrollY}
+        fadingScrollEdges={{ isEnabled: false }}
+        morphingArrow={{ isEnabled: true, offset: 20 }}
+        keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
+        snapEffectDirection={snapEffectDirection}
+        snapPointBottom={HEADER_HEIGHT + EXTRA_SNAP_POINT_OFFSET}
+        onLayoutRequest={(height: number): void => {
+          cardHeight.value = height;
+        }}
+        contentComponent={<Content />}
+      />
+    </Wrapper>
+  );
+};
+
+export default ScrollViewWithSnapEffect;
+```
+  
 ## Expo integration
 npm install @marcuzgabriel/reanimated-animation-library@1.0.0
 https://github.com/marcuzgabriel/reanimated-animation-library/packages/813007
 
-Update app.json accordingly
+Update app.json accordingly and remember to pod install and build the projects properly.
 ```Javascript
 {
   "name": "MyTSProject",
