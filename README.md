@@ -37,7 +37,7 @@ This library provides some nice animation features with the latest reanimated 2+
   
   
 </details>
-<details>
+<details open>
   <summary>Progress</summary>
   
   ## Current progress
