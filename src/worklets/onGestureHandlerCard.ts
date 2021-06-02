@@ -13,7 +13,6 @@ interface Props {
   dragY: Animated.SharedValue<number>;
   translationY: Animated.SharedValue<number>;
   innerScrollY: Animated.SharedValue<number>;
-  panGestureType: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
   type: string;
 }
@@ -30,7 +29,6 @@ export const onGestureHandlerCard = ({
   translationY,
   snapPointBottom,
   innerScrollY,
-  panGestureType,
   type,
 }: Props): Record<string, unknown> => ({
   onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {
@@ -50,7 +48,7 @@ export const onGestureHandlerCard = ({
       if (
         isScrollingCard.value &&
         ctx.startY + event.translationY > prevDragY.value &&
-        panGestureType.value === 1
+        type === 'content'
       ) {
         if (innerScrollY.value === 0 || innerScrollY.value <= SCROLL_EVENT_THROTTLE) {
           translationY.value = dragY.value;

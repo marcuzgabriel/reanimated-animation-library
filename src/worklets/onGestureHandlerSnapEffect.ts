@@ -6,9 +6,6 @@ interface Props {
   translationY: Animated.SharedValue<number>;
   prevDragY: Animated.SharedValue<number>;
   dragY: Animated.SharedValue<number>;
-  maxDragY: number;
-  minDragY: number;
-  dragResistanceFactor: Animated.SharedValue<number>;
   snapEffectDirection: Animated.SharedValue<string>;
 }
 
@@ -16,9 +13,6 @@ export const onGestureHandlerSnapEffect = ({
   translationY,
   prevDragY,
   dragY,
-  maxDragY,
-  minDragY,
-  dragResistanceFactor,
   snapEffectDirection,
 }: Props): Record<string, unknown> => ({
   onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {

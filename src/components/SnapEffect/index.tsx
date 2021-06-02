@@ -52,9 +52,6 @@ const SnapEffect: React.FC<Props> = ({
       translationY,
       prevDragY,
       dragY,
-      maxDragY,
-      minDragY,
-      dragResistanceFactor,
       snapEffectDirection,
     }),
   );
