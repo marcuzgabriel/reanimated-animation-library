@@ -11,7 +11,6 @@ import BottomSheet from '../../components/BottomSheet';
 import SnapEffect from '../SnapEffect';
 
 const HEADER_HEIGHT = 50;
-const EXTRA_SNAP_POINT_OFFSET = 30;
 
 const isAndroid = Platform.OS === 'android';
 
@@ -31,13 +30,6 @@ const Wrapper = styled.View<{ windowHeight: number }>`
   position: relative;
   height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
-`;
-
-const Header = styled.View`
-  width: 100%;
-  height: 100px;
-  background: black;
-  justify
 `;
 
 const Text = styled.Text``;
@@ -83,10 +75,10 @@ const ScrollViewWithSnapEffect: React.FC = () => {
       <BottomSheet
         scrollY={scrollY}
         fadingScrollEdges={{ isEnabled: false }}
-        morphingArrow={{ isEnabled: true, offset: 20 }}
+        morphingArrow={{ isEnabled: Platform.OS !== 'web', offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}
-        snapPointBottom={HEADER_HEIGHT + EXTRA_SNAP_POINT_OFFSET}
+        snapPointBottom={HEADER_HEIGHT}
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}

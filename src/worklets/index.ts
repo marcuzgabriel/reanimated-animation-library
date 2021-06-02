@@ -9,3 +9,4 @@ export { onIsInputFieldFocusedReactionBottomSheet } from './onIsInputFieldFocuse
 export { onIsInputFieldFocusedReaction } from './onIsInputFieldFocusedReaction';
 export { onPanGestureHitFooterReaction } from './onPanGestureHitFooterReaction';
 export { onScrollArrowAppearanceReaction } from './onScrollArrowAppearanceReaction';
+export { onContentHideReaction } from './onContentHideReaction';

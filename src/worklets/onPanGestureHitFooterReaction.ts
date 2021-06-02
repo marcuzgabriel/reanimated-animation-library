@@ -1,5 +1,4 @@
 import Animated from 'react-native-reanimated';
-import { CLOSE_OPEN_CARD_BUTTON_HITSLOP } from '../constants/styles';
 
 interface Props {
   result: number;
@@ -10,6 +9,7 @@ interface Props {
   cardHeight: Animated.SharedValue<number>;
   headerHeight: Animated.SharedValue<number>;
   footerHeight: Animated.SharedValue<number>;
+  extraSnapPointBottomOffset?: number;
 }
 
 export const onPanGestureHitFooterReaction = ({
@@ -19,6 +19,7 @@ export const onPanGestureHitFooterReaction = ({
   translationY,
   footerTranslationY,
   cardHeight,
+  extraSnapPointBottomOffset,
   headerHeight,
   footerHeight,
 }: Props): void => {
@@ -28,8 +29,9 @@ export const onPanGestureHitFooterReaction = ({
     cardHeight.value > 0 && headerHeight.value > 0 && footerHeight.value > 0;
 
   if (result !== previous && areAllLayoutsCalculated) {
+    const extraOffset = extraSnapPointBottomOffset ?? 0;
     const footerTransYPosition =
-      cardHeight.value - headerHeight.value - footerHeight.value - CLOSE_OPEN_CARD_BUTTON_HITSLOP;
+      cardHeight.value - headerHeight.value - footerHeight.value - extraOffset;
     const isHittingFooter = translationY.value >= footerTransYPosition;
 
     if (isHittingFooter) {

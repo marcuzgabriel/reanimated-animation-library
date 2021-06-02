@@ -27,7 +27,6 @@ import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider'
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
 interface Props {
-  panGestureType: Animated.SharedValue<number>;
   isScrollingCard: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
   gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
@@ -35,7 +34,6 @@ interface Props {
 
 const Content: React.FC<Props> = ({
   gestureHandler,
-  panGestureType,
   isScrollingCard,
   isInputFieldFocused,
   children,
@@ -45,9 +43,11 @@ const Content: React.FC<Props> = ({
   const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
 
   const windowHeight = useWindowDimensions().height;
-  const { fadingScrollEdges, scrollArrows, maxHeight: configMaxHeight } = useContext(
-    UserConfigurationContext,
-  );
+  const {
+    fadingScrollEdges,
+    scrollArrows,
+    maxHeight: configMaxHeight,
+  } = useContext(UserConfigurationContext);
   const { scrollViewRef, scrollY, scrollViewHeight, contentHeight, footerHeight } = useContext(
     ReusablePropsContext.bottomSheet,
   );
@@ -59,9 +59,10 @@ const Content: React.FC<Props> = ({
     webBackgroundColorTop,
   } = fadingScrollEdges ?? {};
 
-  const fadingEdgeAndroid = useMemo(() => androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH, [
-    androidFadingEdgeLength,
-  ]);
+  const fadingEdgeAndroid = useMemo(
+    () => androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH,
+    [androidFadingEdgeLength],
+  );
   const fadingEdgeNativeBackgroundColor = useMemo(
     () => nativeBackgroundColor ?? FADING_EDGE_COLOR_NATIVE,
     [nativeBackgroundColor],
@@ -113,11 +114,6 @@ const Content: React.FC<Props> = ({
       shouldCancelWhenOutside={false}
       simultaneousHandlers={nativeViewGestureRef}
       onGestureEvent={gestureHandler}
-      onHandlerStateChange={(): void => {
-        if (panGestureType.value !== 1) {
-          panGestureType.value = 1;
-        }
-      }}
     >
       <Animated.View onLayout={onLayout} style={maxHeightStyle}>
         {fadingScrollEdges?.isEnabled && (
