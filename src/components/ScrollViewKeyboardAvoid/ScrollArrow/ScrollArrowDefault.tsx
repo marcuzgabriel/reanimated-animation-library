@@ -47,7 +47,6 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
   position: absolute;
   align-items: center;
   justify-content: center;
-  z-index: 4;
   left: ${({ scrollArrowRatioOfWindowWidth }): number => scrollArrowRatioOfWindowWidth ?? 0}%;
   ${({ position, topOffset, bottomOffset }): string =>
     position === 'top' ? `top: ${topOffset}px` : `bottom: ${bottomOffset}px`}
@@ -73,23 +72,25 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   const { scrollArrows } = isContextNameBottomSheet ? userConfigurationContext : props;
   const { fill, dimensions, topArrowOffset, bottomArrowOffset } = scrollArrows ?? {};
 
+  const windowWidth = useWindowDimensions().width;
+  const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
+  const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
+  const isTopArrowTouchable = useSharedValue(false);
+  const isBottomArrowTouchable = useSharedValue(false);
+
   const arrowFill = useMemo(() => fill ?? SCROLL_ARROW_FILL, [fill]);
   const arrowDimensions = useMemo(() => dimensions ?? SCROLL_ARROW_DIMENSIONS, [dimensions]);
   const arrowTopOffset = useMemo(() => topArrowOffset ?? SCROLL_ARROW_OFFSET, [topArrowOffset]);
-  const arrowBottomOffset = useMemo(() => bottomArrowOffset ?? SCROLL_ARROW_OFFSET, [
-    bottomArrowOffset,
-  ]);
-
-  const windowWidth = useWindowDimensions().width;
+  const arrowBottomOffset = useMemo(
+    () => bottomArrowOffset ?? SCROLL_ARROW_OFFSET,
+    [bottomArrowOffset],
+  );
 
   const isPositionedTop = useMemo(() => position === 'top', [position]);
   const scrollArrowRatioOfWindowWidth = useMemo(() => {
     const centerAlignedScrollArrowRatio = arrowDimensions / 2;
     return 50 - (centerAlignedScrollArrowRatio / windowWidth) * 100;
   }, [arrowDimensions, windowWidth]);
-
-  const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
-  const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
 
   useAnimatedReaction(
     () => ({
@@ -114,21 +115,41 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
           isScrolledToEnd,
           isScrollable,
           isInputFieldFocused,
+          isTopArrowTouchable,
+          isBottomArrowTouchable,
         });
       }
     },
     [scrollY, contentHeight, scrollViewHeight, isInputFieldFocused],
   );
 
-  const animatedStyleUpArrow = useAnimatedStyle(() => ({
-    opacity: interpolate(translationYUpArrow.value, [ARROW_UP_OFFSET, 0], [0, 1]),
-    transform: [{ translateY: translationYUpArrow.value }, { rotate: '-90deg' }],
-  }));
+  const animatedStyleUpArrow = useAnimatedStyle(
+    () => ({
+      opacity: interpolate(translationYUpArrow.value, [ARROW_UP_OFFSET, 0], [0, 1]),
+      transform: [{ translateY: translationYUpArrow.value }, { rotate: '-90deg' }],
+    }),
+    [isScrollable],
+  );
 
-  const animatedStyleDownArrow = useAnimatedStyle(() => ({
-    opacity: interpolate(translationYDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
-    transform: [{ translateY: translationYDownArrow.value }, { rotate: '90deg' }],
-  }));
+  const animatedStyleDownArrow = useAnimatedStyle(
+    () => ({
+      opacity: interpolate(translationYDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
+      transform: [{ translateY: translationYDownArrow.value }, { rotate: '90deg' }],
+    }),
+    [isScrollable],
+  );
+
+  const animatedStyleTouchableOpacity = useAnimatedStyle(
+    () =>
+      isPositionedTop
+        ? {
+            zIndex: isTopArrowTouchable.value ? 4 : -1,
+          }
+        : {
+            zIndex: isBottomArrowTouchable.value ? 4 : -1,
+          },
+    [isPositionedTop, isScrollable, isTopArrowTouchable, isBottomArrowTouchable],
+  );
 
   return (
     <TouchableOpacity
@@ -136,6 +157,7 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
       scrollArrowRatioOfWindowWidth={scrollArrowRatioOfWindowWidth}
       topOffset={arrowTopOffset}
       bottomOffset={arrowBottomOffset}
+      style={animatedStyleTouchableOpacity}
       onPress={(): void => {
         scrollToHelper({ ref: scrollViewRef, to: isPositionedTop ? 'top' : 'end' });
       }}

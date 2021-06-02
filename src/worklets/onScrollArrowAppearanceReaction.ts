@@ -15,6 +15,8 @@ interface Props {
   isScrolledToEnd: Animated.SharedValue<boolean>;
   isScrollable: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
+  isTopArrowTouchable: Animated.SharedValue<boolean>;
+  isBottomArrowTouchable: Animated.SharedValue<boolean>;
 }
 
 export const onScrollArrowAppearanceReaction = ({
@@ -28,6 +30,8 @@ export const onScrollArrowAppearanceReaction = ({
   isScrolledToEnd,
   isScrollable,
   isInputFieldFocused,
+  isTopArrowTouchable,
+  isBottomArrowTouchable,
 }: Props): void => {
   'worklet';
 
@@ -42,19 +46,29 @@ export const onScrollArrowAppearanceReaction = ({
     if (isInputFieldFocused.value) {
       translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
       translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
+      isTopArrowTouchable.value = false;
+      isBottomArrowTouchable.value = false;
     } else {
       if (isScrolledToTop.value) {
-        translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
-        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
+        translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG, () => {
+          isTopArrowTouchable.value = false;
+        });
+        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG, () => {
+          isBottomArrowTouchable.value = true;
+        });
       }
 
       if (isScrolledToEnd.value) {
-        translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
+        translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG, () => {
+          isBottomArrowTouchable.value = false;
+        });
       }
 
       if (!isScrolledToEnd.value && !isScrolledToTop.value) {
         translationYUpArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
         translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
+        isTopArrowTouchable.value = true;
+        isBottomArrowTouchable.value = true;
       }
     }
   } else {
