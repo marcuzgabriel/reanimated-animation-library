@@ -29,6 +29,7 @@ import { UserConfigurationContext } from '../../../containers/UserConfigurationP
 interface Props {
   isScrollingCard: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
+  children: React.ReactNode;
   gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
 }
 
