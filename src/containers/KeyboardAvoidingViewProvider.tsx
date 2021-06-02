@@ -28,6 +28,7 @@ interface Props {
   onIsInputFieldFocusedRequest?: (status: boolean, availableHeight: number) => void;
   children: React.ReactNode;
 }
+
 interface AnimatedReaction {
   contentHeight?: Animated.SharedValue<number>;
   isKeyboardVisible: Animated.SharedValue<boolean>;
@@ -55,9 +56,8 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
   const windowHeight = useWindowDimensions().height;
 
   const { isKeyboardVisible, keyboardHeight, keyboardDuration } = useContext(KeyboardContext);
-  const { keyboardAvoidBottomMargin: bottomSheetKeyboardAvoidBottomMargin } = useContext(
-    UserConfigurationContext,
-  );
+  const { keyboardAvoidBottomMargin: bottomSheetKeyboardAvoidBottomMargin } =
+    useContext(UserConfigurationContext);
 
   const {
     scrollViewRef: bottomSheetScrollViewRef,

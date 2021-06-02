@@ -40,7 +40,10 @@ const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, c
   const configFadingScrollEdges = useMemo(
     () => ({
       ...fadingScrollEdges,
-      isEnabled: fadingScrollEdges?.isEnabled ?? DEFAULT_CONFIGURATION_IS_ENABLED,
+      isEnabled:
+        typeof fadingScrollEdges?.isEnabled === 'boolean'
+          ? fadingScrollEdges.isEnabled
+          : DEFAULT_CONFIGURATION_IS_ENABLED,
     }),
     [fadingScrollEdges],
   );

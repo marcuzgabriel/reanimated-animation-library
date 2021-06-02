@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { LayoutChangeEvent, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
@@ -8,7 +8,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import ScrollArrow from '../ScrollArrow';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
-import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 import type { MixedScrollViewProps } from '../../../types';
 
 interface Props extends MixedScrollViewProps {
@@ -22,21 +21,16 @@ const AnimatedWrapper = Animated.createAnimatedComponent(
 );
 
 const ScrollView: React.FC<Props> = props => {
-  const userConfigurationContext = useContext(UserConfigurationContext);
-
   const {
-    contextName,
     scrollViewRef,
     keyboardAvoidBottomMargin,
     disableScrollAnimation,
     isKeyboardAvoidDisabled,
+    scrollArrows,
     onContentSizeChange,
     onIsInputFieldFocusedRequest,
     children,
   } = props;
-
-  const isContextNameBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
-  const { scrollArrows } = isContextNameBottomSheet ? userConfigurationContext : props;
 
   const scrollViewHeight = useSharedValue(0);
   const scrollY = useSharedValue(0);
@@ -104,7 +98,7 @@ const ScrollView: React.FC<Props> = props => {
   return (
     <AnimatedWrapper style={animatedStyle}>
       {scrollArrows?.isEnabled && (
-        <ScrollArrow contextName="scrollViewKeyboardAvoid" {...scrollArrowProps} position="top" />
+        <ScrollArrow {...scrollArrowProps} contextName="scrollViewKeyboardAvoid" position="top" />
       )}
       <Animated.ScrollView
         ref={scrollViewRef}
@@ -136,8 +130,8 @@ const ScrollView: React.FC<Props> = props => {
       </Animated.ScrollView>
       {scrollArrows?.isEnabled && (
         <ScrollArrow
-          contextName="scrollViewKeyboardAvoid"
           {...scrollArrowProps}
+          contextName="scrollViewKeyboardAvoid"
           position="bottom"
         />
       )}

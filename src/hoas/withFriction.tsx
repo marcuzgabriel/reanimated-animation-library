@@ -24,7 +24,6 @@ export const withFriction = ({ value, initialVelocity, friction }: Props): any =
       const kv = Math.pow(DECELATION, dt);
       const v = v0 * kv * 1000;
 
-      /* Note: https://www.youtube.com/watch?v=VZ73JdhjFC8: min 6:36 friction formula */
       state.current = value * 0.52 * Math.pow(1 - friction, 2);
       state.velocity = v;
       state.lastTimestamp = now;

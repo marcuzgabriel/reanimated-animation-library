@@ -20,7 +20,7 @@ interface ContextProps extends Partial<Props> {
 const ScrollArrow: React.FC<Props | ContextProps> = props => {
   const { scrollArrowTopComponent, scrollArrowBottomComponent, position } = props;
 
-  if (!!scrollArrowTopComponent || scrollArrowBottomComponent) {
+  if (!!scrollArrowTopComponent || !!scrollArrowBottomComponent) {
     return (
       <ScrollArrowDefault
         {...props}

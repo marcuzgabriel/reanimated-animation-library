@@ -69,7 +69,7 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
         bounces={false}
         keyboardAvoidBottomMargin={isIOS ? 64 : 100}
         scrollArrows={{
-          isEnabled: false,
+          isEnabled: true,
           dimensions: 40,
           fill: 'black',
           topArrowOffset: 40,
