@@ -40,32 +40,21 @@ export const onScrollArrowAppearanceReaction = ({
     isScrolledToEnd.value = Math.floor(result.scrollY.value) === Math.floor(scrollingLength.value);
 
     if (isInputFieldFocused.value) {
-      if (translationYUpArrow.value !== ARROW_UP_OFFSET) {
-        translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
-      }
-
-      if (translationYDownArrow.value !== ARROW_DOWN_OFFSET) {
-        translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
-      }
+      translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
+      translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
     } else {
-      if (isScrolledToTop.value && translationYUpArrow.value !== ARROW_UP_OFFSET) {
+      if (isScrolledToTop.value) {
         translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
+        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
       }
 
-      if (isScrolledToEnd.value && translationYDownArrow.value !== ARROW_DOWN_OFFSET) {
+      if (isScrolledToEnd.value) {
         translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
       }
 
-      if (isScrolledToTop.value && translationYDownArrow.value !== 0) {
-        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
-      }
-
-      if (translationYDownArrow.value !== 0 && !isScrolledToEnd.value) {
-        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
-      }
-
-      if (translationYUpArrow.value !== 0 && !isScrolledToTop.value) {
+      if (!isScrolledToEnd.value && !isScrolledToTop.value) {
         translationYUpArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
+        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG);
       }
     }
   } else {
