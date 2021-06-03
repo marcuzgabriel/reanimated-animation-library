@@ -26,7 +26,8 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
   | scrollY | Animated.SharedValue<number> | An outside prop that can be connected to the BottomSheet. Then it reacts to other scroll events
   | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information
   | snapPointBottom | number |
-  | extraOffset | number | In some cases there is an extra offset that the BottomSheet needs to take into account. This prop helps to get the perfect offset
+  | isScrollableOffset | number | In some cases there can be a header or an outside component that will fill some of the screen. If this is the case then the BottomSheet needs to know the height dimensions of these components in order to determine scrollability correct.
+  | isStaticOffset | number | Same concept as for isScrollableOffset but instead of determine scrollability then it determins when the snappable effect will be enabled / disabled. Etc. if the background content do not overlap the BottomSheet, then there is no need for the SnapEffect. This prop helps to finetune when this effect triggers
   | borderTopRightRadius and borderTopLeftRadius | number | Sets the border top radius'
   | backgroundColor | string | Sets the background color
   | contentComponent | node | Content component
@@ -41,7 +42,7 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
   | fadingScrollEdges = { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: string, webBackgroundColorBottom: string | object | This prop ensures that there is a scrolling edge when the content is scrollable
   | getCurrentConfigRequest(config) | function | This function will provide the current configuration
   | onLayoutRequest(cardHeight) | function | In some use cases the card height of the BottomSheet might become useful
-  
+  | resetCardPosition(reset: callback function) | function | In some cases where there is no rerendering effect when changing screens etc. then this helper will ensure that the card will fold out nicely if its initially collapsed
   
 </details>
 <details>
