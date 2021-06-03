@@ -23,7 +23,7 @@
     "type:generate:copy:windows": "cross-env-shell Xcopy \"src\\ReanimatedAnimationLibrary.ts\" \"lib\\index.js*\"",
     "type:generate:copy:ios": "rsync -auv ./src/ReanimatedAnimationLibrary.ts ./lib/index.js"
   },
-  "main": "lib/index.ts",
+  "main": "lib/index.js",
   "module": "lib/index",
   "types": "reanimated-animation-library.d.ts",
   "react-native": "src/ReanimatedAnimationLibrary",
