@@ -25,7 +25,7 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
 | :--- | :---: | :---:|
   | scrollY | Animated.SharedValue<number> | An outside prop that can be connected to the BottomSheet. Then it reacts to other scroll events
   | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information
-  | snapPointBottom | number |
+  | snapPointBottom* | number | this prop is required for the BottomSheet to work
   | isScrollableOffset | number | In some cases there can be a header or an outside component that will fill some of the screen. If this is the case then the BottomSheet needs to know the height dimensions of these components in order to determine scrollability correct.
   | isStaticOffset | number | Same concept as for isScrollableOffset but instead of determine scrollability then it determins when the snappable effect will be enabled / disabled. Etc. if the background content do not overlap the BottomSheet, then there is no need for the SnapEffect. This prop helps to finetune when this effect triggers
   | borderTopRightRadius and borderTopLeftRadius | number | Sets the border top radius'
