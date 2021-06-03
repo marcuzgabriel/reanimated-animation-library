@@ -66,8 +66,8 @@ const SnapEffect: React.FC<Props> = ({
       previous: Record<string, Animated.SharedValue<number>> | null | undefined,
     ) => {
       if (result.contentHeight.value > 0 && result.cardHeight.value > 0) {
-        const offset = offsetAddition ?? 0;
-        const availableAreaBeforeOverlap = windowHeight - result.cardHeight.value - offset;
+        const extraOffset = offsetAddition ?? 0;
+        const availableAreaBeforeOverlap = windowHeight - result.cardHeight.value - extraOffset;
         const isCardOverlappingContent = result.contentHeight.value > availableAreaBeforeOverlap;
 
         return onSnappableReaction({
@@ -77,6 +77,7 @@ const SnapEffect: React.FC<Props> = ({
           contentHeight,
           isSnapEffectActiveState,
           isCardOverlappingContent,
+          offsetAddition: extraOffset,
           setIsSnapEffectActiveState,
         });
       }
