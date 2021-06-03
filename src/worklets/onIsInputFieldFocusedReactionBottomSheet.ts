@@ -80,13 +80,18 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
         { duration: AVOID_FLICKERING_MS },
         () => {
           footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
-          translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
-            scrollTo(scrollViewRef, 0, scrollToNumber, true);
-          });
+          translationY.value = withTiming(
+            -result.keyboardHeight.value,
+            animationConfig,
+            isAnimationComplete => {
+              if (isAnimationComplete) {
+                scrollTo(scrollViewRef, 0, scrollToNumber, true);
+                isInputFieldFocused.value = true;
+              }
+            },
+          );
         },
       );
-
-      isInputFieldFocused.value = true;
     }
 
     if (result.keyboardHeight.value === 0 && isInputFieldFocused.value) {

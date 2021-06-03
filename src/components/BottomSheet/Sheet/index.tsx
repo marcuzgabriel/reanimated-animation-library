@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useContext, useCallback } from 'react';
+import React, { useMemo, useRef, useContext, useCallback, useEffect } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
@@ -28,7 +28,6 @@ import { UserConfigurationContext } from '../../../containers/UserConfigurationP
 
 const HIDE_CONTENT_INTERPOLATION = 5;
 
-const isAndroid = Platform.OS === 'android';
 interface AnimatedGHContext {
   [key: string]: number;
   startX: number;
@@ -65,6 +64,7 @@ const Sheet: React.FC = () => {
     snapEffectDirection,
     contentComponent,
     onLayoutRequest,
+    resetCardPosition,
   } = useContext(UserConfigurationContext);
 
   const isPanning = useSharedValue(false);
@@ -95,7 +95,7 @@ const Sheet: React.FC = () => {
     return cardHeight.value > 0
       ? cardHeight.value - configSnapPointBottom - extraSnapPointOffset
       : 0;
-  });
+  }, [cardHeight, configSnapPointBottom]);
 
   const derivedIsPanningValue = useDerivedValue(() => isPanning.value, [isPanning]);
 
@@ -211,6 +211,22 @@ const Sheet: React.FC = () => {
       }
     },
     [snapEffectDirection],
+  );
+
+  /* Uncollapse card if its initially collapsed */
+  useAnimatedReaction(
+    () => snapPointBottom.value,
+    (result: number, previous: number | null | undefined) => {
+      if (
+        resetCardPosition &&
+        result !== previous &&
+        snapPointBottom.value > 0 &&
+        isCardCollapsed.value
+      ) {
+        runOnJS(resetCardPosition)(actionRequestCloseOrOpenCard);
+      }
+    },
+    [snapPointBottom],
   );
 
   useAnimatedReaction(

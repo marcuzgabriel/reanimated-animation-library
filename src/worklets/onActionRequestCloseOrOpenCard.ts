@@ -31,16 +31,20 @@ export const onActionRequestCloseOrOpenCard = ({
     translationY.value = withSpring(
       direction === 'up' ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
       DEFAULT_SPRING_CONFIG,
-      () => {
-        isAnimationRunning.value = false;
+      isAnimationComplete => {
+        if (isAnimationComplete) {
+          isAnimationRunning.value = false;
+        }
       },
     );
   } else {
     translationY.value = withSpring(
       translationY.value <= SPRING_OFFSET ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
       DEFAULT_SPRING_CONFIG,
-      () => {
-        isAnimationRunning.value = false;
+      isAnimationComplete => {
+        if (isAnimationComplete) {
+          isAnimationRunning.value = false;
+        }
       },
     );
   }

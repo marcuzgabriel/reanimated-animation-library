@@ -75,8 +75,8 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   const windowWidth = useWindowDimensions().width;
   const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
   const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
-  const isTopArrowTouchable = useSharedValue(false);
-  const isBottomArrowTouchable = useSharedValue(false);
+  const isTopArrowTouchable = useSharedValue(true);
+  const isBottomArrowTouchable = useSharedValue(true);
 
   const arrowFill = useMemo(() => fill ?? SCROLL_ARROW_FILL, [fill]);
   const arrowDimensions = useMemo(() => dimensions ?? SCROLL_ARROW_DIMENSIONS, [dimensions]);
@@ -123,32 +123,24 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
     [scrollY, contentHeight, scrollViewHeight, isInputFieldFocused],
   );
 
-  const animatedStyleUpArrow = useAnimatedStyle(
-    () => ({
-      opacity: interpolate(translationYUpArrow.value, [ARROW_UP_OFFSET, 0], [0, 1]),
-      transform: [{ translateY: translationYUpArrow.value }, { rotate: '-90deg' }],
-    }),
-    [isScrollable],
-  );
+  const animatedStyleUpArrow = useAnimatedStyle(() => ({
+    opacity: interpolate(translationYUpArrow.value, [ARROW_UP_OFFSET, 0], [0, 1]),
+    transform: [{ translateY: translationYUpArrow.value }, { rotate: '-90deg' }],
+  }));
 
-  const animatedStyleDownArrow = useAnimatedStyle(
-    () => ({
-      opacity: interpolate(translationYDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
-      transform: [{ translateY: translationYDownArrow.value }, { rotate: '90deg' }],
-    }),
-    [isScrollable],
-  );
+  const animatedStyleDownArrow = useAnimatedStyle(() => ({
+    opacity: interpolate(translationYDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
+    transform: [{ translateY: translationYDownArrow.value }, { rotate: '90deg' }],
+  }));
 
-  const animatedStyleTouchableOpacity = useAnimatedStyle(
-    () =>
-      isPositionedTop
-        ? {
-            zIndex: isTopArrowTouchable.value ? 4 : -1,
-          }
-        : {
-            zIndex: isBottomArrowTouchable.value ? 4 : -1,
-          },
-    [isPositionedTop, isScrollable, isTopArrowTouchable, isBottomArrowTouchable],
+  const animatedStyleTouchableOpacity = useAnimatedStyle(() =>
+    isPositionedTop
+      ? {
+          zIndex: isTopArrowTouchable.value ? 4 : -1,
+        }
+      : {
+          zIndex: isBottomArrowTouchable.value ? 4 : -1,
+        },
   );
 
   return (

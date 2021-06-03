@@ -69,8 +69,10 @@ export const onGestureHandlerCard = ({
       translationY.value = withSpring(
         isPanningDown.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
         DEFAULT_SPRING_CONFIG,
-        () => {
-          isAnimationRunning.value = false;
+        isAnimationComplete => {
+          if (isAnimationComplete) {
+            isAnimationRunning.value = false;
+          }
         },
       );
     }

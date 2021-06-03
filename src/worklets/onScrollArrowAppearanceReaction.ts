@@ -50,18 +50,32 @@ export const onScrollArrowAppearanceReaction = ({
       isBottomArrowTouchable.value = false;
     } else {
       if (isScrolledToTop.value) {
-        translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG, () => {
-          isTopArrowTouchable.value = false;
-        });
-        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG, () => {
-          isBottomArrowTouchable.value = true;
+        translationYUpArrow.value = withTiming(
+          ARROW_UP_OFFSET,
+          DEFAULT_TIMING_CONFIG,
+          isAnimationComplete => {
+            if (isAnimationComplete) {
+              isTopArrowTouchable.value = false;
+            }
+          },
+        );
+        translationYDownArrow.value = withTiming(0, DEFAULT_TIMING_CONFIG, isAnimationComplete => {
+          if (isAnimationComplete) {
+            isBottomArrowTouchable.value = true;
+          }
         });
       }
 
       if (isScrolledToEnd.value) {
-        translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG, () => {
-          isBottomArrowTouchable.value = false;
-        });
+        translationYDownArrow.value = withTiming(
+          ARROW_DOWN_OFFSET,
+          DEFAULT_TIMING_CONFIG,
+          isAnimationComplete => {
+            if (isAnimationComplete) {
+              isBottomArrowTouchable.value = false;
+            }
+          },
+        );
       }
 
       if (!isScrolledToEnd.value && !isScrolledToTop.value) {
@@ -75,5 +89,7 @@ export const onScrollArrowAppearanceReaction = ({
     isScrollable.value = false;
     translationYUpArrow.value = withTiming(ARROW_UP_OFFSET, DEFAULT_TIMING_CONFIG);
     translationYDownArrow.value = withTiming(ARROW_DOWN_OFFSET, DEFAULT_TIMING_CONFIG);
+    isTopArrowTouchable.value = false;
+    isBottomArrowTouchable.value = false;
   }
 };

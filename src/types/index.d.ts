@@ -48,6 +48,7 @@ export interface BottomSheetConfiguration {
   offsetAddition?: number;
   getCurrentConfigRequest?: (config: Record<string, any>) => void;
   onLayoutRequest?: (cardHeight: number) => void;
+  resetCardPosition?: (reset: () => void) => void;
 }
 export interface MixedScrollViewProps extends ScrollViewProps {
   panGestureType?: Animated.SharedValue<number>;

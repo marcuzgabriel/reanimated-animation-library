@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useWindowDimensions, LayoutChangeEvent } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
@@ -8,14 +8,14 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import { DRAG_RESISTANCE_FACTOR } from '../../constants/animations';
 import { onGestureHandlerSnapEffect, onSnappableReaction } from '../../worklets';
 
 interface Props {
   children: React.ReactNode;
   cardHeight: Animated.SharedValue<number>;
   snapEffectDirection: Animated.SharedValue<string>;
-  offsetAddition?: number;
+  isScrollableOffset?: number;
+  isStaticOffset?: number;
 }
 
 interface AnimatedGHContext {
@@ -28,7 +28,8 @@ const View = styled.View``;
 
 const SnapEffect: React.FC<Props> = ({
   cardHeight,
-  offsetAddition,
+  isScrollableOffset,
+  isStaticOffset,
   snapEffectDirection,
   children,
 }) => {
@@ -37,12 +38,9 @@ const SnapEffect: React.FC<Props> = ({
   const translationY = useSharedValue(0);
   const dragY = useSharedValue(0);
   const prevDragY = useSharedValue(0);
-  const dragResistanceFactor = useSharedValue(0);
   const contentHeight = useSharedValue(0);
 
   const windowHeight = useWindowDimensions().height;
-  const maxDragY = useMemo(() => windowHeight * DRAG_RESISTANCE_FACTOR, [windowHeight]);
-  const minDragY = useMemo(() => -windowHeight * DRAG_RESISTANCE_FACTOR, [windowHeight]);
 
   const gestureHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
@@ -66,8 +64,10 @@ const SnapEffect: React.FC<Props> = ({
       previous: Record<string, Animated.SharedValue<number>> | null | undefined,
     ) => {
       if (result.contentHeight.value > 0 && result.cardHeight.value > 0) {
-        const extraOffset = offsetAddition ?? 0;
-        const availableAreaBeforeOverlap = windowHeight - result.cardHeight.value - extraOffset;
+        const extraIsStaticOffset = isStaticOffset ?? 0;
+        const extraIsScrollableOffset = isScrollableOffset ?? 0;
+        const availableAreaBeforeOverlap =
+          windowHeight - result.cardHeight.value - extraIsStaticOffset;
         const isCardOverlappingContent = result.contentHeight.value > availableAreaBeforeOverlap;
 
         return onSnappableReaction({
@@ -77,7 +77,7 @@ const SnapEffect: React.FC<Props> = ({
           contentHeight,
           isSnapEffectActiveState,
           isCardOverlappingContent,
-          offsetAddition: extraOffset,
+          offsetAddition: extraIsScrollableOffset,
           setIsSnapEffectActiveState,
         });
       }

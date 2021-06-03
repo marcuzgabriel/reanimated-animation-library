@@ -49,6 +49,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     };
     getCurrentConfigRequest?: (config: Record<string, any>) => void;
     onLayoutRequest?: (cardHeight: number) => void;
+    resetCardPosition?: (reset: () => void) => void;
   }
 
   // Input field component types
