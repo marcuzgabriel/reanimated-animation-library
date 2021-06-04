@@ -25,17 +25,16 @@ const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, c
     getCurrentConfigRequest,
   } = configuration;
 
-  const configScrollArrows = useMemo(() => {
-    const { isEnabled } = scrollArrows ?? {};
-    const disableScrollArrows = !!scrollArrowBottomComponent || !!scrollArrowTopComponent;
-    const defaultIsEnabledConfiguration =
-      typeof isEnabled === 'boolean' ? isEnabled : DEFAULT_CONFIGURATION_IS_ENABLED;
-
-    return {
+  const configScrollArrows = useMemo(
+    () => ({
       ...scrollArrows,
-      isEnabled: disableScrollArrows ? false : defaultIsEnabledConfiguration,
-    };
-  }, [scrollArrows, scrollArrowTopComponent, scrollArrowBottomComponent]);
+      isEnabled:
+        typeof scrollArrows?.isEnabled === 'boolean'
+          ? scrollArrows?.isEnabled
+          : DEFAULT_CONFIGURATION_IS_ENABLED,
+    }),
+    [scrollArrows],
+  );
 
   const configFadingScrollEdges = useMemo(
     () => ({

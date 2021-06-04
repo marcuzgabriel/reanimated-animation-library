@@ -47,6 +47,8 @@ const Content: React.FC<Props> = ({
   const {
     fadingScrollEdges,
     scrollArrows,
+    scrollArrowTopComponent,
+    scrollArrowBottomComponent,
     maxHeight: configMaxHeight,
   } = useContext(UserConfigurationContext);
   const { scrollViewRef, scrollY, scrollViewHeight, contentHeight, footerHeight } = useContext(
@@ -127,6 +129,7 @@ const Content: React.FC<Props> = ({
         {scrollArrows?.isEnabled && (
           <ScrollArrow
             isInputFieldFocused={isInputFieldFocused}
+            component={scrollArrowTopComponent}
             contextName="bottomSheet"
             position="top"
           />
@@ -167,6 +170,7 @@ const Content: React.FC<Props> = ({
         </NativeViewGestureHandler>
         {scrollArrows?.isEnabled && (
           <ScrollArrow
+            component={scrollArrowBottomComponent}
             isInputFieldFocused={isInputFieldFocused}
             contextName="bottomSheet"
             position="bottom"

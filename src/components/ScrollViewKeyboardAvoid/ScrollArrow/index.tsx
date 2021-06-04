@@ -9,6 +9,7 @@ interface Props extends ScrollProps {
   isInputFieldFocused: Animated.SharedValue<boolean>;
   position: string;
   contextName: string;
+  component?: React.ReactNode;
 }
 
 interface ContextProps extends Partial<Props> {
@@ -18,15 +19,10 @@ interface ContextProps extends Partial<Props> {
 }
 
 const ScrollArrow: React.FC<Props | ContextProps> = props => {
-  const { scrollArrowTopComponent, scrollArrowBottomComponent, position } = props;
+  const { component } = props;
 
-  if (!!scrollArrowTopComponent || !!scrollArrowBottomComponent) {
-    return (
-      <ScrollArrowDefault
-        {...props}
-        component={position === 'top' ? scrollArrowTopComponent : scrollArrowBottomComponent}
-      />
-    );
+  if (component) {
+    return <ScrollArrowDefault {...props} component={component} />;
   }
 
   return <ScrollArrowDefault {...props} />;

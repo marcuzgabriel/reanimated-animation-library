@@ -24,6 +24,8 @@ import {
   SCROLL_ARROW_OFFSET,
 } from '../../../constants/styles';
 
+const SVG_ARROW_ROTATION = 90;
+
 interface Props extends Pick<MixedScrollViewProps, 'scrollArrows'>, ScrollProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
   position: string;
@@ -37,6 +39,10 @@ interface ContextProps extends Partial<Props> {
   position: string;
   isInputFieldFocused: Animated.SharedValue<boolean>;
 }
+
+const SvgArrowWrapper = styled.View<{ rotation: number }>`
+  transform: ${({ rotation }): string => `rotate(${rotation}deg)`};
+`;
 
 const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacity<{
   position: string;
@@ -53,7 +59,7 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
 `);
 
 const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
-  const { contextName, position, isInputFieldFocused } = props;
+  const { contextName, position, isInputFieldFocused, component } = props;
 
   const isContextNameBottomSheet = useMemo(() => contextName === 'bottomSheet', [contextName]);
   const reusablePropsContextBottomSheet = useContext(ReusablePropsContext.bottomSheet);
@@ -124,13 +130,15 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   );
 
   const animatedStyleUpArrow = useAnimatedStyle(() => ({
+    display: isTopArrowTouchable.value ? 'flex' : 'none',
     opacity: interpolate(translationYUpArrow.value, [ARROW_UP_OFFSET, 0], [0, 1]),
-    transform: [{ translateY: translationYUpArrow.value }, { rotate: '-90deg' }],
+    transform: [{ translateY: translationYUpArrow.value }],
   }));
 
   const animatedStyleDownArrow = useAnimatedStyle(() => ({
+    display: isBottomArrowTouchable.value ? 'flex' : 'none',
     opacity: interpolate(translationYDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
-    transform: [{ translateY: translationYDownArrow.value }, { rotate: '90deg' }],
+    transform: [{ translateY: translationYDownArrow.value }],
   }));
 
   const animatedStyleTouchableOpacity = useAnimatedStyle(() =>
@@ -155,7 +163,11 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
       }}
     >
       <Animated.View style={isPositionedTop ? animatedStyleUpArrow : animatedStyleDownArrow}>
-        <SvgArrow height={arrowDimensions} width={arrowDimensions} fill={arrowFill} />
+        {component ?? (
+          <SvgArrowWrapper rotation={isPositionedTop ? -SVG_ARROW_ROTATION : SVG_ARROW_ROTATION}>
+            <SvgArrow height={arrowDimensions} width={arrowDimensions} fill={arrowFill} />
+          </SvgArrowWrapper>
+        )}
       </Animated.View>
     </TouchableOpacity>
   );
