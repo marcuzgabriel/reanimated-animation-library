@@ -26,12 +26,6 @@ const fakeScrollItem = [
   },
 ];
 
-const Button = styled.TouchableOpacity`
-  width: 100%;
-  height: 100px;
-  background: black;
-`;
-
 const Wrapper = styled.View<{ windowHeight: number }>`
   position: relative;
   height: ${({ windowHeight }): number => windowHeight}px;
@@ -48,7 +42,6 @@ const FakeContentWrapper = styled.View<{ windowHeight: number }>`
 `;
 
 const ScrollViewWithSnapEffect: React.FC = () => {
-  const [isFocusedMock, setIsFocusedMock] = React.useState<boolean>(false);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const scrollY = useSharedValue(0);
   const cardHeight = useSharedValue(0);
@@ -72,7 +65,6 @@ const ScrollViewWithSnapEffect: React.FC = () => {
         scrollEventThrottle={16}
       >
         <SnapEffect cardHeight={cardHeight} snapEffectDirection={snapEffectDirection}>
-          <Button onPress={() => setIsFocusedMock(true)} />
           {fakeScrollItem.map(({ text }, i) => (
             <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
               <Text>{text}</Text>
@@ -87,7 +79,6 @@ const ScrollViewWithSnapEffect: React.FC = () => {
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}
         snapPointBottom={HEADER_HEIGHT}
-        resetCardPosition={isFocusedMock}
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
