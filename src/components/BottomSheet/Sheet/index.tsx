@@ -8,6 +8,7 @@ import Animated, {
   useAnimatedGestureHandler,
   runOnJS,
   interpolate,
+  runOnUI,
 } from 'react-native-reanimated';
 import { LayoutChangeEvent, ViewStyle, Platform, Keyboard } from 'react-native';
 import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
@@ -25,6 +26,7 @@ import {
 import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
+import { snapPoint } from 'react-native-redash';
 
 const HIDE_CONTENT_INTERPOLATION = 5;
 
@@ -213,22 +215,6 @@ const Sheet: React.FC = () => {
     [snapEffectDirection],
   );
 
-  /* Uncollapse card if its initially collapsed */
-  useAnimatedReaction(
-    () => snapPointBottom.value,
-    (result: number, previous: number | null | undefined) => {
-      if (
-        resetCardPosition &&
-        result !== previous &&
-        snapPointBottom.value > 0 &&
-        isCardCollapsed.value
-      ) {
-        runOnJS(resetCardPosition)(actionRequestCloseOrOpenCard);
-      }
-    },
-    [snapPointBottom],
-  );
-
   useAnimatedReaction(
     () => configBackgroundContentScrollY?.value,
     (result: number | undefined, previous: number | null | undefined) => {
@@ -264,6 +250,12 @@ const Sheet: React.FC = () => {
     }),
     [hideContentInterpolation],
   );
+
+  useEffect(() => {
+    if (resetCardPosition && isCardCollapsed.value) {
+      actionRequestCloseOrOpenCard();
+    }
+  }, [resetCardPosition, isCardCollapsed, actionRequestCloseOrOpenCard]);
 
   return (
     <>

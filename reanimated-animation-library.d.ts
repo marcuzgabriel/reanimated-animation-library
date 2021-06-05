@@ -47,9 +47,9 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       webBackgroundColorTop: Record<string, string>;
       webBackgroundColorBottom: Record<string, string>;
     };
+    resetCardPosition?: boolean;
     getCurrentConfigRequest?: (config: Record<string, any>) => void;
     onLayoutRequest?: (cardHeight: number) => void;
-    resetCardPosition?: (reset: () => void) => void;
   }
 
   // Input field component types
