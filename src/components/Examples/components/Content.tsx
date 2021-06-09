@@ -6,6 +6,12 @@ const BottomSheetContentWrapper = styled.View`
   padding: 0px 16px 16px 16px;
 `;
 
+const TouchableOpacity = styled.TouchableOpacity`
+  width: 100%;
+  height: 50px;
+  background: black;
+`;
+
 const inputStyle = {
   width: '100%',
   height: 50,
@@ -19,6 +25,7 @@ const Text = styled.Text``;
 
 const Content: React.FC = () => (
   <BottomSheetContentWrapper>
+    <TouchableOpacity />
     <Text>
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
       labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
@@ -26,7 +33,18 @@ const Content: React.FC = () => (
       voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
       non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     </Text>
-    <InputField uniqueId={0} placeholder="useless placeholder" style={inputStyle} />
+    <InputField
+      uniqueId={0}
+      placeholder="useless placeholder"
+      keyboardType="numeric"
+      style={inputStyle}
+    />
+    <InputField
+      uniqueId={1}
+      placeholder="useless placeholder"
+      keyboardType="default"
+      style={inputStyle}
+    />
     <Text>
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
       labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco

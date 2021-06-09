@@ -45,6 +45,7 @@ const fakeScrollItem = [
 
 const Wrapper = styled.View<{ windowHeight: number }>`
   position: absolute;
+  flex-direction: row;
   height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
 `;
@@ -54,6 +55,11 @@ const FakeContentWrapper = styled.View<{ windowHeight: number }>`
   height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
   padding: 32px 16px;
+`;
+
+const Left = styled.View`
+  width: 500px;
+  border: 1px solid black;
 `;
 
 const Text = styled.Text``;
@@ -67,7 +73,15 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
       <ScrollViewKeyboardAvoid
         ref={scrollViewRef}
         bounces={false}
+        alwaysBounceVertical={false}
         keyboardAvoidBottomMargin={isIOS ? 64 : 100}
+        fadingScrollEdges={{
+          isEnabled: true,
+          iOSandWebFadingEdgeHeight: 150,
+          nativeBackgroundColor: 'black',
+          webBackgroundColorTop: { from: 'rgba(0, 0, 0, 0.05)', to: 'rgba(0,0,0,0.05)' },
+          webBackgroundColorBottom: { to: 'rgba(0, 0, 0, 0.05)', from: 'rgba(0,0,0,0.05)' },
+        }}
         scrollArrows={{
           isEnabled: true,
           dimensions: 40,

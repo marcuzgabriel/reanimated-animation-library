@@ -1,4 +1,5 @@
-import Animated, { withTiming, scrollTo } from 'react-native-reanimated';
+import Animated, { withDelay, withTiming, scrollTo } from 'react-native-reanimated';
+import { Platform } from 'react-native';
 import { KEYBOARD_TIMING_EASING } from '../constants/animations';
 import { CLOSE_OPEN_CARD_BUTTON_HITSLOP, MAX_HEIGHT_RATIO } from '../constants/styles';
 import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
@@ -27,7 +28,6 @@ interface Props {
   keyboardAvoidBottomMargin?: number;
   windowHeight: number;
   scrollViewRef: React.RefObject<Animated.ScrollView>;
-  scrollViewHeight: Animated.SharedValue<number>;
   contentHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
   contentHeight: Animated.SharedValue<number>;
   headerHeight: Animated.SharedValue<number>;
@@ -44,7 +44,6 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
   footerHeight,
   windowHeight,
   scrollViewRef,
-  scrollViewHeight,
   translationY,
   footerTranslationY,
   isInputFieldFocused,
@@ -75,23 +74,23 @@ export const onIsInputFieldFocusedReactionBottomSheet = ({
       const defaultKeyboardAvoidBottomMargin = keyboardAvoidBottomMargin ?? 0;
       const scrollToNumber = res - height / 2 + defaultKeyboardAvoidBottomMargin;
 
-      contentHeightWhenKeyboardIsVisible.value = withTiming(
-        isScrollable ? height : contentHeight.value,
-        { duration: AVOID_FLICKERING_MS },
-        () => {
-          footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
-          translationY.value = withTiming(
-            -result.keyboardHeight.value,
-            animationConfig,
-            isAnimationComplete => {
-              if (isAnimationComplete) {
-                scrollTo(scrollViewRef, 0, scrollToNumber, true);
-                isInputFieldFocused.value = true;
-              }
-            },
-          );
-        },
-      );
+      contentHeightWhenKeyboardIsVisible.value = isScrollable ? height : contentHeight.value;
+
+      /* Effect happens automatically on Android */
+      if (Platform.OS !== 'android') {
+        footerTranslationY.value = withTiming(-result.keyboardHeight.value, animationConfig);
+        translationY.value = withDelay(
+          AVOID_FLICKERING_MS,
+          withTiming(-result.keyboardHeight.value, animationConfig, isAnimationComplete => {
+            if (isAnimationComplete) {
+              scrollTo(scrollViewRef, 0, scrollToNumber, true);
+              isInputFieldFocused.value = true;
+            }
+          }),
+        );
+      } else {
+        isInputFieldFocused.value = true;
+      }
     }
 
     if (result.keyboardHeight.value === 0 && isInputFieldFocused.value) {

@@ -41,7 +41,6 @@ const Content: React.FC<Props> = ({
 }) => {
   const panGestureInnerRef = useRef<PanGestureHandler>();
   const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
-  const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
 
   const windowHeight = useWindowDimensions().height;
   const {
@@ -51,9 +50,15 @@ const Content: React.FC<Props> = ({
     scrollArrowBottomComponent,
     maxHeight: configMaxHeight,
   } = useContext(UserConfigurationContext);
-  const { scrollViewRef, scrollY, scrollViewHeight, contentHeight, footerHeight } = useContext(
-    ReusablePropsContext.bottomSheet,
-  );
+  const {
+    contentHeight,
+    contentHeightWhenKeyboardIsVisible,
+    footerHeight,
+    scrollViewRef,
+    scrollY,
+    scrollViewHeight,
+    scrollViewWidth,
+  } = useContext(ReusablePropsContext.bottomSheet);
   const {
     isEnabled: isFadingScrollEdgeEnabled,
     androidFadingEdgeLength,
@@ -105,9 +110,10 @@ const Content: React.FC<Props> = ({
     (e: LayoutChangeEvent): void => {
       if (e.nativeEvent.layout.height > 0) {
         scrollViewHeight.value = e.nativeEvent.layout.height;
+        scrollViewWidth.value = e.nativeEvent.layout.width;
       }
     },
-    [scrollViewHeight],
+    [scrollViewHeight, scrollViewWidth],
   );
 
   return (
@@ -119,7 +125,7 @@ const Content: React.FC<Props> = ({
       onGestureEvent={gestureHandler}
     >
       <Animated.View onLayout={onLayout} style={maxHeightStyle}>
-        {fadingScrollEdges?.isEnabled && (
+        {isFadingScrollEdgeEnabled && (
           <FadingEdge
             position="top"
             nativeColor={fadingEdgeNativeBackgroundColor}
@@ -176,7 +182,7 @@ const Content: React.FC<Props> = ({
             position="bottom"
           />
         )}
-        {fadingScrollEdges?.isEnabled && (
+        {isFadingScrollEdgeEnabled && (
           <FadingEdge
             position="bottom"
             nativeColor={fadingEdgeNativeBackgroundColor}

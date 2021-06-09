@@ -8,9 +8,8 @@ import Animated, {
   useAnimatedGestureHandler,
   runOnJS,
   interpolate,
-  runOnUI,
 } from 'react-native-reanimated';
-import { LayoutChangeEvent, ViewStyle, Platform, Keyboard } from 'react-native';
+import { LayoutChangeEvent, ViewStyle, Keyboard } from 'react-native';
 import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
 import Content from '../Content';
 import Header from '../Header';
@@ -55,12 +54,13 @@ const Sheet: React.FC = () => {
     cardHeight,
     translationY,
     footerHeight,
+    isInputFieldFocused,
   } = useContext(ReusablePropsContext.bottomSheet);
   const {
-    scrollY: configBackgroundContentScrollY,
     snapPointBottom: configSnapPointBottom,
     borderTopLeftRadius: configBorderTopLeftRadius,
     borderTopRightRadius: configBorderTopRightRadius,
+    outerScrollEvent,
     extraSnapPointBottomOffset,
     backgroundColor,
     snapEffectDirection,
@@ -76,7 +76,6 @@ const Sheet: React.FC = () => {
   const isScrollingDown = useSharedValue(false);
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
-  const isInputFieldFocused = useSharedValue(false);
   const hideContentInterpolation = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
@@ -216,9 +215,9 @@ const Sheet: React.FC = () => {
   );
 
   useAnimatedReaction(
-    () => configBackgroundContentScrollY?.value,
+    () => outerScrollEvent?.scrollY?.value,
     (result: number | undefined, previous: number | null | undefined) => {
-      if (!isInputFieldFocused.value) {
+      if (!isInputFieldFocused.value && typeof result === 'number' && result >= 0) {
         onOuterScrollReaction({
           result,
           previous,
@@ -228,10 +227,11 @@ const Sheet: React.FC = () => {
           isAnimationRunning,
           translationY,
           snapPointBottom,
+          outerScrollEvent,
         });
       }
     },
-    [configBackgroundContentScrollY],
+    [outerScrollEvent],
   );
 
   const panGestureStyle = useAnimatedStyle(
@@ -264,7 +264,7 @@ const Sheet: React.FC = () => {
           <PanGestureHandler ref={panGestureOuterRef} onGestureEvent={gestureHandlerHeader}>
             <Animated.View>
               <Header
-                scrollY={configBackgroundContentScrollY}
+                scrollY={outerScrollEvent?.scrollY}
                 snapPointBottom={snapPointBottom}
                 onPress={actionRequestCloseOrOpenCard}
               />

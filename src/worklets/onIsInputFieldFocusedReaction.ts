@@ -64,12 +64,18 @@ export const onIsInputFieldFocusedReaction = ({
       const defaultKeyboardAvoidBottomMargin = keyboardAvoidBottomMargin ?? 0;
       const scrollToNumber = res - scrollViewHeight.value + defaultKeyboardAvoidBottomMargin;
 
-      translationY.value = withTiming(-result.keyboardHeight.value, animationConfig, () => {
-        scrollTo(scrollViewRef, 0, scrollToNumber, disableScrollAnimation ? false : true);
-        if (typeof onIsInputFieldFocusedRequest === 'function') {
-          runOnJS(onIsInputFieldFocusedRequest)(true, availableHeight);
-        }
-      });
+      translationY.value = withTiming(
+        -result.keyboardHeight.value,
+        animationConfig,
+        isAnimationComplete => {
+          if (isAnimationComplete) {
+            scrollTo(scrollViewRef, 0, scrollToNumber, disableScrollAnimation ? false : true);
+            if (typeof onIsInputFieldFocusedRequest === 'function') {
+              runOnJS(onIsInputFieldFocusedRequest)(true, availableHeight);
+            }
+          }
+        },
+      );
 
       isInputFieldFocused.value = true;
     } else {

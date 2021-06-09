@@ -17,13 +17,7 @@ interface Props {
 }
 
 const UserConfigurationProvider: React.FC<Readonly<Props>> = ({ configuration, children }) => {
-  const {
-    scrollArrowTopComponent,
-    scrollArrowBottomComponent,
-    scrollArrows,
-    fadingScrollEdges,
-    getCurrentConfigRequest,
-  } = configuration;
+  const { scrollArrows, fadingScrollEdges, getCurrentConfigRequest } = configuration;
 
   const configScrollArrows = useMemo(
     () => ({

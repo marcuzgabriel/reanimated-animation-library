@@ -40,21 +40,23 @@ export const onGestureHandlerCard = ({
   onActive: (event: Record<string, number>, ctx: Record<string, number>): void => {
     'worklet';
 
-    isPanning.value = true;
-    prevDragY.value = translationY.value;
-    dragY.value = ctx.startY + event.translationY;
+    if (!isInputFieldFocused.value) {
+      isPanning.value = true;
+      prevDragY.value = translationY.value;
+      dragY.value = ctx.startY + event.translationY;
 
-    if (dragY.value > 0) {
-      if (
-        isScrollingCard.value &&
-        ctx.startY + event.translationY > prevDragY.value &&
-        type === 'content'
-      ) {
-        if (innerScrollY.value === 0 || innerScrollY.value <= SCROLL_EVENT_THROTTLE) {
+      if (dragY.value > 0) {
+        if (
+          isScrollingCard.value &&
+          ctx.startY + event.translationY > prevDragY.value &&
+          type === 'content'
+        ) {
+          if (innerScrollY.value === 0 || innerScrollY.value <= SCROLL_EVENT_THROTTLE) {
+            translationY.value = dragY.value;
+          }
+        } else {
           translationY.value = dragY.value;
         }
-      } else {
-        translationY.value = dragY.value;
       }
     }
   },

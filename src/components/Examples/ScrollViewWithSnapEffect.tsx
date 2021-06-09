@@ -12,9 +12,19 @@ import SnapEffect from '../SnapEffect';
 
 const HEADER_HEIGHT = 50;
 
+const isWeb = Platform.OS === 'web';
 const isAndroid = Platform.OS === 'android';
 
 const fakeScrollItem = [
+  {
+    text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+  ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+  laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+`,
+  },
   {
     text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
   ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
@@ -28,7 +38,7 @@ const fakeScrollItem = [
 
 const Wrapper = styled.View<{ windowHeight: number }>`
   position: relative;
-  height: ${({ windowHeight }): number => windowHeight}px;
+  height: ${({ windowHeight }): string => (isWeb ? `${windowHeight}px` : '100%')};
   width: 100%;
 `;
 
@@ -73,7 +83,10 @@ const ScrollViewWithSnapEffect: React.FC = () => {
         </SnapEffect>
       </Animated.ScrollView>
       <BottomSheet
-        scrollY={scrollY}
+        outerScrollEvent={{
+          scrollY,
+          autoScrollTriggerLength: 16,
+        }}
         fadingScrollEdges={{ isEnabled: false }}
         morphingArrow={{ isEnabled: Platform.OS !== 'web', offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}

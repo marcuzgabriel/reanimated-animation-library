@@ -1,5 +1,5 @@
 import React, { useMemo, createContext, useContext } from 'react';
-import { Platform, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, { useSharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { KeyboardContext } from '../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../containers/ReusablePropsProvider';
@@ -8,8 +8,6 @@ import {
   onIsInputFieldFocusedReaction,
 } from '../worklets';
 import { UserConfigurationContext } from './UserConfigurationProvider';
-
-const isIOS = Platform.OS === 'ios';
 
 export const KeyboardAvoidingViewContext = createContext<Record<string, any>>({});
 export const { Provider } = KeyboardAvoidingViewContext;
@@ -137,7 +135,6 @@ const KeyboardAvoidingViewProvider: React.FC<Props> = ({
             previous,
             windowHeight,
             scrollViewRef,
-            scrollViewHeight,
             contentHeight: bottomSheetContentHeight,
             keyboardAvoidBottomMargin,
             translationY,

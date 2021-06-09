@@ -1,12 +1,9 @@
 import Animated, { withSpring } from 'react-native-reanimated';
-import {
-  DEFAULT_SNAP_POINT_TOP,
-  DEFAULT_SPRING_CONFIG,
-  DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM,
-} from '../constants/animations';
+import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from '../constants/animations';
 
 interface Props {
   result: number;
+  autoScrollTriggerLength: number;
   isAnimationRunning: Animated.SharedValue<boolean>;
   isScrollingDown: Animated.SharedValue<boolean>;
   isScrollingUp: Animated.SharedValue<boolean>;
@@ -16,6 +13,7 @@ interface Props {
 }
 
 export const onScrollRequestCloseOrOpenCard = ({
+  autoScrollTriggerLength,
   isAnimationRunning,
   isScrollingDown,
   isScrollingUp,
@@ -27,14 +25,10 @@ export const onScrollRequestCloseOrOpenCard = ({
   'worklet';
 
   const shouldCardCollapse =
-    isScrollingDown.value &&
-    result >= DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM &&
-    !isCardCollapsed.value;
+    isScrollingDown.value && result >= autoScrollTriggerLength && !isCardCollapsed.value;
 
   const shouldCardOpen =
-    isScrollingUp.value &&
-    result < DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM &&
-    isCardCollapsed.value;
+    isScrollingUp.value && result < autoScrollTriggerLength && isCardCollapsed.value;
 
   if (shouldCardCollapse || shouldCardOpen) {
     isAnimationRunning.value = true;

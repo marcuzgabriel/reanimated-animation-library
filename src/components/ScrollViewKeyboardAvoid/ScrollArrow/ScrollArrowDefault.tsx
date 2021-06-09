@@ -1,10 +1,11 @@
 import React, { useMemo, useContext } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   useAnimatedReaction,
   interpolate,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import SvgArrow from './SvgArrow';
@@ -23,6 +24,8 @@ import {
   SCROLL_ARROW_DIMENSIONS,
   SCROLL_ARROW_OFFSET,
 } from '../../../constants/styles';
+
+const isWeb = Platform.OS === 'web';
 
 const SVG_ARROW_ROTATION = 90;
 
@@ -48,12 +51,11 @@ const TouchableOpacity = Animated.createAnimatedComponent(styled.TouchableOpacit
   position: string;
   topOffset: number;
   bottomOffset: number;
-  scrollArrowRatioOfWindowWidth?: number;
+  scrollArrowLeftRatio?: number;
 }>`
   position: absolute;
   align-items: center;
   justify-content: center;
-  left: ${({ scrollArrowRatioOfWindowWidth }): number => scrollArrowRatioOfWindowWidth ?? 0}%;
   ${({ position, topOffset, bottomOffset }): string =>
     position === 'top' ? `top: ${topOffset}px` : `bottom: ${bottomOffset}px`}
 `);
@@ -68,6 +70,7 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   const {
     scrollViewRef,
     scrollViewHeight,
+    scrollViewWidth,
     contentHeight,
     scrollY,
     scrollingLength,
@@ -78,11 +81,10 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   const { scrollArrows } = isContextNameBottomSheet ? userConfigurationContext : props;
   const { fill, dimensions, topArrowOffset, bottomArrowOffset } = scrollArrows ?? {};
 
-  const windowWidth = useWindowDimensions().width;
-  const translationYUpArrow = useSharedValue(ARROW_UP_OFFSET);
-  const translationYDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
-  const isTopArrowTouchable = useSharedValue(true);
-  const isBottomArrowTouchable = useSharedValue(true);
+  const opacityInterpolationUpArrow = useSharedValue(ARROW_UP_OFFSET);
+  const opacityInterpolationDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
+  const isUpArrowTouchable = useSharedValue(false);
+  const isDownArrowTouchable = useSharedValue(true);
 
   const arrowFill = useMemo(() => fill ?? SCROLL_ARROW_FILL, [fill]);
   const arrowDimensions = useMemo(() => dimensions ?? SCROLL_ARROW_DIMENSIONS, [dimensions]);
@@ -93,10 +95,11 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   );
 
   const isPositionedTop = useMemo(() => position === 'top', [position]);
-  const scrollArrowRatioOfWindowWidth = useMemo(() => {
+
+  const scrollArrowLeftRatio = useDerivedValue(() => {
     const centerAlignedScrollArrowRatio = arrowDimensions / 2;
-    return 50 - (centerAlignedScrollArrowRatio / windowWidth) * 100;
-  }, [arrowDimensions, windowWidth]);
+    return 50 - (centerAlignedScrollArrowRatio / scrollViewWidth.value) * 100;
+  }, [arrowDimensions, scrollViewWidth]);
 
   useAnimatedReaction(
     () => ({
@@ -113,16 +116,16 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
         onScrollArrowAppearanceReaction({
           result,
           contentHeight,
-          translationYUpArrow,
-          translationYDownArrow,
+          opacityInterpolationUpArrow,
+          opacityInterpolationDownArrow,
           scrollViewHeight,
           scrollingLength,
           isScrolledToTop,
           isScrolledToEnd,
           isScrollable,
           isInputFieldFocused,
-          isTopArrowTouchable,
-          isBottomArrowTouchable,
+          isUpArrowTouchable,
+          isDownArrowTouchable,
         });
       }
     },
@@ -130,31 +133,35 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   );
 
   const animatedStyleUpArrow = useAnimatedStyle(() => ({
-    display: isTopArrowTouchable.value ? 'flex' : 'none',
-    opacity: interpolate(translationYUpArrow.value, [ARROW_UP_OFFSET, 0], [0, 1]),
-    transform: [{ translateY: translationYUpArrow.value }],
+    opacity: interpolate(opacityInterpolationUpArrow.value, [ARROW_UP_OFFSET, 0], [0, 1]),
   }));
 
   const animatedStyleDownArrow = useAnimatedStyle(() => ({
-    display: isBottomArrowTouchable.value ? 'flex' : 'none',
-    opacity: interpolate(translationYDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
-    transform: [{ translateY: translationYDownArrow.value }],
+    opacity: interpolate(opacityInterpolationDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
   }));
 
-  const animatedStyleTouchableOpacity = useAnimatedStyle(() =>
-    isPositionedTop
+  const animatedStyleTouchableOpacity = useAnimatedStyle(() => {
+    const webZindexUp = isUpArrowTouchable.value ? 4 : -1;
+    const webZindexDown = isDownArrowTouchable.value ? 4 : -1;
+
+    return isPositionedTop
       ? {
-          zIndex: isTopArrowTouchable.value ? 4 : -1,
+          left: `${scrollArrowLeftRatio.value}%`,
+          zIndex: isWeb
+            ? webZindexUp
+            : interpolate(opacityInterpolationUpArrow.value, [ARROW_UP_OFFSET, 0], [-1, 4]),
         }
       : {
-          zIndex: isBottomArrowTouchable.value ? 4 : -1,
-        },
-  );
+          left: `${scrollArrowLeftRatio.value}%`,
+          zIndex: isWeb
+            ? webZindexDown
+            : interpolate(opacityInterpolationDownArrow.value, [0, ARROW_DOWN_OFFSET], [4, -1]),
+        };
+  });
 
   return (
     <TouchableOpacity
       position={position}
-      scrollArrowRatioOfWindowWidth={scrollArrowRatioOfWindowWidth}
       topOffset={arrowTopOffset}
       bottomOffset={arrowBottomOffset}
       style={animatedStyleTouchableOpacity}

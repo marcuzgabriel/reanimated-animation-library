@@ -7,9 +7,8 @@ export const ReusablePropsContext = {
 };
 
 export const { Provider: BottomSheetProvider } = ReusablePropsContext.bottomSheet;
-export const {
-  Provider: ScrollViewKeyboardAvoidProvider,
-} = ReusablePropsContext.scrollViewKeyboardAvoid;
+export const { Provider: ScrollViewKeyboardAvoidProvider } =
+  ReusablePropsContext.scrollViewKeyboardAvoid;
 
 interface Props {
   contextName: string;
@@ -21,9 +20,11 @@ const ReusablePropsProvider: React.FC<Props> = ({ contextName, children }) => {
     headerHeight: useSharedValue(0),
     footerHeight: useSharedValue(0),
     contentHeight: useSharedValue(0),
+    contentHeightWhenKeyboardIsVisible: useSharedValue(0),
     cardHeight: useSharedValue(0),
     scrollViewRef: useAnimatedRef<Animated.ScrollView>(),
     scrollViewHeight: useSharedValue(0),
+    scrollViewWidth: useSharedValue(0),
     scrollingLength: useSharedValue(0),
     translationY: useSharedValue(0),
     footerTranslationY: useSharedValue(0),
@@ -31,6 +32,7 @@ const ReusablePropsProvider: React.FC<Props> = ({ contextName, children }) => {
     isScrollable: useSharedValue(false),
     isScrolledToTop: useSharedValue(false),
     isScrolledToEnd: useSharedValue(false),
+    isInputFieldFocused: useSharedValue(false),
   };
 
   const scrollViewKeyboardAvoid = {

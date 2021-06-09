@@ -7,6 +7,13 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import ScrollArrow from '../ScrollArrow';
+import FadingEdge from '../../ScrollViewKeyboardAvoid/FadingEdge';
+import {
+  FADING_EDGE_COLOR_NATIVE,
+  FADING_EDGE_COLOR_WEB_BOTTOM,
+  FADING_EDGE_COLOR_WEB_TOP,
+} from '../../../constants/styles';
+import { ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import type { MixedScrollViewProps } from '../../../types';
 
@@ -25,6 +32,7 @@ const ScrollView: React.FC<Props> = props => {
     scrollViewRef,
     keyboardAvoidBottomMargin,
     disableScrollAnimation,
+    fadingScrollEdges,
     isKeyboardAvoidDisabled,
     scrollArrows,
     onContentSizeChange,
@@ -32,7 +40,16 @@ const ScrollView: React.FC<Props> = props => {
     children,
   } = props;
 
+  const {
+    isEnabled: isFadingScrollEdgeEnabled,
+    androidFadingEdgeLength,
+    nativeBackgroundColor,
+    webBackgroundColorBottom,
+    webBackgroundColorTop,
+  } = fadingScrollEdges ?? {};
+
   const scrollViewHeight = useSharedValue(0);
+  const scrollViewWidth = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const scrollingLength = useSharedValue(0);
   const contentHeight = useSharedValue(0);
@@ -63,9 +80,27 @@ const ScrollView: React.FC<Props> = props => {
     (e: LayoutChangeEvent): void => {
       if (e.nativeEvent.layout.height > 0) {
         scrollViewHeight.value = e.nativeEvent.layout.height;
+        scrollViewWidth.value = e.nativeEvent.layout.width;
       }
     },
-    [scrollViewHeight],
+    [scrollViewHeight, scrollViewWidth],
+  );
+
+  const fadingEdgeAndroid = useMemo(
+    () => androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH,
+    [androidFadingEdgeLength],
+  );
+  const fadingEdgeNativeBackgroundColor = useMemo(
+    () => nativeBackgroundColor ?? FADING_EDGE_COLOR_NATIVE,
+    [nativeBackgroundColor],
+  );
+  const fadingEdgeWebBackgroundColorTop = useMemo(
+    () => webBackgroundColorTop ?? FADING_EDGE_COLOR_WEB_TOP,
+    [webBackgroundColorTop],
+  );
+  const fadingEdgeWebBackgroundColorBottom = useMemo(
+    () => webBackgroundColorBottom ?? FADING_EDGE_COLOR_WEB_BOTTOM,
+    [webBackgroundColorBottom],
   );
 
   const scrollArrowProps = useMemo(
@@ -75,6 +110,7 @@ const ScrollView: React.FC<Props> = props => {
       contentHeight,
       scrollY,
       scrollViewHeight,
+      scrollViewWidth,
       scrollingLength,
       isScrolledToTop,
       isScrolledToEnd,
@@ -87,6 +123,7 @@ const ScrollView: React.FC<Props> = props => {
       contentHeight,
       scrollY,
       scrollViewHeight,
+      scrollViewWidth,
       scrollingLength,
       isScrolledToTop,
       isScrolledToEnd,
@@ -97,11 +134,24 @@ const ScrollView: React.FC<Props> = props => {
 
   return (
     <AnimatedWrapper style={animatedStyle}>
+      {isFadingScrollEdgeEnabled && (
+        <FadingEdge
+          position="top"
+          isScrollable={isScrollable}
+          isScrolledToTop={isScrolledToTop}
+          isScrolledToEnd={isScrolledToEnd}
+          scrollViewWidth={scrollViewWidth}
+          nativeColor={fadingEdgeNativeBackgroundColor}
+          webColor={fadingEdgeWebBackgroundColorTop}
+        />
+      )}
       {scrollArrows?.isEnabled && (
         <ScrollArrow {...scrollArrowProps} contextName="scrollViewKeyboardAvoid" position="top" />
       )}
       <Animated.ScrollView
+        {...props}
         ref={scrollViewRef}
+        fadingEdgeLength={isFadingScrollEdgeEnabled ? fadingEdgeAndroid : 0}
         onLayout={onLayout}
         onScroll={onScrollHandler}
         onContentSizeChange={(width, height): void => {
@@ -111,7 +161,6 @@ const ScrollView: React.FC<Props> = props => {
 
           contentHeight.value = height;
         }}
-        {...props}
       >
         <KeyboardAvoidingViewProvider
           isInputFieldFocused={isInputFieldFocused}
@@ -133,6 +182,17 @@ const ScrollView: React.FC<Props> = props => {
           {...scrollArrowProps}
           contextName="scrollViewKeyboardAvoid"
           position="bottom"
+        />
+      )}
+      {isFadingScrollEdgeEnabled && (
+        <FadingEdge
+          position="bottom"
+          isScrollable={isScrollable}
+          isScrolledToTop={isScrolledToTop}
+          isScrolledToEnd={isScrolledToEnd}
+          scrollViewWidth={scrollViewWidth}
+          nativeColor={fadingEdgeNativeBackgroundColor}
+          webColor={fadingEdgeWebBackgroundColorBottom}
         />
       )}
     </AnimatedWrapper>

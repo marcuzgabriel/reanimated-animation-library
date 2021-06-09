@@ -1,12 +1,14 @@
 import React from 'react';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import Svg, { G, Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 
 interface Props {
   height: number;
-  width: number | string;
-  viewBox: string;
+  width: Animated.SharedValue<number>;
   stopColor?: string;
 }
+
+const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
 /* NOTE: stopColor -> type satisfaction: Undefined allowance from a user configuration perspective
 but will always be defined in the default config: containers/UserConfigurationProvider.tsx */
@@ -26,10 +28,13 @@ const svgConfig = (stopColor?: string): Record<string, React.ReactElement> => ({
   ),
 });
 
-const GradientToBottomWhite: React.FC<Props> = ({ height, width, stopColor, viewBox }) => (
-  <Svg height={height} width={width}>
-    {svgConfig(stopColor).svg}
-  </Svg>
-);
+const GradientToBottomWhite: React.FC<Props> = ({ height, width, stopColor }) => {
+  const animatedStyle = useAnimatedStyle(() => ({
+    height,
+    width: width.value,
+  }));
+
+  return <AnimatedSvg style={animatedStyle}>{svgConfig(stopColor).svg}</AnimatedSvg>;
+};
 
 export default GradientToBottomWhite;

@@ -14,6 +14,10 @@ const FADING_EDGE_HEIGHT = 10;
 interface Props {
   position: string;
   nativeColor?: string;
+  isScrolledToTop?: Animated.SharedValue<boolean>;
+  isScrolledToEnd?: Animated.SharedValue<boolean>;
+  scrollViewWidth?: Animated.SharedValue<number>;
+  isScrollable?: Animated.SharedValue<boolean>;
   webColor?: Record<string, string>;
 }
 
@@ -34,18 +38,49 @@ const Wrapper = Animated.createAnimatedComponent(styled.View<{
   ${({ position }): string => (position === 'top' ? `top: 0px;` : `bottom: 0px`)}
 `);
 
-const FadingEdge: React.FC<Props> = ({ position, nativeColor, webColor }) => {
-  const { isScrolledToTop, isScrolledToEnd, windowWidth } = useContext(
-    ReusablePropsContext.bottomSheet,
-  );
+const FadingEdge: React.FC<Props> = ({
+  position,
+  nativeColor,
+  webColor,
+  scrollViewWidth: propScrollViewWidth,
+  isScrollable: propIsScrollable,
+  isScrolledToTop: propIsScrolledToTop,
+  isScrolledToEnd: propIsScrolledToBottom,
+}) => {
+  const {
+    isScrollable: bottomSheetIsScrollable,
+    isScrolledToTop: bottomSheetIsScrolledToTop,
+    isScrolledToEnd: bottomSheetIsScrolledToEnd,
+    scrollViewWidth: bottomSheetScrollViewWidth,
+  } = useContext(ReusablePropsContext.bottomSheet);
   const isPositionedTop = useMemo(() => position === 'top', [position]);
 
+  const isScrollable = useMemo(
+    () => bottomSheetIsScrollable ?? propIsScrollable,
+    [bottomSheetIsScrollable, propIsScrollable],
+  );
+
+  const scrollViewWidth = useMemo(
+    () => bottomSheetScrollViewWidth ?? propScrollViewWidth,
+    [bottomSheetScrollViewWidth, propScrollViewWidth],
+  );
+
+  const isScrolledToTop = useMemo(
+    () => bottomSheetIsScrolledToTop ?? propIsScrolledToTop,
+    [bottomSheetIsScrolledToTop, propIsScrolledToTop],
+  );
+
+  const isScrolledToEnd = useMemo(
+    () => bottomSheetIsScrolledToEnd ?? propIsScrolledToBottom,
+    [bottomSheetIsScrolledToEnd, propIsScrolledToBottom],
+  );
+
   const animatedStyleTop = useAnimatedStyle(() => ({
-    display: !isScrolledToTop.value ? 'flex' : 'none',
+    display: !isScrolledToTop.value && isScrollable.value ? 'flex' : 'none',
   }));
 
   const animatedStyleBottom = useAnimatedStyle(() => ({
-    display: !isScrolledToEnd.value ? 'flex' : 'none',
+    display: !isScrolledToEnd.value && isScrollable.value ? 'flex' : 'none',
   }));
 
   return (
@@ -58,16 +93,14 @@ const FadingEdge: React.FC<Props> = ({ position, nativeColor, webColor }) => {
         <GradientToTopWhite
           stopColor={nativeColor}
           height={FADING_EDGE_HEIGHT}
-          width={windowWidth}
-          viewBox={`0 0 ${windowWidth} ${FADING_EDGE_HEIGHT}`}
+          width={scrollViewWidth}
         />
       )}
       {isIOS && !isPositionedTop && (
         <GradientToBottomWhite
           stopColor={nativeColor}
           height={FADING_EDGE_HEIGHT}
-          width={windowWidth}
-          viewBox={`0 0 ${windowWidth} ${FADING_EDGE_HEIGHT}`}
+          width={scrollViewWidth}
         />
       )}
     </Wrapper>

@@ -47,6 +47,11 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       webBackgroundColorTop: Record<string, string>;
       webBackgroundColorBottom: Record<string, string>;
     };
+    outerScrollEvent?: {
+      isEnabled?: boolean;
+      scrollY?: Animated.SharedValue<number>;
+      autoScrollTriggerLength?: number;
+    };
     resetCardPosition?: boolean;
     getCurrentConfigRequest?: (config: Record<string, any>) => void;
     onLayoutRequest?: (cardHeight: number) => void;

@@ -45,12 +45,19 @@ export interface BottomSheetConfiguration {
     webBackgroundColorTop?: Record<string, string>;
     webBackgroundColorBottom?: Record<string, string>;
   };
+  outerScrollEvent?: {
+    isEnabled?: boolean;
+    scrollY?: Animated.SharedValue<number>;
+    autoScrollTriggerLength?: number;
+  };
   resetCardPosition?: boolean;
   offsetAddition?: number;
   getCurrentConfigRequest?: (config: Record<string, any>) => void;
   onLayoutRequest?: (cardHeight: number) => void;
 }
-export interface MixedScrollViewProps extends ScrollViewProps {
+export interface MixedScrollViewProps
+  extends ScrollViewProps,
+    Pick<BottomSheetConfiguration, 'fadingScrollEdges'> {
   panGestureType?: Animated.SharedValue<number>;
   contentHeightWHenKeyboardIsVisible?: Animated.SharedValue<number>;
   disableScrollAnimation?: boolean;
