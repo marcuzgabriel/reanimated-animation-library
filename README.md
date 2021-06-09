@@ -42,7 +42,7 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
   | fadingScrollEdges = { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: { from: string to: string}, webBackgroundColorBottom: { from: string, to: string } | object | This prop ensures that there is a scrolling edge when the content is scrollable
   | getCurrentConfigRequest(config) | function | This function will provide the current configuration
   | onLayoutRequest(cardHeight) | function | In some use cases the card height of the BottomSheet might become useful
-  | resetCardPosition(reset: callback function) | function | In some cases where there is no rerendering effect when changing screens etc. then this helper will ensure that the card will fold out nicely if its initially collapsed
+  | resetCardPosition | boolean | In some cases where there is no rerendering effect when changing screens etc. then this helper will ensure that the card will fold out nicely if its initially collapsed
   
 </details>
 <details>
