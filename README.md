@@ -233,4 +233,5 @@ Latest react-native-gesture-handler version vs old and latest react-native-reani
 | #useWindowDimensions | Android | A micro difference occours when setting the child height within a Animated.ScrollView component to the window height with the use of useWindowDimensions. When exctracting the child height with (onContentSizeChange) then the height says 683.4285888671875 vs the windowheight 683.4285714285714. An offset constant is therefore needed to determine scrollability.
 | simulator update behaviour | all | As reanimated is using worklets and other functionality that runs on a different thread, then a change in props might first work when the simulator is refreshed
 | #useAnimatedStyle | iOS | Avoid attach dependencies to this type of hook. Freezing behaviour is likely to occour. Have multiple examples where iOS crashes without any further information.
-
+| #useAnimatedStyle | iOS | Had big challenges interpolating / manipulating zIndex through useAnimatedStyle. It crashes on iOS simulator but not on a real device.
+| #react-native-reanimated | all | As a programmer there is little to no information on why a worklet crashes in the console. The troubleshooting with reanimated is therefore (from a personal point of view) quite messy and time consuming.
