@@ -141,8 +141,10 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   }));
 
   const animatedStyleTouchableOpacity = useAnimatedStyle(() => {
-    const webZindexUp = isUpArrowTouchable.value ? 4 : -1;
-    const webZindexDown = isDownArrowTouchable.value ? 4 : -1;
+    const isUpArrowHidden = opacityInterpolationUpArrow.value === ARROW_UP_OFFSET;
+    const isDownArrowHidden = opacityInterpolationDownArrow.value === ARROW_DOWN_OFFSET;
+    const webZindexUp = isUpArrowTouchable.value && !isUpArrowHidden ? 4 : -1;
+    const webZindexDown = isDownArrowTouchable.value && !isDownArrowHidden ? 4 : -1;
 
     return isPositionedTop
       ? {

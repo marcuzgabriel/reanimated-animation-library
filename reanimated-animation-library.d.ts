@@ -21,6 +21,8 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     contentComponent: React.ReactNode;
     footerComponent?: React.ReactNode;
     headerComponent?: React.ReactNode;
+    hideFooterOnCardCollapse?: boolean;
+    hideContentOnCardCollapse?: boolean;
     scrollArrowTopComponent?: React.ReactNode;
     scrollArrowBottomComponent?: React.ReactNode;
     scrollArrows?: {

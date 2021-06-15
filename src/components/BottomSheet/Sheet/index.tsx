@@ -25,7 +25,6 @@ import {
 import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
-import { snapPoint } from 'react-native-redash';
 
 const HIDE_CONTENT_INTERPOLATION = 5;
 
@@ -60,6 +59,7 @@ const Sheet: React.FC = () => {
     snapPointBottom: configSnapPointBottom,
     borderTopLeftRadius: configBorderTopLeftRadius,
     borderTopRightRadius: configBorderTopRightRadius,
+    hideContentOnCardCollapse,
     outerScrollEvent,
     extraSnapPointBottomOffset,
     backgroundColor,
@@ -191,7 +191,7 @@ const Sheet: React.FC = () => {
   useAnimatedReaction(
     () => translationY.value,
     (result: number, previous: number | null | undefined) => {
-      if (result !== previous && extraSnapPointBottomOffset) {
+      if (result !== previous) {
         onContentHideReaction({
           result,
           snapPointBottom,
@@ -246,7 +246,9 @@ const Sheet: React.FC = () => {
 
   const animatedContentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      opacity: interpolate(hideContentInterpolation.value, [0, HIDE_CONTENT_INTERPOLATION], [1, 0]),
+      opacity: hideContentOnCardCollapse
+        ? interpolate(hideContentInterpolation.value, [0, HIDE_CONTENT_INTERPOLATION], [1, 0])
+        : 1,
     }),
     [hideContentInterpolation],
   );

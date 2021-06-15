@@ -10,7 +10,7 @@ import Content from './components/Content';
 import BottomSheet from '../../components/BottomSheet';
 import SnapEffect from '../SnapEffect';
 
-const HEADER_HEIGHT = 50;
+const HEADER_HEIGHT = 70;
 
 const isWeb = Platform.OS === 'web';
 const isAndroid = Platform.OS === 'android';
@@ -87,6 +87,8 @@ const ScrollViewWithSnapEffect: React.FC = () => {
           scrollY,
           autoScrollTriggerLength: 16,
         }}
+        hideContentOnCardCollapse={true}
+        hideFooterOnCardCollapse={true}
         fadingScrollEdges={{ isEnabled: false }}
         morphingArrow={{ isEnabled: Platform.OS !== 'web', offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}

@@ -57,16 +57,8 @@ export const onScrollArrowAppearanceReaction = ({
         isDownArrowTouchable.value = true;
       } else if (isScrolledToTop.value) {
         isDownArrowTouchable.value = true;
-
-        if (opacityInterpolationUpArrow.value === ARROW_UP_OFFSET) {
-          isUpArrowTouchable.value = false;
-        }
       } else if (isScrolledToEnd.value) {
         isUpArrowTouchable.value = true;
-
-        if (opacityInterpolationDownArrow.value === ARROW_UP_OFFSET) {
-          isDownArrowTouchable.value = false;
-        }
       }
     }
 

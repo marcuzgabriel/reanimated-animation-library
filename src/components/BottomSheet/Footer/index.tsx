@@ -1,7 +1,12 @@
 import React, { useCallback, useContext } from 'react';
 import { LayoutChangeEvent, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
-import Animated, { useAnimatedStyle, useAnimatedReaction } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useAnimatedReaction,
+  interpolate,
+  useDerivedValue,
+} from 'react-native-reanimated';
 import { onPanGestureHitFooterReaction } from '../../../worklets';
 import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
@@ -23,15 +28,24 @@ const Wrapper = Animated.createAnimatedComponent(styled.View``);
 
 const Footer: React.FC = () => {
   const { isKeyboardVisible } = useContext(KeyboardContext);
-  const { footerComponent, extraSnapPointBottomOffset } = useContext(UserConfigurationContext);
+  const { footerComponent, extraSnapPointBottomOffset, hideFooterOnCardCollapse } =
+    useContext(UserConfigurationContext);
   const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } = useContext(
     ReusablePropsContext.bottomSheet,
   );
+
+  const opacityInterpolationValues = useDerivedValue(() => {
+    const diff = footerHeight.value - headerHeight.value;
+    return diff > 0 ? [0, diff / 2, diff] : [0, footerHeight.value / 3, footerHeight.value / 2];
+  }, [footerHeight, headerHeight]);
 
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       position: 'absolute',
       bottom: -footerTranslationY.value,
+      opacity: hideFooterOnCardCollapse
+        ? interpolate(footerTranslationY.value, opacityInterpolationValues.value, [1, 1, 0])
+        : 1,
       width: '100%',
       zIndex: 3,
     }),

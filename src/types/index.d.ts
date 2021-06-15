@@ -23,6 +23,8 @@ export interface BottomSheetConfiguration {
   contentComponent: React.ReactNode;
   footerComponent?: React.ReactNode;
   headerComponent?: React.ReactNode;
+  hideFooterOnCardCollapse?: boolean;
+  hideContentOnCardCollapse?: boolean;
   scrollArrowTopComponent?: React.ReactNode;
   scrollArrowBottomComponent?: React.ReactNode;
   scrollArrows?: scrollArrows;
