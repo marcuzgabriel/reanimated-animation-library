@@ -238,3 +238,4 @@ Latest react-native-gesture-handler version vs old and latest react-native-reani
 | #useAnimatedStyle | iOS | Had big challenges interpolating / manipulating zIndex through useAnimatedStyle. It crashes on iOS simulator but not on a real device.
 | #react-native-reanimated | all | As a programmer there is little to no information on why a worklet crashes in the console. The troubleshooting with reanimated is therefore (from a personal point of view) quite messy and time consuming.
 | #react-native-reanimated | iOS | Rarely the simulator can crash when selecting an input field that also have an animation. When the crash occours it is reproducable until the moment the metro bundler and simulator is refreshed. The crash is not reproducable on a real device.
+| debugging | all | Debugging tool has to be flipper: Turbomodules on the native side is not supported with Chrome software-mansion/react-native-reanimated#1663
