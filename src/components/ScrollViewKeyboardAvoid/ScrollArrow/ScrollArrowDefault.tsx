@@ -1,5 +1,5 @@
 import React, { useMemo, useContext } from 'react';
-import { Platform } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -24,8 +24,6 @@ import {
   SCROLL_ARROW_DIMENSIONS,
   SCROLL_ARROW_OFFSET,
 } from '../../../constants/styles';
-
-const isWeb = Platform.OS === 'web';
 
 const SVG_ARROW_ROTATION = 90;
 
@@ -85,6 +83,7 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
   const opacityInterpolationDownArrow = useSharedValue(ARROW_DOWN_OFFSET);
   const isUpArrowTouchable = useSharedValue(false);
   const isDownArrowTouchable = useSharedValue(true);
+  const currentWindowHeight = useSharedValue(0);
 
   const arrowFill = useMemo(() => fill ?? SCROLL_ARROW_FILL, [fill]);
   const arrowDimensions = useMemo(() => dimensions ?? SCROLL_ARROW_DIMENSIONS, [dimensions]);
@@ -140,26 +139,40 @@ const ScrollArrowDefault: React.FC<Props | ContextProps> = props => {
     opacity: interpolate(opacityInterpolationDownArrow.value, [0, ARROW_DOWN_OFFSET], [1, 0]),
   }));
 
-  const animatedStyleTouchableOpacity = useAnimatedStyle(() => {
-    const isUpArrowHidden = opacityInterpolationUpArrow.value === ARROW_UP_OFFSET;
-    const isDownArrowHidden = opacityInterpolationDownArrow.value === ARROW_DOWN_OFFSET;
-    const webZindexUp = isUpArrowTouchable.value && !isUpArrowHidden ? 4 : -1;
-    const webZindexDown = isDownArrowTouchable.value && !isDownArrowHidden ? 4 : -1;
+  const { height: windowHeight } = useWindowDimensions();
 
-    return isPositionedTop
-      ? {
-          left: `${scrollArrowLeftRatio.value}%`,
-          zIndex: isWeb
-            ? webZindexUp
-            : interpolate(opacityInterpolationUpArrow.value, [ARROW_UP_OFFSET, 0], [-1, 4]),
-        }
-      : {
-          left: `${scrollArrowLeftRatio.value}%`,
-          zIndex: isWeb
-            ? webZindexDown
-            : interpolate(opacityInterpolationDownArrow.value, [0, ARROW_DOWN_OFFSET], [4, -1]),
-        };
-  });
+  /* NOTE: Reset behaviour of arrow animations when rotation occours */
+  useDerivedValue(() => {
+    if (windowHeight !== currentWindowHeight.value) {
+      currentWindowHeight.value = windowHeight;
+      opacityInterpolationDownArrow.value = ARROW_DOWN_OFFSET;
+      opacityInterpolationUpArrow.value = ARROW_UP_OFFSET;
+    }
+  }, [windowHeight, currentWindowHeight, opacityInterpolationDownArrow]);
+
+  const zIndexUpArrow = useDerivedValue(
+    () => opacityInterpolationUpArrow.value === ARROW_UP_OFFSET,
+    [opacityInterpolationDownArrow],
+  );
+
+  const zIndexDownArrow = useDerivedValue(
+    () => opacityInterpolationDownArrow.value === ARROW_DOWN_OFFSET,
+    [opacityInterpolationDownArrow],
+  );
+
+  const animatedStyleTouchableOpacity = useAnimatedStyle(
+    () =>
+      isPositionedTop
+        ? {
+            left: `${scrollArrowLeftRatio.value}%`,
+            zIndex: zIndexUpArrow.value ? -1 : 4,
+          }
+        : {
+            left: `${scrollArrowLeftRatio.value}%`,
+            zIndex: zIndexDownArrow.value ? -1 : 4,
+          },
+    [contentHeight],
+  );
 
   return (
     <TouchableOpacity

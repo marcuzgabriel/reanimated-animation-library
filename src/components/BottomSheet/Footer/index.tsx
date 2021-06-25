@@ -2,15 +2,20 @@ import React, { useCallback, useContext } from 'react';
 import { LayoutChangeEvent, ViewStyle } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
+  interpolate,
   useAnimatedStyle,
   useAnimatedReaction,
-  interpolate,
   useDerivedValue,
 } from 'react-native-reanimated';
 import { onPanGestureHitFooterReaction } from '../../../worklets';
+import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
+
+interface FooterProps {
+  hideFooterInterpolation: Animated.SharedValue<number>;
+}
 
 const ComponentWhenUndefined = styled.View`
   height: 100px;
@@ -24,30 +29,46 @@ const TextWhenUndefined = styled.Text`
   color: white;
 `;
 
-const Wrapper = Animated.createAnimatedComponent(styled.View``);
+const TouchableOpacity = styled.TouchableOpacity`
+  height: 50px;
+  width: 100%;
+  background: white;
+`;
 
-const Footer: React.FC = () => {
+const ParentWrapper = Animated.createAnimatedComponent(styled.View``);
+const ChildWrapper = Animated.View;
+
+const Footer: React.FC<FooterProps> = ({ hideFooterInterpolation }) => {
   const { isKeyboardVisible } = useContext(KeyboardContext);
-  const { footerComponent, extraSnapPointBottomOffset, hideFooterOnCardCollapse } =
+  const { footerComponent, extraSnapPointBottomOffset, hideFooterOnCardCollapse, header } =
     useContext(UserConfigurationContext);
-  const { cardHeight, headerHeight, footerHeight, translationY, footerTranslationY } = useContext(
-    ReusablePropsContext.bottomSheet,
-  );
+  const {
+    cardHeight,
+    headerHeight: headerHeightLayout,
+    footerHeight,
+    translationY,
+    footerTranslationY,
+  } = useContext(ReusablePropsContext.bottomSheet);
 
-  const opacityInterpolationValues = useDerivedValue(() => {
-    const diff = footerHeight.value - headerHeight.value;
-    return diff > 0 ? [0, diff / 2, diff] : [0, footerHeight.value / 3, footerHeight.value / 2];
-  }, [footerHeight, headerHeight]);
+  const headerHeight = useDerivedValue(
+    () => header?.height ?? headerHeightLayout.value,
+    [headerHeightLayout, header],
+  );
 
   const animatedParentStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
       position: 'absolute',
-      bottom: -footerTranslationY.value,
-      opacity: hideFooterOnCardCollapse
-        ? interpolate(footerTranslationY.value, opacityInterpolationValues.value, [1, 1, 0])
-        : 1,
       width: '100%',
       zIndex: 3,
+      bottom: -footerTranslationY.value,
+    }),
+  );
+
+  const animatedChildStyle = useAnimatedStyle(
+    (): Animated.AnimatedStyleProp<ViewStyle> => ({
+      opacity: hideFooterOnCardCollapse?.isEnabled
+        ? interpolate(hideFooterInterpolation.value, [0, HIDE_CONTENT_OUTPUT_RANGE], [1, 0])
+        : 1,
     }),
   );
 
@@ -79,13 +100,16 @@ const Footer: React.FC = () => {
   );
 
   return (
-    <Wrapper onLayout={onLayout} style={animatedParentStyle}>
-      {footerComponent ?? (
-        <ComponentWhenUndefined>
-          <TextWhenUndefined>Footer component</TextWhenUndefined>
-        </ComponentWhenUndefined>
-      )}
-    </Wrapper>
+    <ParentWrapper onLayout={onLayout} style={animatedParentStyle}>
+      <ChildWrapper style={animatedChildStyle}>
+        {footerComponent ?? (
+          <ComponentWhenUndefined>
+            <TouchableOpacity />
+            <TextWhenUndefined>Footer component</TextWhenUndefined>
+          </ComponentWhenUndefined>
+        )}
+      </ChildWrapper>
+    </ParentWrapper>
   );
 };
 

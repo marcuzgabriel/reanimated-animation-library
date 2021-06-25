@@ -87,8 +87,14 @@ const ScrollViewWithSnapEffect: React.FC = () => {
           scrollY,
           autoScrollTriggerLength: 16,
         }}
-        hideContentOnCardCollapse={true}
-        hideFooterOnCardCollapse={true}
+        hideContentOnCardCollapse={{
+          isEnabled: true,
+          offset: 5,
+        }}
+        hideFooterOnCardCollapse={{
+          isEnabled: true,
+          offset: 30,
+        }}
         fadingScrollEdges={{ isEnabled: false }}
         morphingArrow={{ isEnabled: Platform.OS !== 'web', offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}

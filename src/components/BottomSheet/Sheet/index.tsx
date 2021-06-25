@@ -15,18 +15,17 @@ import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
 import { DEFAULT_BORDER_RADIUS } from '../../../constants/styles';
+import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import {
   onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
   getAnimatedCardStyles,
   onGestureHandlerCard,
-  onContentHideReaction,
+  onSnapHideContentOrFooterReaction,
 } from '../../../worklets';
 import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
-
-const HIDE_CONTENT_INTERPOLATION = 5;
 
 interface AnimatedGHContext {
   [key: string]: number;
@@ -52,7 +51,6 @@ const Sheet: React.FC = () => {
     scrollY: innerScrollY,
     cardHeight,
     translationY,
-    footerHeight,
     isInputFieldFocused,
   } = useContext(ReusablePropsContext.bottomSheet);
   const {
@@ -60,6 +58,7 @@ const Sheet: React.FC = () => {
     borderTopLeftRadius: configBorderTopLeftRadius,
     borderTopRightRadius: configBorderTopRightRadius,
     hideContentOnCardCollapse,
+    hideFooterOnCardCollapse,
     outerScrollEvent,
     extraSnapPointBottomOffset,
     backgroundColor,
@@ -77,6 +76,7 @@ const Sheet: React.FC = () => {
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
   const hideContentInterpolation = useSharedValue(0);
+  const hideFooterInterpolation = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
 
@@ -192,15 +192,23 @@ const Sheet: React.FC = () => {
     () => translationY.value,
     (result: number, previous: number | null | undefined) => {
       if (result !== previous) {
-        onContentHideReaction({
+        const hideContentOffset = hideContentOnCardCollapse?.offset ?? 0;
+        const hideFooterOffset = hideFooterOnCardCollapse?.offset ?? 0;
+
+        onSnapHideContentOrFooterReaction({
           result,
           snapPointBottom,
-          footerHeight,
           hideContentInterpolation,
+          hideFooterInterpolation,
+          hideContentOffset,
+          hideFooterOffset,
+          isHideContentOnCardCollapseEnabled: hideContentOnCardCollapse?.isEnabled ?? false,
+          isHideFooterOnCardCollapseEnabled: hideFooterOnCardCollapse?.isEnabled ?? false,
+          isAnimationRunning,
         });
       }
     },
-    [translationY, snapPointBottom, hideContentInterpolation],
+    [translationY, snapPointBottom, isAnimationRunning, hideContentInterpolation],
   );
 
   /* Snap effect reaction */
@@ -244,14 +252,18 @@ const Sheet: React.FC = () => {
       }),
   );
 
-  const animatedContentStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      opacity: hideContentOnCardCollapse
-        ? interpolate(hideContentInterpolation.value, [0, HIDE_CONTENT_INTERPOLATION], [1, 0])
-        : 1,
-    }),
-    [hideContentInterpolation],
-  );
+  const animatedContentStyle = useAnimatedStyle((): Animated.AnimatedStyleProp<ViewStyle> => {
+    if (hideContentOnCardCollapse?.isEnabled) {
+      return {
+        opacity: interpolate(
+          hideContentInterpolation.value,
+          [0, HIDE_CONTENT_OUTPUT_RANGE],
+          [1, 0],
+        ),
+      };
+    }
+    return {};
+  }, [hideContentInterpolation]);
 
   useEffect(() => {
     if (resetCardPosition && isCardCollapsed.value) {
@@ -283,7 +295,7 @@ const Sheet: React.FC = () => {
           </AnimatedContent>
         </Animated.View>
       </View>
-      <Footer />
+      <Footer hideFooterInterpolation={hideFooterInterpolation} />
     </>
   );
 };

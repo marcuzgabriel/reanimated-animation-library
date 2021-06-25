@@ -1,9 +1,6 @@
 import Animated, { withTiming } from 'react-native-reanimated';
-import { Platform } from 'react-native';
 import { DEFAULT_TIMING_CONFIG, ARROW_UP_OFFSET, ARROW_DOWN_OFFSET } from '../constants/animations';
 import type { OnScrollArrowAppearanceReaction } from '../types';
-
-const isWeb = Platform.OS === 'web';
 
 const MINIMUM_SCROLLING_LENGTH = 16;
 
@@ -47,20 +44,8 @@ export const onScrollArrowAppearanceReaction = ({
     isScrolledToTop.value = result.scrollY.value === 0;
     isScrolledToEnd.value = Math.floor(result.scrollY.value) === Math.floor(scrollingLength.value);
 
-    const isScrolledInBetween = !isScrolledToTop.value && !isScrolledToEnd.value;
     const hideUpArrow = isScrolledToTop.value || isInputFieldFocused.value;
     const hideDownArrow = isScrolledToEnd.value || isInputFieldFocused.value;
-
-    if (isWeb) {
-      if (isScrolledInBetween) {
-        isUpArrowTouchable.value = true;
-        isDownArrowTouchable.value = true;
-      } else if (isScrolledToTop.value) {
-        isDownArrowTouchable.value = true;
-      } else if (isScrolledToEnd.value) {
-        isUpArrowTouchable.value = true;
-      }
-    }
 
     opacityInterpolationUpArrow.value = withTiming(
       hideUpArrow ? ARROW_UP_OFFSET : 0,

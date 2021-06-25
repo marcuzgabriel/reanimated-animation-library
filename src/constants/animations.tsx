@@ -3,6 +3,8 @@ import { Easing } from 'react-native-reanimated';
 export const ARROW_UP_OFFSET = -15;
 export const ARROW_DOWN_OFFSET = 15;
 export const SPRING_OFFSET = 5;
+export const MINIMUM_HIDE_OFFSET = 5;
+export const HIDE_CONTENT_OUTPUT_RANGE = 10;
 export const DEFAULT_SNAP_POINT_BOTTOM_RATIO = 0.8;
 export const DEFAULT_SNAP_POINT_TOP = 0;
 export const DEFAULT_SCROLL_SNAP_POINT_RATIO = 0.1;
@@ -14,6 +16,10 @@ export const IS_SCROLLABLE_OFFSET = 1;
 export const KEYBOARD_TIMING_EASING = {
   easing: Easing.bezier(0.17, 0.59, 0.4, 0.77),
 };
+export const DEFAULT_TIMING_HIDE_CONTENT_CONFIG = {
+  duration: 200,
+};
+
 export const DEFAULT_TIMING_CONFIG = {
   duration: 500,
   easing: Easing.bezier(0.25, 0.1, 0.25, 1),
