@@ -51,9 +51,9 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       isEnabled: boolean;
       androidFadingEdgeLength?: number;
       iOSandWebFadingEdgeHeight?: number;
-      nativeBackgroundColor: string;
-      webBackgroundColorTop: Record<string, string>;
-      webBackgroundColorBottom: Record<string, string>;
+      nativeBackgroundColor?: string;
+      webBackgroundColorTop?: Record<string, string>;
+      webBackgroundColorBottom?: Record<string, string>;
     };
     outerScrollEvent?: {
       isEnabled?: boolean;

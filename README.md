@@ -10,7 +10,7 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
 
 <details>
   <summary>Gifs</summary>
-  
+
   ## BottomSheet
 ![Alt Text](https://media.giphy.com/media/Ik9LNWjdCMrvGg5ToJ/giphy.gif)
 ![Alt Text](https://media.giphy.com/media/HF6U0tvtuE7UQra27j/giphy.gif)
@@ -18,10 +18,10 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
 </details>
 <details>
   <summary>Props</summary>
-  
+
   ## BottomSheet
-  
-  | Prop | Type | Description | 
+
+  | Prop | Type | Description |
 | :--- | :---: | :---:|
   | scrollY | Animated.SharedValue<number> | An outside prop that can be connected to the BottomSheet. Then it reacts to other scroll events
   | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information
@@ -45,19 +45,19 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
   | getCurrentConfigRequest(config) | function | This function will provide the current configuration
   | onLayoutRequest(cardHeight) | function | In some use cases the card height of the BottomSheet might become useful
   | resetCardPosition | boolean | In some cases where there is no rerendering effect when changing screens etc. then this helper will ensure that the card will fold out nicely if its initially collapsed
-  
+
 </details>
 <details>
   <summary>Progress</summary>
-  
+
   ## Current progress
-  
+
 - [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Secondly it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```<InputField />```. Multiple examples can be found in the project Example folder.
 - [x] InputField. This is a component that is connected to the above ScrollViewKeyboardAvoid. When focused and the minimum requirements for ScrollViewKeyboardAvoid is met, then a smooth scroll-to-focused-input field event will trigger.
 - [x] BottomSheet
   - [x] Static event: When background content is not scrollable then the background content should not be snappable
   - [x] Scroll arrows that appear / dissapear
-  - [x] Fading scroll edges for alle platforms 
+  - [x] Fading scroll edges for alle platforms
   - [x] Drag resistance when using the snap effect
   - [x] InputField component that accepts a unique id so no matter where the component is located then a nice scrollTo animation effect to the input field is achieved
   - [x] If the background content is not scrollable but there is content hiding behind the card, then make the component snappable so the card will collapse if the user tries to do a scroll gesture on the background content
@@ -77,7 +77,7 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
 </details>
 <details>
   <summary>Integration</summary>
-  
+
 ## React integration
 ```Javascript
 import React from 'react';
@@ -88,8 +88,8 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedRef,
 } from 'react-native-reanimated';
-import { BottomSheet, snapEffect } from '@marcuzgabriel/reanimated-animation-library';
-  
+import { BottomSheet, SnapEffect } from '@marcuzgabriel/reanimated-animation-library';
+
 const HEADER_HEIGHT = 50;
 const EXTRA_SNAP_POINT_OFFSET = 30;
 
@@ -167,7 +167,7 @@ const ScrollViewWithSnapEffect: React.FC = () => {
       <BottomSheet
         scrollY={scrollY}
         fadingScrollEdges={{ isEnabled: false }}
-        morphingArrow={{ isEnabled: true, offset: 20 }}
+        morphingArrow={{ isEnabled: Platform.OS !=='web', offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}
         snapPointBottom={HEADER_HEIGHT + EXTRA_SNAP_POINT_OFFSET}
@@ -182,7 +182,7 @@ const ScrollViewWithSnapEffect: React.FC = () => {
 
 export default ScrollViewWithSnapEffect;
 ```
-  
+
 ## Expo integration
 npm install @marcuzgabriel/reanimated-animation-library@1.0.0
 https://github.com/marcuzgabriel/reanimated-animation-library/packages/813007
@@ -214,13 +214,13 @@ Update app.json accordingly and remember to pod install and build the projects p
 </details>
 <details>
   <summary>Performance</summary>
-  
+
   ## Performance observations
 The only time a performance decrease occours is when the native keyboad appears. This type of performance decrease will always happend with or without reanimated. If you experience any other performance decrease, please let me know :)
 </details>
 <details>
   <summary>Observations / notes</summary>
-  
+
 ## Observations
 Latest react-native-gesture-handler version vs old and latest react-native-reanimated vs old
 
