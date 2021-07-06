@@ -30,8 +30,6 @@ export const onScrollArrowAppearanceReaction = ({
   isScrolledToEnd,
   isScrollable,
   isInputFieldFocused,
-  isDownArrowTouchable,
-  isUpArrowTouchable,
 }: Props): void => {
   'worklet';
 

@@ -1,5 +1,4 @@
 import Animated, { runOnJS } from 'react-native-reanimated';
-import { IS_SCROLLABLE_OFFSET } from '../constants/animations';
 
 interface Props {
   result: Record<string, Animated.SharedValue<number>>;
@@ -28,7 +27,7 @@ export const onSnappableReaction = ({
 
     if (isCardOverlappingContent && !isScrollable) {
       runOnJS(setIsSnapEffectActiveState)(true);
-    } else if (isSnapEffectActiveState) {
+    } else if (isScrollable || isSnapEffectActiveState) {
       runOnJS(setIsSnapEffectActiveState)(false);
     }
   }

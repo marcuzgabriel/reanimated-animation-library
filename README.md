@@ -42,9 +42,9 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
   | header = { height: number } | object | If there is no header component then this object can be used to style the header
   | morphingArrow = { isEnabled: boolean, offset: number, fill: string } | object | As there currently is a bug on web when interpolating SVG's with reanimated, then the morphing arrow can be disabled for specific platforms using this prop
   | fadingScrollEdges = { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: { from: string to: string}, webBackgroundColorBottom: { from: string, to: string } | object | This prop ensures that there is a scrolling edge when the content is scrollable
-  | getCurrentConfigRequest(config) | function | This function will provide the current configuration
-  | onLayoutRequest(cardHeight) | function | In some use cases the card height of the BottomSheet might become useful
-  | resetCardPosition | boolean | In some cases where there is no rerendering effect when changing screens etc. then this helper will ensure that the card will fold out nicely if its initially collapsed
+  | getCurrentConfigRequest(config) | function with callback | This function will provide the current configuration
+  | onLayoutRequest(cardHeight) | function with callback | In some use cases the card height of the BottomSheet might become useful
+  | resetCardPosition(resetCallback) | function with callback | In some cases where there is no rerendering effect when changing screens etc. then this helper will ensure that the card will fold out nicely if its initially collapsed. An implementation example can be found in ./src/components/Example/NoHardRerenderingEffect.tsx
 
 </details>
 <details>

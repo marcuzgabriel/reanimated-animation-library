@@ -60,7 +60,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       scrollY?: Animated.SharedValue<number>;
       autoScrollTriggerLength?: number;
     };
-    resetCardPosition?: boolean;
+    resetCardPosition?: (resetCallback: (direction?: string) => void) => void;
     getCurrentConfigRequest?: (config: Record<string, any>) => void;
     onLayoutRequest?: (cardHeight: number) => void;
   }
@@ -95,6 +95,14 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     snapEffectDirection: Animated.SharedValue<string>;
     offsetAddition?: number;
   }
+
+  interface ScrollToProps {
+    ref: React.RefObject<Animated.ScrollView>;
+    to: string;
+  }
+
+  // Helpers
+  export function scrollTo<P extends ScrollToProps>({ ref, to }: P): void;
 
   // Components
   export function BottomSheet<P extends BottomSheetConfiguration>(props: P): React.ReactElement<P>;

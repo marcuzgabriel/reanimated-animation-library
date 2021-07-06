@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import Animated, { useSharedValue, useAnimatedRef } from 'react-native-reanimated';
+import Animated, { useAnimatedRef } from 'react-native-reanimated';
 import { useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
 import ScrollViewKeyboardAvoid from '../ScrollViewKeyboardAvoid';
@@ -14,11 +14,6 @@ const Wrapper = styled.View<{ height: number }>`
 const Left = styled.View`
   flex: 1;
   height: 100%;
-`;
-const Right = styled.View`
-  flex: 1;
-  height: 100%;
-  border-left-width: 1px;
 `;
 
 const FakeContentWrapper = styled.View<{ height: number }>`

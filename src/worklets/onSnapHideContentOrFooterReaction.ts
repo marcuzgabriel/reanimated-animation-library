@@ -26,7 +26,6 @@ export const onSnapHideContentOrFooterReaction = ({
   hideFooterOffset,
   isHideContentOnCardCollapseEnabled,
   isHideFooterOnCardCollapseEnabled,
-  isAnimationRunning,
 }: Props): void => {
   'worklet';
 

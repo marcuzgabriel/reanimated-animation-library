@@ -1,8 +1,12 @@
 {
   "name": "@marcuzgabriel/reanimated-animation-library",
   "author": "Marcuz Gabriel Larsen <marcuzgabriel@gmail.com>",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcuzgabriel/reanimated-animation-library.git"
+  },
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -110,5 +114,9 @@
       "json",
       "node"
     ]
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry":"https://npm.pkg.github.com/"
   }
 }

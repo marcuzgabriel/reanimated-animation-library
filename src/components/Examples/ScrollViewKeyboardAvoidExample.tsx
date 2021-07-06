@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { useWindowDimensions, Platform } from 'react-native';
-import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedRef } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import InputField from '../InputField';
 import ScrollViewKeyboardAvoid from '../ScrollViewKeyboardAvoid';

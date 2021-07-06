@@ -267,9 +267,10 @@ const Sheet: React.FC = () => {
 
   useEffect(() => {
     if (resetCardPosition && isCardCollapsed.value) {
-      actionRequestCloseOrOpenCard();
+      snapEffectDirection.value = '';
+      resetCardPosition(actionRequestCloseOrOpenCard);
     }
-  }, [resetCardPosition, isCardCollapsed, actionRequestCloseOrOpenCard]);
+  }, [isCardCollapsed, snapEffectDirection, resetCardPosition, actionRequestCloseOrOpenCard]);
 
   return (
     <>

@@ -58,8 +58,8 @@ export interface BottomSheetConfiguration {
     scrollY?: Animated.SharedValue<number>;
     autoScrollTriggerLength?: number;
   };
-  resetCardPosition?: boolean;
   offsetAddition?: number;
+  resetCardPosition?: (resetCallback: (direction?: string) => void) => void;
   getCurrentConfigRequest?: (config: Record<string, any>) => void;
   onLayoutRequest?: (cardHeight: number) => void;
 }
