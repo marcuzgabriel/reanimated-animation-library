@@ -1,4 +1,5 @@
-import Animated, { withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, withSpring } from 'react-native-reanimated';
+import { Keyboard } from 'react-native';
 import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from '../constants/animations';
 import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
 
@@ -66,6 +67,10 @@ export const onGestureHandlerCard = ({
     isCardCollapsed.value = isPanningDown.value;
     isAnimationRunning.value = true;
     isPanning.value = false;
+
+    if (isInputFieldFocused && innerScrollY.value === 0) {
+      runOnJS(Keyboard.dismiss)();
+    }
 
     if (!isInputFieldFocused.value) {
       translationY.value = withSpring(

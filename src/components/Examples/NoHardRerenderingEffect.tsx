@@ -1,37 +1,52 @@
 import React, { useCallback, useState } from 'react';
 import { useWindowDimensions, Platform } from 'react-native';
-import Animated, {
-  useAnimatedRef,
-  useSharedValue,
-  useAnimatedScrollHandler,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import Content from './components/Content';
 import SnapEffect from '../SnapEffect';
+import ScrollViewKeyboardAvoid from '../../components/ScrollViewKeyboardAvoid';
 import { SCROLL_EVENT_THROTTLE } from '../../constants/configs';
 import BottomSheet from '../../components/BottomSheet';
-import { scrollTo } from '../../helpers/scrollTo';
+import { scrollToPosition } from '../../helpers/scrollToPosition';
 
 const HEADER_HEIGHT = 70;
 
 const isWeb = Platform.OS === 'web';
 const isAndroid = Platform.OS === 'android';
 
+const SmallContentExtra = () => (
+  <>
+    <Text>
+      Try to collapse the screen and go either forward or backward. resetCardPosition will ensure
+      that the card will scroll to top and reset to default position which is a uncollapsed state
+    </Text>
+    <Text>
+      Try to collapse the screen and go either forward or backward. resetCardPosition will ensure
+      that the card will scroll to top and reset to default position which is a uncollapsed state
+    </Text>
+  </>
+);
+
 const screenObjectData = {
-  currentScreen: 0,
+  currentScreen: -1,
   screens: [
     {
       title: 'Screen 1',
-      text: 'Try to collapse the screen and go either forward or backward. resetCardPosition will ensure that the card will scroll to top and reset to default position which is a uncollapsed state',
+      extraHeight: 500,
+      text: 'Try to collapse the screen and go either forward or backward. resetCardTry to collapse the screen and go either forward or backward. resetCardTry to collapse the screen and go either forward or backward. resetCardTry to collapse the screen and go either forward or backward. resetCardTry to collapse the screen and go either forward or backward. resetCardTry to collapse the screen and go either forward or backward. resetCardTry to collapse the screen and go either forward or backward. resetCardTry to collapse the screen and go either forward or backward. resetCardPosition will Trawdawdadawdtion will Trawdawdadawdtion will Trawdawdadawdtion will Trawdawdadawdy to collapse the screen and go either forward or backward. resetCardPosition will ensurTry to collapse the screen and go either forward or backward. resetCardPosition will ensurTry to collapse the screen and go either forward or backward. resetCardPosition will ensurensure that the card will scroll to top and reset to default position which is a uncollapsed state',
+      content: <Content />,
     },
     {
       title: 'Screen 2',
-      extraHeight: 100,
+      extraHeight: 500,
       text: 'Try to collapse the screen and go either forward or backward. resetCardPosition will ensure that the card will scroll to top and reset to default position which is a uncollapsed state',
+      content: <Content />,
     },
     {
       title: 'Screen 3',
+      extraHeight: 2000,
       text: 'Try to collapse the screen and go either forward or backward. resetCardPosition will ensure that the card will scroll to top and reset to default position which is a uncollapsed state',
+      content: <SmallContentExtra />,
     },
   ],
 };
@@ -42,9 +57,9 @@ const Wrapper = styled.View<{ windowHeight: number }>`
   width: 100%;
 `;
 
-const FakeContentWrapper = styled.View<{ windowHeight: number; extraHeight: number }>`
+const FakeContentWrapper = styled.View<{ extraHeight: number }>`
   background: white;
-  height: ${({ windowHeight, extraHeight }): number => windowHeight + extraHeight}px;
+  height: ${({ extraHeight }): number => extraHeight}px;
   width: 100%;
   padding: 32px 16px;
   align-items: center;
@@ -81,12 +96,6 @@ const NoHardRerenderingEffect: React.FC = () => {
 
   const windowHeight = useWindowDimensions().height;
 
-  const onScrollHandler = useAnimatedScrollHandler({
-    onScroll: e => {
-      scrollY.value = e.contentOffset.y;
-    },
-  });
-
   const changeScreen = useCallback(
     (i: number, direction: string) => {
       const canGoBack = i !== 0 && direction === 'back';
@@ -104,20 +113,19 @@ const NoHardRerenderingEffect: React.FC = () => {
 
   return (
     <Wrapper windowHeight={windowHeight}>
-      <Animated.ScrollView
+      <ScrollViewKeyboardAvoid
         ref={scrollViewRef}
         bounces={false}
         alwaysBounceVertical={false}
-        onScroll={onScrollHandler}
+        connectScrollViewMeasuresToAnimationValues={{
+          scrollY,
+        }}
         scrollEventThrottle={SCROLL_EVENT_THROTTLE}
       >
         <SnapEffect cardHeight={cardHeight} snapEffectDirection={snapEffectDirection}>
-          <FakeContentWrapper
-            windowHeight={windowHeight}
-            extraHeight={screens[currentScreen]?.extraHeight ?? 0}
-          >
-            <Text>{screens[currentScreen].title}</Text>
-            <Text>{screens[currentScreen].text}</Text>
+          <FakeContentWrapper extraHeight={screens[currentScreen]?.extraHeight ?? 0}>
+            <Text>{screens[currentScreen]?.title}</Text>
+            <Text>{screens[currentScreen]?.text}</Text>
             <ButtonWrapper>
               <Button
                 hasMarginRight={true}
@@ -131,16 +139,32 @@ const NoHardRerenderingEffect: React.FC = () => {
             </ButtonWrapper>
           </FakeContentWrapper>
         </SnapEffect>
-      </Animated.ScrollView>
+      </ScrollViewKeyboardAvoid>
       <BottomSheet
-        resetCardPosition={(cb): void => {
-          if (scrollViewRef && scrollY.value > 0) {
-            scrollTo({ ref: scrollViewRef, to: 'top' });
+        testID="test"
+        isBottomSheetInactive={currentScreen === -1}
+        initializeBottomSheetAsClosed={currentScreen === -1}
+        openBottomSheetRequest={{
+          isEnabled: true,
+          callback: (cb): void => {
+            if (scrollViewRef?.current) {
+              scrollToPosition({ ref: scrollViewRef, to: 'top' });
+            }
+
             cb();
-          } else {
-            cb();
-          }
+          },
         }}
+        closeBottomSheetRequest={{
+          isEnabled: true,
+          callback: (cb): void => {
+            if (scrollViewRef?.current) {
+              scrollToPosition({ ref: scrollViewRef, to: 'top' });
+            }
+
+            cb();
+          },
+        }}
+        contentResizeHeightTriggerOnFocusedInputField={200}
         outerScrollEvent={{
           scrollY,
           autoScrollTriggerLength: 16,
@@ -153,7 +177,7 @@ const NoHardRerenderingEffect: React.FC = () => {
           isEnabled: true,
           offset: 30,
         }}
-        fadingScrollEdges={{ isEnabled: false }}
+        fadingScrollEdges={{ isEnabled: true }}
         morphingArrow={{ isEnabled: Platform.OS !== 'web', offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}
@@ -161,7 +185,7 @@ const NoHardRerenderingEffect: React.FC = () => {
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
-        contentComponent={<Content />}
+        contentComponent={screens[currentScreen]?.content}
       />
     </Wrapper>
   );

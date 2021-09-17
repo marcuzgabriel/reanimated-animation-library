@@ -6,7 +6,7 @@ import { DEFAULT_BACKGROUND_COLOR } from '../constants/styles';
 default based on the provider. The interface concerning
 border is for type satisfaction */
 interface Props {
-  translationY: Animated.SharedValue<number>;
+  translationY: number;
   borderTopRightRadius: number;
   borderTopLeftRadius: number;
   backgroundColor?: string;

@@ -1,6 +1,10 @@
 import React, { Fragment } from 'react';
 import { useWindowDimensions, Platform } from 'react-native';
-import Animated, { useAnimatedRef } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedRef,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import InputField from '../InputField';
 import ScrollViewKeyboardAvoid from '../ScrollViewKeyboardAvoid';
@@ -44,8 +48,6 @@ const fakeScrollItem = [
 ];
 
 const Wrapper = styled.View<{ windowHeight: number }>`
-  position: absolute;
-  flex-direction: row;
   height: ${({ windowHeight }): number => windowHeight}px;
   width: 100%;
 `;
@@ -57,51 +59,75 @@ const FakeContentWrapper = styled.View<{ windowHeight: number }>`
   padding: 32px 16px;
 `;
 
-const Left = styled.View`
-  width: 500px;
-  border: 1px solid black;
-`;
-
+const AnimatedWrapper = Animated.View;
 const Text = styled.Text``;
 
 const ScrollViewKeyboardAvoidExample: React.FC = () => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const windowHeight = useWindowDimensions().height;
+  const translationY = useSharedValue(0);
+  const isKeyboardVisible = useSharedValue(false);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      position: 'absolute',
+      bottom: 0,
+      height: isKeyboardVisible?.value ? 150 : windowHeight,
+      transform: [
+        {
+          translateY: translationY.value,
+        },
+      ],
+    };
+  });
 
   return (
     <Wrapper windowHeight={windowHeight}>
-      <ScrollViewKeyboardAvoid
-        ref={scrollViewRef}
-        bounces={false}
-        alwaysBounceVertical={false}
-        keyboardAvoidBottomMargin={isIOS ? 64 : 100}
-        fadingScrollEdges={{
-          isEnabled: true,
-          iOSandWebFadingEdgeHeight: 150,
-          nativeBackgroundColor: 'black',
-          webBackgroundColorTop: { from: 'rgba(0, 0, 0, 0.05)', to: 'rgba(0,0,0,0.05)' },
-          webBackgroundColorBottom: { to: 'rgba(0, 0, 0, 0.05)', from: 'rgba(0,0,0,0.05)' },
-        }}
-        scrollArrows={{
-          isEnabled: true,
-          dimensions: 40,
-          fill: 'black',
-          topArrowOffset: 40,
-          bottomArrowOffset: 40,
-        }}
-        scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-      >
-        {fakeScrollItem.map(({ text }, i) => (
-          <Fragment key={i}>
-            <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
-              <Text>
-                {text} <InputField uniqueId="wtf" style={inputStyle} />
-              </Text>
-            </FakeContentWrapper>
-            <InputField uniqueId={i} style={inputStyle} />
-          </Fragment>
-        ))}
-      </ScrollViewKeyboardAvoid>
+      <AnimatedWrapper style={animatedStyle}>
+        <ScrollViewKeyboardAvoid
+          ref={scrollViewRef}
+          bounces={false}
+          alwaysBounceVertical={false}
+          translationYValues={[translationY]}
+          keyboardAvoidBottomMargin={isIOS ? 64 : 100}
+          connectScrollViewMeasuresToAnimationValues={{
+            isKeyboardVisible,
+          }}
+          fadingScrollEdges={{
+            isEnabled: true,
+            iOSandWebFadingEdgeHeight: 150,
+            nativeBackgroundColor: 'black',
+            webBackgroundColorTop: {
+              from: 'rgba(0, 0, 0, 0.05)',
+              to: 'rgba(0,0,0,0.05)',
+            },
+            webBackgroundColorBottom: {
+              to: 'rgba(0, 0, 0, 0.05)',
+              from: 'rgba(0,0,0,0.05)',
+            },
+          }}
+          scrollArrows={{
+            isEnabled: true,
+            dimensions: 40,
+            fill: 'black',
+            topArrowOffset: 40,
+            bottomArrowOffset: 40,
+          }}
+          scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+        >
+          <>
+            {fakeScrollItem.map(({ text }, i) => (
+              <Fragment key={i}>
+                <FakeContentWrapper windowHeight={windowHeight} key={`${i}_${text}`}>
+                  <Text>
+                    {text} <InputField uniqueId="wtf" style={inputStyle} />
+                  </Text>
+                </FakeContentWrapper>
+                <InputField uniqueId={i} style={inputStyle} />
+              </Fragment>
+            ))}
+          </>
+        </ScrollViewKeyboardAvoid>
+      </AnimatedWrapper>
     </Wrapper>
   );
 };

@@ -1,20 +1,17 @@
 import React, { useCallback, useContext } from 'react';
-import { LayoutChangeEvent, ViewStyle } from 'react-native';
+import { LayoutChangeEvent } from 'react-native';
 import styled from 'styled-components/native';
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useAnimatedReaction,
-  useDerivedValue,
-} from 'react-native-reanimated';
-import { onPanGestureHitFooterReaction } from '../../../worklets';
+import Animated, { useAnimatedStyle, interpolate, useDerivedValue } from 'react-native-reanimated';
+import {
+  EXTRA_MARGIN_WRAPPER_HEIGHT,
+  DEFAULT_CONTENT_RESIZE_HEIGHT_TRIGGER_ON_FOCUSED_INPUT_FIELD,
+} from '../../../constants/styles';
 import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
-import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 
-interface FooterProps {
-  hideFooterInterpolation: Animated.SharedValue<number>;
+interface Props {
+  isCardCollapsed: Animated.SharedValue<boolean>;
 }
 
 const ComponentWhenUndefined = styled.View`
@@ -29,25 +26,28 @@ const TextWhenUndefined = styled.Text`
   color: white;
 `;
 
-const TouchableOpacity = styled.TouchableOpacity`
-  height: 50px;
-  width: 100%;
-  background: white;
-`;
-
-const ParentWrapper = Animated.createAnimatedComponent(styled.View``);
+const ExtraMarginWrapper = Animated.View;
+const Parentwrapper = Animated.View;
 const ChildWrapper = Animated.View;
 
-const Footer: React.FC<FooterProps> = ({ hideFooterInterpolation }) => {
-  const { isKeyboardVisible } = useContext(KeyboardContext);
-  const { footerComponent, extraSnapPointBottomOffset, hideFooterOnCardCollapse, header } =
-    useContext(UserConfigurationContext);
+const Footer: React.FC<Props> = ({ isCardCollapsed }) => {
   const {
+    footerComponent,
+    extraSnapPointBottomOffset,
+    hideFooterOnCardCollapse,
+    header,
+    contentResizeHeightTriggerOnFocusedInputField,
+  } = useContext(UserConfigurationContext);
+
+  const {
+    contentHeight,
     cardHeight,
     headerHeight: headerHeightLayout,
+    hideFooterInterpolation,
     footerHeight,
     translationY,
     footerTranslationY,
+    isKeyboardVisible,
   } = useContext(ReusablePropsContext.bottomSheet);
 
   const headerHeight = useDerivedValue(
@@ -55,40 +55,68 @@ const Footer: React.FC<FooterProps> = ({ hideFooterInterpolation }) => {
     [headerHeightLayout, header],
   );
 
-  const animatedParentStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      position: 'absolute',
-      width: '100%',
-      zIndex: 3,
-      bottom: -footerTranslationY.value,
-    }),
-  );
+  const hasExtraMargin = useDerivedValue(() => {
+    const defaultContentResizeHeightTriggerOnFocusedInputField =
+      contentResizeHeightTriggerOnFocusedInputField ??
+      DEFAULT_CONTENT_RESIZE_HEIGHT_TRIGGER_ON_FOCUSED_INPUT_FIELD;
 
-  const animatedChildStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => ({
-      opacity: hideFooterOnCardCollapse?.isEnabled
+    return contentHeight.value >= defaultContentResizeHeightTriggerOnFocusedInputField;
+  }, [contentHeight, contentResizeHeightTriggerOnFocusedInputField]);
+
+  const derivedFooterTranslationY = useDerivedValue(() => {
+    const areAllLayoutsCalculated =
+      cardHeight.value > 0 && headerHeight.value > 0 && footerHeight.value > 0;
+
+    if (areAllLayoutsCalculated) {
+      if (!isCardCollapsed.value && translationY.value === 0) {
+        return 0;
+      }
+
+      const extraOffset = extraSnapPointBottomOffset ?? 0;
+      const footerTransYPosition =
+        cardHeight.value - headerHeight.value - footerHeight.value - extraOffset;
+      const userIsPanningFooter =
+        translationY.value > 0 && translationY.value >= footerTransYPosition;
+
+      if (userIsPanningFooter) {
+        const panningValue = translationY.value - footerTransYPosition;
+        return -panningValue;
+      }
+
+      return -footerTranslationY.value;
+    } else {
+      return 0;
+    }
+  }, [
+    cardHeight,
+    headerHeight,
+    footerHeight,
+    translationY,
+    footerTranslationY,
+    isKeyboardVisible,
+    isCardCollapsed,
+  ]);
+
+  const animatedParentStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    width: '100%',
+    zIndex: 3,
+    bottom: derivedFooterTranslationY.value,
+  }));
+
+  const animatedChildStyle = useAnimatedStyle(() => ({
+    opacity:
+      hideFooterOnCardCollapse?.isEnabled && !isKeyboardVisible?.value
         ? interpolate(hideFooterInterpolation.value, [0, HIDE_CONTENT_OUTPUT_RANGE], [1, 0])
         : 1,
-    }),
-  );
+  }));
 
-  useAnimatedReaction(
-    () => translationY.value,
-    (result: number, previous: number | null | undefined) => {
-      onPanGestureHitFooterReaction({
-        result,
-        previous,
-        translationY,
-        footerTranslationY,
-        cardHeight,
-        isKeyboardVisible,
-        headerHeight,
-        footerHeight,
-        extraSnapPointBottomOffset,
-      });
-    },
-    [translationY.value, cardHeight, headerHeight, footerHeight, isKeyboardVisible],
-  );
+  const animatedStyleExtraMarginWrapper = useAnimatedStyle(() => ({
+    display: isKeyboardVisible?.value && hasExtraMargin.value ? 'flex' : 'none',
+    backgroundColor: 'transparent',
+    height: EXTRA_MARGIN_WRAPPER_HEIGHT,
+    width: '100%',
+  }));
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent): void => {
@@ -100,16 +128,16 @@ const Footer: React.FC<FooterProps> = ({ hideFooterInterpolation }) => {
   );
 
   return (
-    <ParentWrapper onLayout={onLayout} style={animatedParentStyle}>
+    <Parentwrapper onLayout={onLayout} style={animatedParentStyle}>
       <ChildWrapper style={animatedChildStyle}>
+        <ExtraMarginWrapper style={animatedStyleExtraMarginWrapper} />
         {footerComponent ?? (
           <ComponentWhenUndefined>
-            <TouchableOpacity />
             <TextWhenUndefined>Footer component</TextWhenUndefined>
           </ComponentWhenUndefined>
         )}
       </ChildWrapper>
-    </ParentWrapper>
+    </Parentwrapper>
   );
 };
 

@@ -1,10 +1,13 @@
-import React, { useMemo, useContext } from 'react';
+import React from 'react';
 import { Platform } from 'react-native';
 import styled from 'styled-components/native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
 import GradientToTopWhite from './GradientToTopWhite';
 import GradientToBottomWhite from './GradientToBottomWhite';
-import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 
 const isIOS = Platform.OS === 'ios';
 const isWeb = Platform.OS === 'web';
@@ -13,11 +16,12 @@ const FADING_EDGE_HEIGHT = 10;
 
 interface Props {
   position: string;
+  isScrolledToTop: Animated.SharedValue<boolean>;
+  isScrolledToEnd: Animated.SharedValue<boolean>;
+  scrollViewWidth: Animated.SharedValue<number>;
+  isScrollable: Animated.SharedValue<boolean>;
+  isFocusInputFieldAnimationRunning: Animated.SharedValue<boolean>;
   nativeColor?: string;
-  isScrolledToTop?: Animated.SharedValue<boolean>;
-  isScrolledToEnd?: Animated.SharedValue<boolean>;
-  scrollViewWidth?: Animated.SharedValue<number>;
-  isScrollable?: Animated.SharedValue<boolean>;
   webColor?: Record<string, string>;
 }
 
@@ -42,53 +46,46 @@ const FadingEdge: React.FC<Props> = ({
   position,
   nativeColor,
   webColor,
-  scrollViewWidth: propScrollViewWidth,
-  isScrollable: propIsScrollable,
-  isScrolledToTop: propIsScrolledToTop,
-  isScrolledToEnd: propIsScrolledToBottom,
+  scrollViewWidth,
+  isScrollable,
+  isScrolledToTop,
+  isScrolledToEnd,
+  isFocusInputFieldAnimationRunning,
 }) => {
-  const {
-    isScrollable: bottomSheetIsScrollable,
-    isScrolledToTop: bottomSheetIsScrolledToTop,
-    isScrolledToEnd: bottomSheetIsScrolledToEnd,
-    scrollViewWidth: bottomSheetScrollViewWidth,
-  } = useContext(ReusablePropsContext.bottomSheet);
-  const isPositionedTop = useMemo(() => position === 'top', [position]);
+  const isPositionedTop = position === 'top';
+  const animatedValueIsPositionedTop = useSharedValue(isPositionedTop);
 
-  const isScrollable = useMemo(
-    () => bottomSheetIsScrollable ?? propIsScrollable,
-    [bottomSheetIsScrollable, propIsScrollable],
-  );
+  const animatedDisplayStyle = useDerivedValue(() => {
+    if (!isFocusInputFieldAnimationRunning.value) {
+      if (animatedValueIsPositionedTop.value && isScrollable.value) {
+        if (isScrolledToTop.value) {
+          return 'none';
+        } else {
+          return 'flex';
+        }
+      } else if (isScrollable.value) {
+        if (isScrolledToEnd.value) {
+          return 'none';
+        } else {
+          return 'flex';
+        }
+      }
+    }
 
-  const scrollViewWidth = useMemo(
-    () => bottomSheetScrollViewWidth ?? propScrollViewWidth,
-    [bottomSheetScrollViewWidth, propScrollViewWidth],
-  );
+    return 'none';
+  }, [
+    isScrolledToTop,
+    isFocusInputFieldAnimationRunning,
+    isScrolledToEnd,
+    animatedValueIsPositionedTop,
+  ]);
 
-  const isScrolledToTop = useMemo(
-    () => bottomSheetIsScrolledToTop ?? propIsScrolledToTop,
-    [bottomSheetIsScrolledToTop, propIsScrolledToTop],
-  );
-
-  const isScrolledToEnd = useMemo(
-    () => bottomSheetIsScrolledToEnd ?? propIsScrolledToBottom,
-    [bottomSheetIsScrolledToEnd, propIsScrolledToBottom],
-  );
-
-  const animatedStyleTop = useAnimatedStyle(() => ({
-    display: !isScrolledToTop.value && isScrollable.value ? 'flex' : 'none',
-  }));
-
-  const animatedStyleBottom = useAnimatedStyle(() => ({
-    display: !isScrolledToEnd.value && isScrollable.value ? 'flex' : 'none',
+  const animatedStyle = useAnimatedStyle(() => ({
+    display: animatedDisplayStyle.value,
   }));
 
   return (
-    <Wrapper
-      position={position}
-      webColor={webColor}
-      style={isPositionedTop ? animatedStyleTop : animatedStyleBottom}
-    >
+    <Wrapper position={position} webColor={webColor} style={animatedStyle}>
       {isIOS && isPositionedTop && (
         <GradientToTopWhite
           stopColor={nativeColor}

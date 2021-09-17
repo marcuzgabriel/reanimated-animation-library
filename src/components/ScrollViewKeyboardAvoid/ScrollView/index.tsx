@@ -1,11 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
-import { LayoutChangeEvent, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, ViewStyle, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
   useAnimatedStyle,
   useAnimatedScrollHandler,
   useSharedValue,
+  useAnimatedReaction,
+  useDerivedValue,
 } from 'react-native-reanimated';
+import { onScrollGetScrollingMeasures } from '../../../worklets';
 import ScrollArrow from '../ScrollArrow';
 import FadingEdge from '../../ScrollViewKeyboardAvoid/FadingEdge';
 import {
@@ -15,30 +18,29 @@ import {
 } from '../../../constants/styles';
 import { ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
-import type { MixedScrollViewProps } from '../../../types';
+import { KeyboardContext } from '../../../containers/KeyboardProvider';
+import type { ScrollViewProps } from '../../../types';
 
-interface Props extends MixedScrollViewProps {
-  scrollViewRef: React.RefObject<Animated.ScrollView> | any;
-}
+const AnimatedWrapper = Animated.createAnimatedComponent(styled.View``);
+const isWeb = Platform.OS === 'web';
 
-const AnimatedWrapper = Animated.createAnimatedComponent(
-  styled.View`
-    flex: 1;
-  `,
-);
-
-const ScrollView: React.FC<Props> = props => {
+const ScrollView: React.FC<ScrollViewProps> = props => {
   const {
     scrollViewRef,
+    connectScrollViewMeasuresToAnimationValues,
     keyboardAvoidBottomMargin,
-    disableScrollAnimation,
     fadingScrollEdges,
     isKeyboardAvoidDisabled,
     scrollArrows,
+    translationYValues,
+    contentResizeHeightTriggerOnFocusedInputField,
+    scrollTo,
     onContentSizeChange,
     onIsInputFieldFocusedRequest,
     children,
   } = props;
+
+  const { isKeyboardVisible } = React.useContext(KeyboardContext);
 
   const {
     isEnabled: isFadingScrollEdgeEnabled,
@@ -53,8 +55,8 @@ const ScrollView: React.FC<Props> = props => {
   const scrollY = useSharedValue(0);
   const scrollingLength = useSharedValue(0);
   const contentHeight = useSharedValue(0);
-  const contentHeightWhenKeyboardIsVisible = useSharedValue(0);
   const translationY = useSharedValue(0);
+  const isFocusInputFieldAnimationRunning = useSharedValue(false);
   const isInputFieldFocused = useSharedValue(false);
   const isScrolledToTop = useSharedValue(false);
   const isScrolledToEnd = useSharedValue(false);
@@ -68,6 +70,7 @@ const ScrollView: React.FC<Props> = props => {
 
   const animatedStyle = useAnimatedStyle(
     (): Animated.AnimatedStyleProp<ViewStyle> => ({
+      flex: isWeb ? 1 : 0,
       transform: [
         {
           translateY: translationY.value,
@@ -103,11 +106,26 @@ const ScrollView: React.FC<Props> = props => {
     [webBackgroundColorBottom],
   );
 
+  const connectionProps: Record<
+    string,
+    Animated.SharedValue<number | boolean | undefined>
+  > = useMemo(
+    () => ({
+      scrollY,
+      scrollViewHeight,
+      contentHeight,
+      isKeyboardVisible,
+      isInputFieldFocused,
+    }),
+    [scrollY, scrollViewHeight, contentHeight, isKeyboardVisible, isInputFieldFocused],
+  );
+
   const scrollArrowProps = useMemo(
     () => ({
       scrollViewRef,
       scrollArrows,
       contentHeight,
+      scrollTo,
       scrollY,
       scrollViewHeight,
       scrollViewWidth,
@@ -116,11 +134,13 @@ const ScrollView: React.FC<Props> = props => {
       isScrolledToEnd,
       isScrollable,
       isInputFieldFocused,
+      isKeyboardVisible,
     }),
     [
       scrollViewRef,
       scrollArrows,
       contentHeight,
+      scrollTo,
       scrollY,
       scrollViewHeight,
       scrollViewWidth,
@@ -129,25 +149,74 @@ const ScrollView: React.FC<Props> = props => {
       isScrolledToEnd,
       isScrollable,
       isInputFieldFocused,
+      isKeyboardVisible,
     ],
   );
+
+  const fadingEdgeProps = useMemo(
+    () => ({
+      isFocusInputFieldAnimationRunning,
+      isScrollable,
+      isScrolledToTop,
+      isScrolledToEnd,
+      scrollViewWidth,
+      nativeColor: fadingEdgeNativeBackgroundColor,
+    }),
+    [
+      isFocusInputFieldAnimationRunning,
+      isScrollable,
+      isScrolledToTop,
+      isScrolledToEnd,
+      scrollViewWidth,
+      fadingEdgeNativeBackgroundColor,
+    ],
+  );
+
+  useAnimatedReaction(
+    () => ({
+      scrollY: scrollY.value,
+      contentHeight: contentHeight.value,
+      scrollViewHeight: scrollViewHeight.value,
+    }),
+    () => {
+      if (contentHeight.value > 0 && scrollViewHeight.value > 0) {
+        return onScrollGetScrollingMeasures({
+          scrollY,
+          scrollViewHeight,
+          scrollingLength,
+          isScrolledToTop,
+          isScrolledToEnd,
+          isScrollable,
+          contentHeight,
+        });
+      }
+    },
+    [scrollY, contentHeight, scrollViewHeight, onScrollGetScrollingMeasures],
+  );
+
+  useDerivedValue(() => {
+    if (connectScrollViewMeasuresToAnimationValues) {
+      Object.keys(connectScrollViewMeasuresToAnimationValues).forEach(key => {
+        if (
+          Object.keys(connectionProps).includes(key) &&
+          connectScrollViewMeasuresToAnimationValues[key].value !== connectionProps[key].value
+        ) {
+          connectScrollViewMeasuresToAnimationValues[key].value = connectionProps[key].value;
+        }
+      });
+    }
+  }, [connectScrollViewMeasuresToAnimationValues]);
 
   return (
     <AnimatedWrapper style={animatedStyle}>
       {isFadingScrollEdgeEnabled && (
         <FadingEdge
+          {...fadingEdgeProps}
           position="top"
-          isScrollable={isScrollable}
-          isScrolledToTop={isScrolledToTop}
-          isScrolledToEnd={isScrolledToEnd}
-          scrollViewWidth={scrollViewWidth}
-          nativeColor={fadingEdgeNativeBackgroundColor}
           webColor={fadingEdgeWebBackgroundColorTop}
         />
       )}
-      {scrollArrows?.isEnabled && (
-        <ScrollArrow {...scrollArrowProps} contextName="scrollViewKeyboardAvoid" position="top" />
-      )}
+      {scrollArrows?.isEnabled && <ScrollArrow {...scrollArrowProps} position="top" />}
       <Animated.ScrollView
         {...props}
         ref={scrollViewRef}
@@ -164,34 +233,24 @@ const ScrollView: React.FC<Props> = props => {
       >
         <KeyboardAvoidingViewProvider
           isInputFieldFocused={isInputFieldFocused}
+          translationYValues={translationYValues}
           isKeyboardAvoidDisabled={isKeyboardAvoidDisabled}
+          isFocusInputFieldAnimationRunning={isFocusInputFieldAnimationRunning}
+          contentResizeHeightTriggerOnFocusedInputField={
+            contentResizeHeightTriggerOnFocusedInputField
+          }
           contentHeight={contentHeight}
-          contentHeightWhenKeyboardIsVisible={contentHeightWhenKeyboardIsVisible}
-          disableScrollAnimation={disableScrollAnimation}
           keyboardAvoidBottomMargin={keyboardAvoidBottomMargin}
-          translationY={translationY}
-          scrollViewRef={scrollViewRef}
-          scrollViewHeight={scrollViewHeight}
           onIsInputFieldFocusedRequest={onIsInputFieldFocusedRequest}
         >
           {children}
         </KeyboardAvoidingViewProvider>
       </Animated.ScrollView>
-      {scrollArrows?.isEnabled && (
-        <ScrollArrow
-          {...scrollArrowProps}
-          contextName="scrollViewKeyboardAvoid"
-          position="bottom"
-        />
-      )}
+      {scrollArrows?.isEnabled && <ScrollArrow {...scrollArrowProps} position="bottom" />}
       {isFadingScrollEdgeEnabled && (
         <FadingEdge
+          {...fadingEdgeProps}
           position="bottom"
-          isScrollable={isScrollable}
-          isScrolledToTop={isScrolledToTop}
-          isScrolledToEnd={isScrolledToEnd}
-          scrollViewWidth={scrollViewWidth}
-          nativeColor={fadingEdgeNativeBackgroundColor}
           webColor={fadingEdgeWebBackgroundColorBottom}
         />
       )}

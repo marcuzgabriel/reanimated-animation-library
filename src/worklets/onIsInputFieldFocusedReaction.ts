@@ -1,90 +1,66 @@
-import Animated, { scrollTo } from 'react-native-reanimated';
-import { withTiming, runOnJS } from 'react-native-reanimated';
+import Animated, { withTiming, runOnJS } from 'react-native-reanimated';
+import { Platform } from 'react-native';
 import { KEYBOARD_TIMING_EASING } from '../constants/animations';
-import { SCROLL_EVENT_THROTTLE } from '../constants/configs';
+import type { ContextPropsKeyboard, ScrollViewProps } from '../types';
 
-interface ResultCurrentAndPreviousProps {
-  contentHeight?: Animated.SharedValue<number>;
-  contentHeightWhenKeyboardIsVisible?: Animated.SharedValue<number>;
-  disableScrollAnimation?: boolean;
-  keyboardAvoidBottomMargin?: number;
-  scrollViewHeight?: Animated.SharedValue<number>;
-  translationY?: Animated.SharedValue<number>;
-  isKeyboardVisible: Animated.SharedValue<boolean>;
+const isIOS = Platform.OS === 'ios';
+
+interface OnIsInputFieldFocusedReactionProps
+  extends Pick<
+      ScrollViewProps,
+      | 'translationYValues'
+      | 'contentResizeHeightTriggerOnFocusedInputField'
+      | 'onIsInputFieldFocusedRequest'
+    >,
+    Pick<ContextPropsKeyboard, 'isKeyboardVisible'> {
   keyboardHeight: Animated.SharedValue<number>;
   keyboardDuration: Animated.SharedValue<number>;
-  selectedInputFieldPositionY: Animated.SharedValue<number>;
-}
-interface Props {
-  result: ResultCurrentAndPreviousProps;
-  previous: ResultCurrentAndPreviousProps | null | undefined;
-  windowHeight: number;
-  scrollViewRef: React.RefObject<Animated.ScrollView> | any;
-  scrollViewHeight?: Animated.SharedValue<number>;
-  contentHeight: Animated.SharedValue<number>;
-  contentHeightWhenKeyboardIsVisible: Animated.SharedValue<number>;
+  isFocusInputFieldAnimationRunning: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
-  keyboardAvoidBottomMargin?: number;
-  disableScrollAnimation?: boolean;
-  translationY: Animated.SharedValue<number>;
-  onIsInputFieldFocusedRequest?: (status: boolean, availableHeight: number) => void;
+  contentHeight: Animated.SharedValue<number>;
 }
 
 export const onIsInputFieldFocusedReaction = ({
-  result,
-  previous,
-  windowHeight,
-  contentHeight,
-  disableScrollAnimation,
-  keyboardAvoidBottomMargin,
+  isFocusInputFieldAnimationRunning,
   isInputFieldFocused,
-  scrollViewRef,
-  scrollViewHeight,
-  translationY,
+  translationYValues,
+  isKeyboardVisible,
+  keyboardDuration,
+  keyboardHeight,
   onIsInputFieldFocusedRequest,
-}: Props): void => {
+}: OnIsInputFieldFocusedReactionProps): void => {
   'worklet';
 
-  if (result !== previous) {
-    if (result.keyboardHeight.value > 0 && scrollViewHeight?.value) {
-      const res = result.selectedInputFieldPositionY.value;
-      const height = windowHeight - contentHeight.value;
-      const isScrollable = contentHeight.value > height;
-      const availableHeight = windowHeight - result.keyboardHeight.value;
-
-      const animationConfigIsScrollable = { duration: SCROLL_EVENT_THROTTLE };
-      const animationConfigIsNotScrollable = {
-        duration: result.keyboardDuration.value,
+  if (typeof isKeyboardVisible?.value === 'boolean') {
+    if (isIOS) {
+      const animationTimingConfig = {
+        duration: keyboardDuration.value,
         KEYBOARD_TIMING_EASING,
       };
-      const animationConfig = isScrollable
-        ? animationConfigIsScrollable
-        : animationConfigIsNotScrollable;
 
-      const defaultKeyboardAvoidBottomMargin = keyboardAvoidBottomMargin ?? 0;
-      const scrollToNumber = res - scrollViewHeight.value + defaultKeyboardAvoidBottomMargin;
+      isFocusInputFieldAnimationRunning.value = true;
 
-      translationY.value = withTiming(
-        -result.keyboardHeight.value,
-        animationConfig,
-        isAnimationComplete => {
-          if (isAnimationComplete) {
-            scrollTo(scrollViewRef, 0, scrollToNumber, disableScrollAnimation ? false : true);
-            if (typeof onIsInputFieldFocusedRequest === 'function') {
-              runOnJS(onIsInputFieldFocusedRequest)(true, availableHeight);
-            }
-          }
-        },
-      );
-
-      isInputFieldFocused.value = true;
-    } else {
-      translationY.value = 0;
-      isInputFieldFocused.value = false;
-
-      if (typeof onIsInputFieldFocusedRequest === 'function') {
-        runOnJS(onIsInputFieldFocusedRequest)(false, 0);
-      }
+      translationYValues?.forEach(translationValue => {
+        if (translationValue.value !== -keyboardHeight.value) {
+          translationValue.value = withTiming(
+            -keyboardHeight.value,
+            animationTimingConfig,
+            isAnimationDone => {
+              if (isAnimationDone) {
+                isFocusInputFieldAnimationRunning.value = false;
+              }
+            },
+          );
+        }
+      });
     }
+
+    if (typeof onIsInputFieldFocusedRequest === 'function') {
+      runOnJS(onIsInputFieldFocusedRequest)(false, 0);
+    }
+
+    isInputFieldFocused.value = isKeyboardVisible.value;
+  } else if (isInputFieldFocused.value) {
+    isInputFieldFocused.value = false;
   }
 };

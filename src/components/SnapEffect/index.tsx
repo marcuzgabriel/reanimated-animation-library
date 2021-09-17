@@ -82,7 +82,7 @@ const SnapEffect: React.FC<Props> = ({
         });
       }
     },
-    [cardHeight, contentHeight],
+    [cardHeight, contentHeight, isSnapEffectActiveState],
   );
 
   const animatedStyle = useAnimatedStyle(() => ({

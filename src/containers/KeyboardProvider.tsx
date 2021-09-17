@@ -1,26 +1,28 @@
 import React, { useEffect, createContext, useCallback } from 'react';
 import { Platform, Keyboard } from 'react-native';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
+import type { ContextPropsKeyboard } from '../types';
 
-export const KeyboardContext = createContext<Record<string, any>>({});
+export const KeyboardContext = createContext({} as ContextPropsKeyboard);
 export const { Provider } = KeyboardContext;
+
+const isIOS = Platform.OS === 'ios';
+const isAndroid = Platform.OS === 'android';
 
 interface Props {
   children: React.ReactNode;
 }
 
 const KeyboardProvider: React.FC<Props> = ({ children }) => {
-  const isKeyboardVisible = useSharedValue(0);
+  const isKeyboardVisible = useSharedValue<boolean | undefined>(undefined);
   const keyboardHeight = useSharedValue(0);
   const keyboardDuration = useSharedValue(0);
 
-  const isIOS = Platform.OS === 'ios';
   const show = isIOS ? 'keyboardWillShow' : 'keyboardDidShow';
-  const hide = isIOS ? 'keyboardWillHide' : 'keyboardDidHide';
 
   const handleShow = useCallback(
     e => {
-      isKeyboardVisible.value = 1;
+      isKeyboardVisible.value = true;
       keyboardHeight.value = e.endCoordinates.height;
       keyboardDuration.value = e.duration;
     },
@@ -29,7 +31,7 @@ const KeyboardProvider: React.FC<Props> = ({ children }) => {
 
   const handleHide = useCallback(
     e => {
-      isKeyboardVisible.value = 0;
+      isKeyboardVisible.value = false;
       keyboardHeight.value = 0;
       keyboardDuration.value = e.duration;
     },
@@ -37,13 +39,22 @@ const KeyboardProvider: React.FC<Props> = ({ children }) => {
   );
 
   useEffect(() => {
-    Keyboard.addListener(show, handleShow);
-    Keyboard.addListener(hide, handleHide);
+    const showSubscription = Keyboard.addListener(show, handleShow);
+    const willHideSubscription = Keyboard.addListener('keyboardWillHide', handleHide);
+    const didHideSubscription = Keyboard.addListener('keyboardDidHide', e => {
+      if (isAndroid) {
+        handleShow(e);
+      }
+
+      isKeyboardVisible.value = undefined;
+    });
+
     return (): void => {
-      Keyboard.removeListener(show, handleShow);
-      Keyboard.removeListener(hide, handleHide);
+      showSubscription.remove();
+      willHideSubscription.remove();
+      didHideSubscription.remove();
     };
-  }, [handleHide, handleShow, show, hide]);
+  }, [handleHide, handleShow, show, isKeyboardVisible]);
 
   return (
     <Provider

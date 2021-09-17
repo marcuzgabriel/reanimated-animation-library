@@ -23,11 +23,13 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
 
   | Prop | Type | Description |
 | :--- | :---: | :---:|
-  | scrollY | Animated.SharedValue<number> | An outside prop that can be connected to the BottomSheet. Then it reacts to other scroll events
+  | isBottomSheetInactive | boolean | Set the bottom to an inactive state. Can be used for async handling og UX requirements
+  | initializeBottomSheetAsClosed | boolean | In some cases it might be relevant to show the background content before showing the bottomSheet
+  | contentResizeHeightTriggerOnFocusedInputField | number | At which content height should a resize in content height occour when the input field is focused?
+  | contentResizeHeightOnFocusedInputField | number | If contentResizeHeightTriggerOnFocusedInputField is met what should be the new content height size when input field is focused?
   | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information
-  | snapPointBottom* | number | this prop is required for the BottomSheet to work
-  | isScrollableOffset | number | In some cases there can be a header or an outside component that will fill some of the screen. If this is the case then the BottomSheet needs to know the height dimensions of these components in order to determine scrollability correct.
-  | isStaticOffset | number | Same concept as for isScrollableOffset but instead of determine scrollability then it determins when the snappable effect will be enabled / disabled. Etc. if the background content do not overlap the BottomSheet, then there is no need for the SnapEffect. This prop helps to finetune when this effect triggers
+  | snapPointBottom* | number | This prop is required for the BottomSheet to work
+  | extraOffset | number | If you need some extra offset when it comes to the panning event hitting the footer
   | borderTopRightRadius and borderTopLeftRadius | number | Sets the border top radius'
   | backgroundColor | string | Sets the background color
   | contentComponent | node | Content component
@@ -35,16 +37,20 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
   | headerComponent | node | Header component
   | hideFooterOnCardCollapse | object | { isEnabled: boolean, offset: number }
   | hideContentOnCardCollapse | object | { isEnabled: boolean, offset: number }
-  | scrollArrowTopComponent | node | Scroll arrow top component
-  | scrollArrowBottomComponent | node | Scroll arrow bottom component
+  | scrollArrowTopComponent (currently disabled) | node | Scroll arrow top component
+  | scrollArrowBottomComponent (currently disabled) | node | Scroll arrow bottom component
   | scrollArrows = { isEnabled: boolean, fill: string, dimensions: number, topArrowOffset: number, bottomArrowOffset: number } | object | When there is no scrollArrowBottom- or top component then this object can be used for styling the scroll arrows.
   | extraSnapPointBottomOffset | number | Minor differences occours depending on the Platform. This prop helps to get the perfect snap point on all platforms
+  | keyboardAvoidBottomMargin (currently disabled) | number | An extra margin wrapper is implemented instead. The prop was used to create extra spacings when an input field is focused
+  | maxHeight | number | max height of the bottom sheet
   | header = { height: number } | object | If there is no header component then this object can be used to style the header
   | morphingArrow = { isEnabled: boolean, offset: number, fill: string } | object | As there currently is a bug on web when interpolating SVG's with reanimated, then the morphing arrow can be disabled for specific platforms using this prop
   | fadingScrollEdges = { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: { from: string to: string}, webBackgroundColorBottom: { from: string, to: string } | object | This prop ensures that there is a scrolling edge when the content is scrollable
+  | outerScrollEvent = { isEnabled?: boolean, scrollY?: Animated.SharedValue<number>, autoScrollTriggerLength?: number } | object | Connect an outer scrolling event that the bottom sheet should react to
+  | testID | string | add testID to the bottomSheet
+  | openBottomSheetRequest & closeBottomSheetRequest | { isEnabled: boolean; callback: ((cb) => void) => void } | Custom trigger functions to make the bottom sheet go to bottom or top
   | getCurrentConfigRequest(config) | function with callback | This function will provide the current configuration
   | onLayoutRequest(cardHeight) | function with callback | In some use cases the card height of the BottomSheet might become useful
-  | resetCardPosition(resetCallback) | function with callback | In some cases where there is no rerendering effect when changing screens etc. then this helper will ensure that the card will fold out nicely if its initially collapsed. An implementation example can be found in ./src/components/Example/NoHardRerenderingEffect.tsx
 
 </details>
 <details>

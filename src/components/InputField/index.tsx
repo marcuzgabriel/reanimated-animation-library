@@ -1,21 +1,12 @@
 import React, { useContext } from 'react';
-import { TextInputProps, LayoutChangeEvent, TextStyle } from 'react-native';
+import { TextInputProps, LayoutChangeEvent } from 'react-native';
 import styled from 'styled-components/native';
 import { KeyboardAvoidingViewContext } from '../../containers/KeyboardAvoidingViewProvider';
-
-/* NOTE: There is a type bug when it comes to justifyContent and
-textAlign parsed directly from an object in react-native. */
-type StyleTypeFix<T> = {
-  [K in keyof T]: K extends 'justifyContent' ? any : K extends 'textAlign' ? any : T[K];
-};
+import type { InputFieldProps } from '../../types';
 
 interface Props extends TextInputProps {
   uniqueId: number | string;
-  style: StyleTypeFix<TextStyle>;
-}
-
-interface DoesExist {
-  identifier: number | undefined;
+  style: any;
 }
 
 const TextInput = styled.TextInput``;
@@ -25,7 +16,7 @@ const InputField: React.FC<Props> = props => {
 
   const onLayout = (e: LayoutChangeEvent): void => {
     const doesExist = inputFields.value.some(
-      ({ identifier }: DoesExist) => identifier === props.uniqueId,
+      ({ identifier }: Pick<InputFieldProps, 'identifier'>) => identifier === props.uniqueId,
     );
 
     if (!doesExist) {
@@ -33,9 +24,9 @@ const InputField: React.FC<Props> = props => {
         identifier: props.uniqueId,
         y: e.nativeEvent.layout.y,
       });
-    } else if (inputFields.length > 0) {
+    } else if (inputFields.value.length > 0) {
       const hasSameIdentifier = inputFields.value.some(
-        ({ identifier, y }: Record<string, number | string>) =>
+        ({ identifier, y }: InputFieldProps) =>
           identifier === props.uniqueId && e.nativeEvent.layout.y !== y,
       );
 
@@ -47,9 +38,8 @@ const InputField: React.FC<Props> = props => {
 
   const onFocus = (): void => {
     try {
-      selectedInputFieldPositionY.value = inputFields.value.find(
-        ({ identifier }: Record<string, number | string>) => identifier === props.uniqueId,
-      ).y;
+      selectedInputFieldPositionY.value =
+        inputFields.value.find(({ identifier }) => identifier === props.uniqueId)?.y ?? 0;
     } catch (err) {
       console.warn(
         'Please provide a uniqueId prop to the input field so the animation know what to look for',

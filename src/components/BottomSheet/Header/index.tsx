@@ -15,7 +15,7 @@ import { UserConfigurationContext } from '../../../containers/UserConfigurationP
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
-  scrollY: Animated.SharedValue<number>;
+  scrollY?: Animated.SharedValue<number>;
   onPress: () => void;
 }
 

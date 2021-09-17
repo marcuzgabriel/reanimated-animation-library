@@ -87,6 +87,8 @@ const ScrollViewWithSnapEffect: React.FC = () => {
           scrollY,
           autoScrollTriggerLength: 16,
         }}
+        contentResizeHeightTriggerOnFocusedInputField={270}
+        contentResizeHeightOnFocusedInputField={200}
         hideContentOnCardCollapse={{
           isEnabled: true,
           offset: 5,

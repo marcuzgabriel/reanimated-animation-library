@@ -1,31 +1,33 @@
-import React, { useMemo, useRef, useContext, useCallback, useEffect } from 'react';
+import React, { useMemo, useRef, useContext, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   useAnimatedReaction,
   useDerivedValue,
+  useAnimatedRef,
   useAnimatedGestureHandler,
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
 import { LayoutChangeEvent, ViewStyle, Keyboard } from 'react-native';
 import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
-import Content from '../Content';
-import Header from '../Header';
-import Footer from '../Footer';
 import { DEFAULT_BORDER_RADIUS } from '../../../constants/styles';
 import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import {
+  onInitializationCloseRequest,
   onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
   getAnimatedCardStyles,
   onGestureHandlerCard,
   onSnapHideContentOrFooterReaction,
 } from '../../../worklets';
-import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
+import { useCloseOrOpenRequestCallback } from '../../../hooks/useCloseOrOpenRequestCallback';
+import Content from '../Content';
+import Header from '../Header';
+import Footer from '../Footer';
 
 interface AnimatedGHContext {
   [key: string]: number;
@@ -46,17 +48,21 @@ const AnimatedContent = Animated.View;
 
 const Sheet: React.FC = () => {
   const panGestureOuterRef = useRef<PanGestureHandler>();
-  const keyboardContext = useContext(KeyboardContext);
+
   const {
     scrollY: innerScrollY,
     cardHeight,
     translationY,
     isInputFieldFocused,
+    isKeyboardVisible,
+    hideFooterInterpolation,
   } = useContext(ReusablePropsContext.bottomSheet);
+
   const {
     snapPointBottom: configSnapPointBottom,
     borderTopLeftRadius: configBorderTopLeftRadius,
     borderTopRightRadius: configBorderTopRightRadius,
+    testID,
     hideContentOnCardCollapse,
     hideFooterOnCardCollapse,
     outerScrollEvent,
@@ -64,10 +70,19 @@ const Sheet: React.FC = () => {
     backgroundColor,
     snapEffectDirection,
     contentComponent,
+    initializeBottomSheetAsClosed,
+    isBottomSheetInactive,
+    openBottomSheetRequest,
+    closeBottomSheetRequest,
     onLayoutRequest,
-    resetCardPosition,
   } = useContext(UserConfigurationContext);
 
+  const measureRef = useAnimatedRef<Animated.View>();
+
+  const hasCloseOrOpenRequest =
+    openBottomSheetRequest?.isEnabled || closeBottomSheetRequest?.isEnabled;
+
+  const isMounted = useSharedValue(false);
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
   const isAnimationRunning = useSharedValue(false);
@@ -75,8 +90,8 @@ const Sheet: React.FC = () => {
   const isScrollingDown = useSharedValue(false);
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
+  const isInitializedAsClosed = useSharedValue(false);
   const hideContentInterpolation = useSharedValue(0);
-  const hideFooterInterpolation = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
 
@@ -104,11 +119,11 @@ const Sheet: React.FC = () => {
     (direction?: string) => {
       'worklet';
 
-      if (keyboardContext.isKeyboardVisible.value) {
+      if (isKeyboardVisible?.value) {
         runOnJS(Keyboard.dismiss)();
       }
 
-      if (!derivedIsPanningValue.value && !keyboardContext.isKeyboardVisible.value) {
+      if (!derivedIsPanningValue.value && !isKeyboardVisible?.value) {
         onActionRequestCloseOrOpenCard({
           translationY,
           isAnimationRunning,
@@ -120,7 +135,7 @@ const Sheet: React.FC = () => {
     },
     [
       derivedIsPanningValue,
-      keyboardContext,
+      isKeyboardVisible,
       isCardCollapsed,
       isAnimationRunning,
       snapPointBottom,
@@ -133,12 +148,18 @@ const Sheet: React.FC = () => {
       if (e.nativeEvent.layout.height > 0) {
         cardHeight.value = e.nativeEvent.layout.height;
 
+        /* NOTE: This check is neccesary for having a
+        open / close request based on measureRef. */
+        if (!isMounted.value) {
+          isMounted.value = true;
+        }
+
         if (onLayoutRequest) {
           onLayoutRequest(e.nativeEvent.layout.height);
         }
       }
     },
-    [cardHeight, onLayoutRequest],
+    [cardHeight, isMounted, onLayoutRequest],
   );
 
   const gestureHandlerProps = {
@@ -215,11 +236,11 @@ const Sheet: React.FC = () => {
   useAnimatedReaction(
     () => snapEffectDirection?.value,
     (result: string | undefined, previous: string | null | undefined) => {
-      if (result !== previous && (result === 'up' || result === 'down')) {
+      if (!isBottomSheetInactive && result !== previous && (result === 'up' || result === 'down')) {
         actionRequestCloseOrOpenCard(result);
       }
     },
-    [snapEffectDirection],
+    [snapEffectDirection, isBottomSheetInactive],
   );
 
   useAnimatedReaction(
@@ -265,38 +286,60 @@ const Sheet: React.FC = () => {
     return {};
   }, [hideContentInterpolation]);
 
-  useEffect(() => {
-    if (resetCardPosition && isCardCollapsed.value) {
-      snapEffectDirection.value = '';
-      resetCardPosition(actionRequestCloseOrOpenCard);
-    }
-  }, [isCardCollapsed, snapEffectDirection, resetCardPosition, actionRequestCloseOrOpenCard]);
+  /* NOTE: Handler for closing BottomSheet on initialization */
+  useAnimatedReaction(
+    () => snapPointBottom.value,
+    (result: number, previous: number | null | undefined) => {
+      if (result !== previous && initializeBottomSheetAsClosed && !isInitializedAsClosed.value) {
+        onInitializationCloseRequest({
+          isCardCollapsed,
+          isAnimationRunning,
+          isInitializedAsClosed,
+          snapEffectDirection,
+          translationY,
+          snapPointBottom,
+        });
+      }
+    },
+    [snapPointBottom, initializeBottomSheetAsClosed],
+  );
+
+  /* NOTE: Handler for open and close request */
+  useCloseOrOpenRequestCallback({
+    hasCloseOrOpenRequest,
+    measureRef,
+    isMounted,
+    isCardCollapsed,
+    isAnimationRunning,
+  });
 
   return (
     <>
-      <View pointerEvents="box-none">
-        <Animated.View onLayout={onLayout} style={panGestureStyle}>
-          <PanGestureHandler ref={panGestureOuterRef} onGestureEvent={gestureHandlerHeader}>
+      <View testID={testID} pointerEvents="box-none">
+        <Animated.View ref={measureRef} onLayout={onLayout} style={panGestureStyle}>
+          <PanGestureHandler
+            enabled={!isBottomSheetInactive}
+            ref={panGestureOuterRef}
+            onGestureEvent={gestureHandlerHeader}
+          >
             <Animated.View>
               <Header
                 scrollY={outerScrollEvent?.scrollY}
                 snapPointBottom={snapPointBottom}
-                onPress={actionRequestCloseOrOpenCard}
+                onPress={(): void | undefined =>
+                  isBottomSheetInactive ? undefined : actionRequestCloseOrOpenCard()
+                }
               />
             </Animated.View>
           </PanGestureHandler>
           <AnimatedContent style={animatedContentStyle}>
-            <Content
-              gestureHandler={gestureHandlerContent}
-              isScrollingCard={isScrollingCard}
-              isInputFieldFocused={isInputFieldFocused}
-            >
+            <Content gestureHandler={gestureHandlerContent} isScrollingCard={isScrollingCard}>
               {contentComponent}
             </Content>
           </AnimatedContent>
         </Animated.View>
       </View>
-      <Footer hideFooterInterpolation={hideFooterInterpolation} />
+      <Footer isCardCollapsed={isCardCollapsed} />
     </>
   );
 };
