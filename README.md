@@ -58,8 +58,7 @@ Or fork the react-native-reanimated and integrate my solution noticed in the lin
 
   ## Current progress
 
-- [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Secondly it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```<InputField />```. Multiple examples can be found in the project Example folder.
-- [x] InputField. This is a component that is connected to the above ScrollViewKeyboardAvoid. When focused and the minimum requirements for ScrollViewKeyboardAvoid is met, then a smooth scroll-to-focused-input field event will trigger.
+- [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Secondly it changes the height of the content container so a nice scroll-to-focused-input gets triggered. Works out of the box. Where animations happens automatically on the native side. Multiple examples can be found in the project Example folder. Remember on Android you might need to change the keyboardAdjust settings so it works the same way as on iOS. I have examples from work on how to easily manipulate the android keyboardAdjust settings - just ping me.
 - [x] BottomSheet
   - [x] Static event: When background content is not scrollable then the background content should not be snappable
   - [x] Scroll arrows that appear / dissapear
