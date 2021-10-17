@@ -4,6 +4,6 @@ import ScrollViewKeyboardAvoidExample from './components/Examples/ScrollViewKeyb
 import IPadRotationExmaple from './components/Examples/IPadRotationExample';
 import NoHardRerenderingEffect from './components/Examples/NoHardRerenderingEffect';
 
-const App: React.FC = () => <NoHardRerenderingEffect />;
+const App: React.FC = () => <ScrollViewKeyboardAvoidExample />;
 
 export default App;
