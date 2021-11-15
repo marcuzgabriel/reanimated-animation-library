@@ -3,7 +3,12 @@ import ScrollViewWithSnapEffect from './components/Examples/ScrollViewWithSnapEf
 import ScrollViewKeyboardAvoidExample from './components/Examples/ScrollViewKeyboardAvoidExample';
 import IPadRotationExmaple from './components/Examples/IPadRotationExample';
 import NoHardRerenderingEffect from './components/Examples/NoHardRerenderingEffect';
+import 'setimmediate';
 
-const App: React.FC = () => <ScrollViewKeyboardAvoidExample />;
+if (!global.setImmediate) {
+  global.setImmediate = setTimeout as any;
+}
+
+const App: React.FC = () => <ScrollViewWithSnapEffect />;
 
 export default App;

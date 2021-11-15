@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { LayoutChangeEvent, ViewStyle, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
+  AnimatedStyleProp,
   useAnimatedStyle,
   useAnimatedScrollHandler,
   useSharedValue,
@@ -69,7 +70,7 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
   });
 
   const animatedStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> => ({
+    (): AnimatedStyleProp<ViewStyle> => ({
       flex: isWeb ? 1 : 0,
       transform: [
         {

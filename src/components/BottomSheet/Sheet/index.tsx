@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useContext, useCallback } from 'react';
 import styled from 'styled-components/native';
 import Animated, {
+  AnimatedStyleProp,
   useSharedValue,
   useAnimatedStyle,
   useAnimatedReaction,
@@ -264,7 +265,7 @@ const Sheet: React.FC = () => {
   );
 
   const panGestureStyle = useAnimatedStyle(
-    (): Animated.AnimatedStyleProp<ViewStyle> =>
+    (): AnimatedStyleProp<ViewStyle> =>
       getAnimatedCardStyles({
         translationY: translationY.value,
         borderTopLeftRadius,
@@ -273,7 +274,7 @@ const Sheet: React.FC = () => {
       }),
   );
 
-  const animatedContentStyle = useAnimatedStyle((): Animated.AnimatedStyleProp<ViewStyle> => {
+  const animatedContentStyle = useAnimatedStyle((): AnimatedStyleProp<ViewStyle> => {
     if (hideContentOnCardCollapse?.isEnabled) {
       return {
         opacity: interpolate(

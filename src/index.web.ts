@@ -6,7 +6,7 @@ interface WebappRootTag {
   document: Document & any /* eslint-disable-line @typescript-eslint/no-explicit-any */;
 }
 
-type GlobalType = NodeJS.Global & typeof globalThis & WebappRootTag;
+type GlobalType = typeof globalThis & WebappRootTag;
 
 const globalAny = global as GlobalType;
 const rootTag = globalAny.document.getElementById('root');
