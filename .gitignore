@@ -31,7 +31,9 @@ local.properties
 
 # node.js
 #
+coverage/
 node_modules/
+test-report.xml
 npm-debug.log
 yarn-error.log
 
@@ -60,6 +62,3 @@ buck-out/
 
 # Typescript
 lib/
-
-# Auth
-.env

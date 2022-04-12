@@ -47,7 +47,7 @@ const InputField: React.FC<Props> = props => {
     }
   };
 
-  return <TextInput onLayout={onLayout} onFocus={onFocus} {...props} />;
+  return <TextInput onLayout={onLayout} onFocus={onFocus} />;
 };
 
 export default InputField;

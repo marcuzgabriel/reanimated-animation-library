@@ -4,7 +4,7 @@
 declare module '@marcuzgabriel/reanimated-animation-library' {
   import React from 'react';
   import Animated from 'react-native-reanimated';
-  import { ScrollViewProps } from 'react-native';
+  import { ScrollViewProps as ScrollViewNativeProps } from 'react-native';
 
   export interface ScrollArrows {
     isEnabled: boolean;
@@ -26,8 +26,26 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
   export interface BottomSheetConfiguration {
     isBottomSheetInactive?: boolean;
     initializeBottomSheetAsClosed?: boolean;
-    contentResizeHeightTriggerOnFocusedInputField?: number;
-    contentResizeHeightOnFocusedInputField?: number;
+    pressableSafeAreaToContent?: number;
+    webBoxShadow?: {
+      offset: number;
+      opacity: number;
+    };
+    smoothAppearance?: {
+      waitForContent: boolean;
+      emptyContentHeight?: number;
+    };
+    contentHeightWhenKeyboardIsVisible: {
+      takeUpAllAvailableSpace?: boolean;
+      resizeHeightTrigger?: number;
+      resizeHeight?: number;
+      offset?: number;
+      closeIcon?: {
+        topOffset?: number;
+        rightOffset?: number;
+        icon: () => React.ReactNode;
+      };
+    };
     snapEffectDirection?: Animated.SharedValue<string>;
     snapPointBottom: number;
     extraOffset?: number;
@@ -50,7 +68,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     scrollArrows?: ScrollArrows;
     extraSnapPointBottomOffset?: number;
     keyboardAvoidBottomMargin?: number;
-    maxHeight?: number;
+    maxHeightRatio?: number;
     header?: {
       height?: number;
     };
@@ -58,6 +76,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       isEnabled?: boolean;
       offset?: number;
       fill?: string;
+      marginTop?: number;
     };
     fadingScrollEdges?: FadingScrollEdges;
     outerScrollEvent?: {
@@ -106,6 +125,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     translationY: Animated.SharedValue<number>;
     footerTranslationY: Animated.SharedValue<number>;
     scrollY: Animated.SharedValue<number>;
+    smoothAppearanceClock: Animated.SharedValue<number>;
     isScrollable: Animated.SharedValue<boolean>;
     isScrolledToTop: Animated.SharedValue<boolean>;
     isScrolledToEnd: Animated.SharedValue<boolean>;
@@ -141,8 +161,10 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     selectedInputFieldPositionY: Animated.SharedValue<number>;
   }
 
-  /* NOTE: main driver for all types associated with ScrollView */
-  export interface ScrollViewProps extends ScrollViewNativeProps {
+  /* NOTE: main type for all types associated with ScrollView */
+  export interface ScrollViewProps
+    extends ScrollViewNativeProps,
+      Pick<BottomSheetConfiguration, 'contentHeightWhenKeyboardIsVisible'> {
     scrollViewRef?: React.ForwardedRef<Animated.ScrollView>;
     translationYValues?: Animated.SharedValue<number>[];
     fadingScrollEdges?: FadingScrollEdges;
@@ -153,10 +175,9 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     children: React.ReactNode;
     isKeyboardAvoidDisabled?: boolean;
     keyboardAvoidBottomMargin?: number;
-    contentResizeHeightTriggerOnFocusedInputField?: number;
     connectScrollViewMeasuresToAnimationValues?: Record<
       string,
-      Animated.SharedValue<number | boolean>
+      Animated.SharedValue<number | boolean | undefined>
     >;
   }
 
@@ -180,13 +201,36 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
       | 'translationYValues'
       | 'onIsInputFieldFocusedRequest'
       | 'isKeyboardAvoidDisabled'
-      | 'contentResizeHeightTriggerOnFocusedInputField'
       | 'keyboardAvoidBottomMargin'
     > {
     contentHeight: Animated.SharedValue<number>;
     scrollViewHeight: Animated.SharedValue<number>;
     isInputFieldFocused: Animated.SharedValue<boolean>;
     children: React.ReactNode;
+  }
+
+  export interface ScrollToPositionArgs {
+    animated: boolean;
+    y?: number;
+  }
+
+  export interface ScrollToPositionFunctions {
+    scrollToEnd?: (args: ScrollToPositionArgs) => void;
+    scrollTo?: (args: ScrollToPositionArgs) => void;
+  }
+
+  export interface ScrollToProps {
+    ref?: React.ForwardedRef<Animated.ScrollView> | any;
+    to: string;
+  }
+
+  export interface SnapEffectProps {
+    children: React.ReactNode;
+    cardHeight: Animated.SharedValue<number>;
+    snapEffectDirection: Animated.SharedValue<string>;
+    isScrollableOffset?: number;
+    isStaticOffset?: number;
+    disableSnapEffect?: boolean;
   }
 
   // Helpers
@@ -197,7 +241,7 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
   export function InputField<P extends InputFieldProps>(props: P): React.ReactElement<P>;
   export function SnapEffect<P extends SnapEffectProps>(props: P): React.ReactElement<P>;
   export function ScrollViewWithSnapEffect(): React.ReactElement;
-  export function ScrollViewKeyboardAvoid<P extends ScrollViewKeyboardAvoidProps>(
+  export function ScrollViewKeyboardAvoid<P extends ScrollViewProps>(
     props: P,
   ): React.ReactElement<P>;
 }

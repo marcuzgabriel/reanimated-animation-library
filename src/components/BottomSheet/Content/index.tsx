@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useContext, useCallback } from 'react';
+import React, { useRef, useContext, useCallback } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import {
@@ -8,14 +8,14 @@ import {
   NativeViewGestureHandler,
 } from 'react-native-gesture-handler';
 import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
-import { MAX_HEIGHT_RATIO } from '../../../constants/styles';
-import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import {
+  MAX_HEIGHT_RATIO,
   DEFAULT_SCROLL_ARROWS,
   DEFAULT_FADING_SCROLL_EDGES,
   DEFAULT_CONTENT_RESIZE_HEIGHT_ON_FOCSED_INPUT_FIELD,
   DEFAULT_CONTENT_RESIZE_HEIGHT_TRIGGER_ON_FOCUSED_INPUT_FIELD,
 } from '../../../constants/styles';
+import { SCROLL_EVENT_THROTTLE, ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
 import { scrollToPosition } from '../../../helpers';
@@ -35,13 +35,14 @@ const Content: React.FC<Props> = ({ isScrollingCard, gestureHandler, children })
   const {
     fadingScrollEdges,
     scrollArrows,
-    maxHeight: configMaxHeight,
-    contentResizeHeightTriggerOnFocusedInputField,
-    contentResizeHeightOnFocusedInputField,
+    maxHeightRatio: configMaxHeightRatio,
+    contentHeightWhenKeyboardIsVisible,
   } = useContext(UserConfigurationContext);
 
   const {
+    keyboardHeight,
     contentHeight,
+    headerHeight,
     footerHeight,
     footerTranslationY,
     scrollViewRef,
@@ -53,35 +54,49 @@ const Content: React.FC<Props> = ({ isScrollingCard, gestureHandler, children })
   } = useContext(ReusablePropsContext.bottomSheet);
 
   const { isEnabled: isFadingScrollEdgeEnabled, androidFadingEdgeLength } = fadingScrollEdges ?? {};
-  const contentResizeHeightTriggerOnFocusedInputFieldSetup =
-    contentResizeHeightTriggerOnFocusedInputField ??
-    DEFAULT_CONTENT_RESIZE_HEIGHT_TRIGGER_ON_FOCUSED_INPUT_FIELD;
-  const contentResizeHeightOnFocusedInputFieldSetup =
-    contentResizeHeightOnFocusedInputField ?? DEFAULT_CONTENT_RESIZE_HEIGHT_ON_FOCSED_INPUT_FIELD;
 
-  const fadingEdgeAndroid = useMemo(
-    () => androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH,
-    [androidFadingEdgeLength],
-  );
+  const contentResizeHeightTrigger =
+    contentHeightWhenKeyboardIsVisible?.resizeHeightTrigger ??
+    DEFAULT_CONTENT_RESIZE_HEIGHT_TRIGGER_ON_FOCUSED_INPUT_FIELD;
+
+  const contentResizeHeightWhenKeyboardIsVisible =
+    contentHeightWhenKeyboardIsVisible?.resizeHeight ??
+    DEFAULT_CONTENT_RESIZE_HEIGHT_ON_FOCSED_INPUT_FIELD;
+
+  const fadingEdgeAndroid = androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH;
 
   const maxHeight = useDerivedValue(
-    () => configMaxHeight ?? (windowHeight - footerHeight.value) * MAX_HEIGHT_RATIO,
-    [footerHeight, configMaxHeight],
+    () => (windowHeight - footerHeight.value) * (configMaxHeightRatio ?? MAX_HEIGHT_RATIO),
+    [footerHeight, configMaxHeightRatio],
   );
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const derivedContentHeight = useDerivedValue(() => {
     const height = contentHeight.value > maxHeight.value ? maxHeight.value : contentHeight.value;
-    const heightWhenKeyboardIsVisible =
-      height > contentResizeHeightTriggerOnFocusedInputFieldSetup
-        ? contentResizeHeightOnFocusedInputFieldSetup
-        : height;
 
-    return {
-      marginBottom: footerHeight.value,
-      maxHeight: maxHeight.value,
-      height: isKeyboardVisible?.value ? heightWhenKeyboardIsVisible : '100%',
-    };
-  });
+    if (isKeyboardVisible.value && keyboardHeight.value > 0) {
+      if (contentHeightWhenKeyboardIsVisible?.takeUpAllAvailableSpace) {
+        const offset = contentHeightWhenKeyboardIsVisible?.offset ?? 0;
+
+        return (
+          windowHeight - keyboardHeight.value - headerHeight.value - footerHeight.value - offset
+        );
+      }
+
+      if (height > contentResizeHeightTrigger) {
+        return contentResizeHeightWhenKeyboardIsVisible;
+      } else {
+        return height;
+      }
+    }
+
+    return height;
+  }, [isKeyboardVisible, keyboardHeight]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    marginBottom: footerHeight.value,
+    maxHeight: maxHeight.value,
+    height: isKeyboardVisible?.value ? derivedContentHeight.value : '100%',
+  }));
 
   /* NOTE: This callback is created outside the ScrollViewKeyboardAvoid component
   because NativeViewGestureHandler blocks refs within its scope */
@@ -108,9 +123,6 @@ const Content: React.FC<Props> = ({ isScrollingCard, gestureHandler, children })
             ref={scrollViewRef}
             bounces={false}
             scrollTo={scrollTo}
-            contentResizeHeightTriggerOnFocusedInputField={
-              contentResizeHeightTriggerOnFocusedInputFieldSetup
-            }
             translationYValues={[translationY, footerTranslationY]}
             alwaysBounceVertical={false}
             directionalLockEnabled={true}
@@ -118,6 +130,7 @@ const Content: React.FC<Props> = ({ isScrollingCard, gestureHandler, children })
               scrollY,
               scrollViewHeight,
               contentHeight,
+              keyboardHeight,
               isKeyboardVisible,
               isInputFieldFocused,
             }}

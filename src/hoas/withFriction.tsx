@@ -41,6 +41,7 @@ export const withFriction = ({ value, initialVelocity, friction }: Props): numbe
         if (Math.abs(v) < VELOCITY_EPS) {
           return true;
         }
+
         return false;
       };
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useWindowDimensions } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useAnimatedProps } from 'react-native-reanimated';
@@ -15,9 +15,11 @@ const EDGE_OFFSET = 5;
 
 const STATIC_ARROW_WIDTH = 100;
 const STATIC_ARROW_HEIGHT = 50;
+const MARGIN_TOP = 16;
 
-const Wrapper = styled.View`
+const Wrapper = styled.View<{ marginTop?: number }>`
   position: relative;
+  margin-top: ${({ marginTop }): number => marginTop ?? MARGIN_TOP}px;
   width: 100%;
   height: 100%;
   justify-content: center;
@@ -37,9 +39,9 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
   const { morphingArrow } = useContext(UserConfigurationContext);
   const { translationY } = useContext(ReusablePropsContext.bottomSheet);
 
-  const fill = useMemo(() => morphingArrow?.fill ?? 'white', [morphingArrow?.fill]);
-  const height = useMemo(() => STATIC_ARROW_HEIGHT, []);
-  const width = useMemo(() => STATIC_ARROW_WIDTH, []);
+  const fill = morphingArrow?.fill ?? 'white';
+  const height = STATIC_ARROW_HEIGHT;
+  const width = STATIC_ARROW_WIDTH;
 
   const animatedProps = useAnimatedProps(() => {
     const startX = windowWidth / 2;
@@ -64,7 +66,7 @@ const MorphingArrow: React.FC<Props> = ({ snapPointBottom }) => {
   }, [windowWidth]);
 
   return (
-    <Wrapper>
+    <Wrapper marginTop={morphingArrow?.marginTop}>
       {morphingArrow?.isEnabled ? (
         <Svg width="100%" height="100%">
           <AnimatedPath

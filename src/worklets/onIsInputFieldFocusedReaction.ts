@@ -6,18 +6,12 @@ import type { ContextPropsKeyboard, ScrollViewProps } from '../types';
 const isIOS = Platform.OS === 'ios';
 
 interface OnIsInputFieldFocusedReactionProps
-  extends Pick<
-      ScrollViewProps,
-      | 'translationYValues'
-      | 'contentResizeHeightTriggerOnFocusedInputField'
-      | 'onIsInputFieldFocusedRequest'
-    >,
+  extends Pick<ScrollViewProps, 'translationYValues' | 'onIsInputFieldFocusedRequest'>,
     Pick<ContextPropsKeyboard, 'isKeyboardVisible'> {
   keyboardHeight: Animated.SharedValue<number>;
   keyboardDuration: Animated.SharedValue<number>;
   isFocusInputFieldAnimationRunning: Animated.SharedValue<boolean>;
   isInputFieldFocused: Animated.SharedValue<boolean>;
-  contentHeight: Animated.SharedValue<number>;
 }
 
 export const onIsInputFieldFocusedReaction = ({

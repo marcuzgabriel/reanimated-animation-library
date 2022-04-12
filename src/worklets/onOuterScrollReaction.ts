@@ -38,7 +38,7 @@ export const onOuterScrollReaction = ({
   const autoScrollTriggerLength =
     outerScrollEvent?.autoScrollTriggerLength ?? DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM;
 
-  if (previous && result !== previous) {
+  if (typeof previous === 'number' && result !== previous) {
     isScrollingDown.value = result > previous;
     isScrollingUp.value = result < previous;
 

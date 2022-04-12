@@ -3,6 +3,7 @@ import { useWindowDimensions, Platform } from 'react-native';
 import Animated, { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import Content from './components/Content';
+import Footer from './components/Footer';
 import SnapEffect from '../SnapEffect';
 import ScrollViewKeyboardAvoid from '../../components/ScrollViewKeyboardAvoid';
 import { SCROLL_EVENT_THROTTLE } from '../../constants/configs';
@@ -85,6 +86,16 @@ const Text = styled.Text<{ color?: string }>`
   text-align: center;
 `;
 
+const CloseIcon = styled.View`
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  height: 50px;
+  width: 50px;
+  background-color: white;
+  border: 1px solid white;
+`;
+
 const NoHardRerenderingEffect: React.FC = () => {
   const [screenObject, setScreenObject] = useState(screenObjectData);
   const { currentScreen, screens } = screenObject;
@@ -164,7 +175,20 @@ const NoHardRerenderingEffect: React.FC = () => {
             cb();
           },
         }}
-        contentResizeHeightTriggerOnFocusedInputField={200}
+        contentHeightWhenKeyboardIsVisible={{
+          takeUpAllAvailableSpace: true,
+          resizeHeightTrigger: 270,
+          resizeHeight: 200,
+          closeIcon: {
+            topOffset: 60,
+            rightOffset: 20,
+            icon: (): React.ReactNode => (
+              <CloseIcon>
+                <Text>Close btn</Text>
+              </CloseIcon>
+            ),
+          },
+        }}
         outerScrollEvent={{
           scrollY,
           autoScrollTriggerLength: 16,
@@ -185,6 +209,7 @@ const NoHardRerenderingEffect: React.FC = () => {
         onLayoutRequest={(height: number): void => {
           cardHeight.value = height;
         }}
+        footerComponent={<Footer />}
         contentComponent={screens[currentScreen]?.content}
       />
     </Wrapper>

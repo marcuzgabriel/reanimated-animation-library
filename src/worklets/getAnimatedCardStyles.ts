@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 import { AnimatedStyleProp } from 'react-native-reanimated';
-import { DEFAULT_BACKGROUND_COLOR } from '../constants/styles';
 
 /* Borders will always be defined either by user config or
 default based on the provider. The interface concerning
@@ -9,7 +8,7 @@ interface Props {
   translationY: number;
   borderTopRightRadius: number;
   borderTopLeftRadius: number;
-  backgroundColor?: string;
+  backgroundColor: string;
 }
 
 export const getAnimatedCardStyles = ({
@@ -28,12 +27,12 @@ export const getAnimatedCardStyles = ({
         borderTopRightRadius,
         borderTopLeftRadius,
         bottom: 0,
-        backgroundColor: backgroundColor ?? DEFAULT_BACKGROUND_COLOR,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 5,
         transform: [{ translateY: translationY }],
+        backgroundColor,
       }
     : {
         position: 'absolute',
@@ -42,8 +41,8 @@ export const getAnimatedCardStyles = ({
         bottom: 0,
         borderTopRightRadius,
         borderTopLeftRadius,
-        backgroundColor: backgroundColor ?? DEFAULT_BACKGROUND_COLOR,
         elevation: 10,
         transform: [{ translateY: translationY }],
+        backgroundColor,
       };
 };

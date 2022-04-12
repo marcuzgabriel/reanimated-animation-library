@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -59,13 +59,10 @@ const ScrollArrow: React.FC<ScrollArrowProps> = props => {
   const animatedValueIsPositionedTop = useSharedValue(isPositionedTop);
   const isScrolling = useSharedValue(false);
 
-  const arrowFill = useMemo(() => fill ?? SCROLL_ARROW_FILL, [fill]);
-  const arrowDimensions = useMemo(() => dimensions ?? SCROLL_ARROW_DIMENSIONS, [dimensions]);
-  const arrowTopOffset = useMemo(() => topArrowOffset ?? SCROLL_ARROW_OFFSET, [topArrowOffset]);
-  const arrowBottomOffset = useMemo(
-    () => bottomArrowOffset ?? SCROLL_ARROW_OFFSET,
-    [bottomArrowOffset],
-  );
+  const arrowFill = fill ?? SCROLL_ARROW_FILL;
+  const arrowDimensions = dimensions ?? SCROLL_ARROW_DIMENSIONS;
+  const arrowTopOffset = topArrowOffset ?? SCROLL_ARROW_OFFSET;
+  const arrowBottomOffset = bottomArrowOffset ?? SCROLL_ARROW_OFFSET;
 
   const scrollArrowLeftRatio = useDerivedValue(() => {
     const centerAlignedScrollArrowRatio = arrowDimensions / 2;

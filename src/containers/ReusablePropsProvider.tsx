@@ -1,6 +1,6 @@
 import React, { createContext } from 'react';
 import Animated, { useSharedValue, useAnimatedRef } from 'react-native-reanimated';
-import { ContextPropsBottomSheet, ContextPropsScrollViewKeyboardAvoid } from '../types';
+import type { ContextPropsBottomSheet, ContextPropsScrollViewKeyboardAvoid } from '../types';
 
 export const ReusablePropsContext = {
   bottomSheet: createContext({} as ContextPropsBottomSheet),
@@ -23,6 +23,7 @@ const ReusablePropsProvider: React.FC<Props> = ({ contextName, children }) => {
     contentHeight: useSharedValue(0),
     cardHeight: useSharedValue(0),
     hideFooterInterpolation: useSharedValue(0),
+    keyboardHeight: useSharedValue(0),
     scrollViewRef: useAnimatedRef<Animated.ScrollView>(),
     scrollViewHeight: useSharedValue(0),
     scrollViewWidth: useSharedValue(0),
@@ -30,6 +31,7 @@ const ReusablePropsProvider: React.FC<Props> = ({ contextName, children }) => {
     translationY: useSharedValue(0),
     footerTranslationY: useSharedValue(0),
     scrollY: useSharedValue(0),
+    smoothAppearanceClock: useSharedValue(0),
     isScrollable: useSharedValue(false),
     isScrolledToTop: useSharedValue(false),
     isScrolledToEnd: useSharedValue(false),

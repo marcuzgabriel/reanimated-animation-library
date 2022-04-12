@@ -7,6 +7,13 @@ interface Props {
   prevDragY: Animated.SharedValue<number>;
   dragY: Animated.SharedValue<number>;
   snapEffectDirection: Animated.SharedValue<string>;
+  friction?: number;
+}
+
+interface ReturnFunctionTypes {
+  onStart: (_: Record<string, number>, ctx: Record<string, number>) => void;
+  onActive: (event: Record<string, number>, ctx: Record<string, number>) => void;
+  onEnd: () => void;
 }
 
 export const onGestureHandlerSnapEffect = ({
@@ -14,22 +21,24 @@ export const onGestureHandlerSnapEffect = ({
   prevDragY,
   dragY,
   snapEffectDirection,
-}: Props): Record<string, unknown> => ({
-  onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {
+  friction = 0.1,
+}: Props): ReturnFunctionTypes => ({
+  onStart: (_, ctx): void => {
     'worklet';
 
     ctx.startY = translationY.value;
   },
-  onActive: (event: Record<string, number>, ctx: Record<string, number>): void => {
+  onActive: (event, ctx): void => {
     'worklet';
 
     prevDragY.value = translationY.value;
     dragY.value = ctx.startY + event.translationY;
     snapEffectDirection.value = event.translationY > 0 ? 'down' : 'up';
+
     translationY.value = withFriction({
       value: dragY.value,
       initialVelocity: event.velocityY,
-      friction: 0.1,
+      friction,
     });
   },
   onEnd: (): void => {

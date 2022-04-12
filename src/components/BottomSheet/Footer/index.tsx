@@ -1,46 +1,23 @@
 import React, { useCallback, useContext } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import styled from 'styled-components/native';
 import Animated, { useAnimatedStyle, interpolate, useDerivedValue } from 'react-native-reanimated';
-import {
-  EXTRA_MARGIN_WRAPPER_HEIGHT,
-  DEFAULT_CONTENT_RESIZE_HEIGHT_TRIGGER_ON_FOCUSED_INPUT_FIELD,
-} from '../../../constants/styles';
 import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
+import SmoothAppearance from '../SmoothAppearance';
 
 interface Props {
   isCardCollapsed: Animated.SharedValue<boolean>;
 }
 
-const ComponentWhenUndefined = styled.View`
-  height: 100px;
-  width: 100%;
-  background: black;
-  justify-content: center;
-  align-items: center;
-`;
-
-const TextWhenUndefined = styled.Text`
-  color: white;
-`;
-
-const ExtraMarginWrapper = Animated.View;
 const Parentwrapper = Animated.View;
 const ChildWrapper = Animated.View;
 
 const Footer: React.FC<Props> = ({ isCardCollapsed }) => {
-  const {
-    footerComponent,
-    extraSnapPointBottomOffset,
-    hideFooterOnCardCollapse,
-    header,
-    contentResizeHeightTriggerOnFocusedInputField,
-  } = useContext(UserConfigurationContext);
+  const { footerComponent, extraSnapPointBottomOffset, hideFooterOnCardCollapse, header } =
+    useContext(UserConfigurationContext);
 
   const {
-    contentHeight,
     cardHeight,
     headerHeight: headerHeightLayout,
     hideFooterInterpolation,
@@ -54,14 +31,6 @@ const Footer: React.FC<Props> = ({ isCardCollapsed }) => {
     () => header?.height ?? headerHeightLayout.value,
     [headerHeightLayout, header],
   );
-
-  const hasExtraMargin = useDerivedValue(() => {
-    const defaultContentResizeHeightTriggerOnFocusedInputField =
-      contentResizeHeightTriggerOnFocusedInputField ??
-      DEFAULT_CONTENT_RESIZE_HEIGHT_TRIGGER_ON_FOCUSED_INPUT_FIELD;
-
-    return contentHeight.value >= defaultContentResizeHeightTriggerOnFocusedInputField;
-  }, [contentHeight, contentResizeHeightTriggerOnFocusedInputField]);
 
   const derivedFooterTranslationY = useDerivedValue(() => {
     const areAllLayoutsCalculated =
@@ -111,13 +80,6 @@ const Footer: React.FC<Props> = ({ isCardCollapsed }) => {
         : 1,
   }));
 
-  const animatedStyleExtraMarginWrapper = useAnimatedStyle(() => ({
-    display: isKeyboardVisible?.value && hasExtraMargin.value ? 'flex' : 'none',
-    backgroundColor: 'transparent',
-    height: EXTRA_MARGIN_WRAPPER_HEIGHT,
-    width: '100%',
-  }));
-
   const onLayout = useCallback(
     (e: LayoutChangeEvent): void => {
       if (e.nativeEvent.layout.height > 0) {
@@ -129,14 +91,9 @@ const Footer: React.FC<Props> = ({ isCardCollapsed }) => {
 
   return (
     <Parentwrapper onLayout={onLayout} style={animatedParentStyle}>
-      <ChildWrapper style={animatedChildStyle}>
-        <ExtraMarginWrapper style={animatedStyleExtraMarginWrapper} />
-        {footerComponent ?? (
-          <ComponentWhenUndefined>
-            <TextWhenUndefined>Footer component</TextWhenUndefined>
-          </ComponentWhenUndefined>
-        )}
-      </ChildWrapper>
+      <SmoothAppearance>
+        <ChildWrapper style={animatedChildStyle}>{footerComponent}</ChildWrapper>
+      </SmoothAppearance>
     </Parentwrapper>
   );
 };
