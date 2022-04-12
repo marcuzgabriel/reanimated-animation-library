@@ -1,7 +1,7 @@
-import React, { useMemo, useRef, useContext, useCallback } from 'react';
+import React, { useRef, useContext, useCallback } from 'react';
+import { LayoutChangeEvent, Keyboard } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
-  AnimatedStyleProp,
   useSharedValue,
   useAnimatedStyle,
   useAnimatedReaction,
@@ -11,17 +11,20 @@ import Animated, {
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
-import { LayoutChangeEvent, ViewStyle, Keyboard } from 'react-native';
-import { PanGestureHandlerGestureEvent, PanGestureHandler } from 'react-native-gesture-handler';
+import {
+  PanGestureHandlerGestureEvent,
+  PanGestureHandler,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import { DEFAULT_BORDER_RADIUS } from '../../../constants/styles';
 import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import {
+  getAnimatedCardStyles,
   onInitializationCloseRequest,
   onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
-  getAnimatedCardStyles,
   onGestureHandlerCard,
-  onSnapHideContentOrFooterReaction,
+  onGestureHideContentOrFooterReaction,
 } from '../../../worklets';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
@@ -29,6 +32,7 @@ import { useCloseOrOpenRequestCallback } from '../../../hooks/useCloseOrOpenRequ
 import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
+import SmoothAppearance from '../SmoothAppearance';
 
 interface AnimatedGHContext {
   [key: string]: number;
@@ -57,6 +61,7 @@ const Sheet: React.FC = () => {
     isInputFieldFocused,
     isKeyboardVisible,
     hideFooterInterpolation,
+    smoothAppearanceClock,
   } = useContext(ReusablePropsContext.bottomSheet);
 
   const {
@@ -64,6 +69,7 @@ const Sheet: React.FC = () => {
     borderTopLeftRadius: configBorderTopLeftRadius,
     borderTopRightRadius: configBorderTopRightRadius,
     testID,
+    smoothAppearance,
     hideContentOnCardCollapse,
     hideFooterOnCardCollapse,
     outerScrollEvent,
@@ -96,15 +102,11 @@ const Sheet: React.FC = () => {
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
 
-  const borderTopLeftRadius = useMemo(
-    () => configBorderTopLeftRadius ?? DEFAULT_BORDER_RADIUS,
-    [configBorderTopLeftRadius],
-  );
-
-  const borderTopRightRadius = useMemo(
-    () => configBorderTopRightRadius ?? DEFAULT_BORDER_RADIUS,
-    [configBorderTopRightRadius],
-  );
+  const borderTopLeftRadius = configBorderTopLeftRadius ?? DEFAULT_BORDER_RADIUS;
+  const borderTopRightRadius = configBorderTopRightRadius ?? DEFAULT_BORDER_RADIUS;
+  const derivedBackgroundColor = backgroundColor ?? 'lightgrey';
+  const hasSmoothAppearance = typeof smoothAppearance?.waitForContent === 'boolean';
+  const { emptyContentHeight } = smoothAppearance ?? {};
 
   const snapPointBottom = useDerivedValue(() => {
     const extraSnapPointOffset = extraSnapPointBottomOffset ?? 0;
@@ -217,7 +219,7 @@ const Sheet: React.FC = () => {
         const hideContentOffset = hideContentOnCardCollapse?.offset ?? 0;
         const hideFooterOffset = hideFooterOnCardCollapse?.offset ?? 0;
 
-        onSnapHideContentOrFooterReaction({
+        onGestureHideContentOrFooterReaction({
           result,
           snapPointBottom,
           hideContentInterpolation,
@@ -264,29 +266,6 @@ const Sheet: React.FC = () => {
     [outerScrollEvent],
   );
 
-  const panGestureStyle = useAnimatedStyle(
-    (): AnimatedStyleProp<ViewStyle> =>
-      getAnimatedCardStyles({
-        translationY: translationY.value,
-        borderTopLeftRadius,
-        borderTopRightRadius,
-        backgroundColor,
-      }),
-  );
-
-  const animatedContentStyle = useAnimatedStyle((): AnimatedStyleProp<ViewStyle> => {
-    if (hideContentOnCardCollapse?.isEnabled) {
-      return {
-        opacity: interpolate(
-          hideContentInterpolation.value,
-          [0, HIDE_CONTENT_OUTPUT_RANGE],
-          [1, 0],
-        ),
-      };
-    }
-    return {};
-  }, [hideContentInterpolation]);
-
   /* NOTE: Handler for closing BottomSheet on initialization */
   useAnimatedReaction(
     () => snapPointBottom.value,
@@ -305,6 +284,38 @@ const Sheet: React.FC = () => {
     [snapPointBottom, initializeBottomSheetAsClosed],
   );
 
+  const animatedBottomSheetStyle = useAnimatedStyle(() =>
+    getAnimatedCardStyles({
+      translationY: hasSmoothAppearance
+        ? interpolate(
+            smoothAppearanceClock.value,
+            [0, 20],
+            [emptyContentHeight ?? 0, translationY.value],
+          )
+        : translationY.value,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+      backgroundColor: derivedBackgroundColor,
+    }),
+  );
+
+  const animatedStyleHeader = useAnimatedStyle(() => ({
+    zIndex: 1,
+  }));
+
+  const animatedContentStyle = useAnimatedStyle(() => {
+    if (hideContentOnCardCollapse?.isEnabled) {
+      return {
+        opacity: interpolate(
+          hideContentInterpolation.value,
+          [0, HIDE_CONTENT_OUTPUT_RANGE],
+          [1, 0],
+        ),
+      };
+    }
+    return {};
+  }, [hideContentInterpolation]);
+
   /* NOTE: Handler for open and close request */
   useCloseOrOpenRequestCallback({
     hasCloseOrOpenRequest,
@@ -317,27 +328,31 @@ const Sheet: React.FC = () => {
   return (
     <>
       <View testID={testID} pointerEvents="box-none">
-        <Animated.View ref={measureRef} onLayout={onLayout} style={panGestureStyle}>
-          <PanGestureHandler
-            enabled={!isBottomSheetInactive}
-            ref={panGestureOuterRef}
-            onGestureEvent={gestureHandlerHeader}
-          >
-            <Animated.View>
-              <Header
-                scrollY={outerScrollEvent?.scrollY}
-                snapPointBottom={snapPointBottom}
-                onPress={(): void | undefined =>
-                  isBottomSheetInactive ? undefined : actionRequestCloseOrOpenCard()
-                }
-              />
-            </Animated.View>
-          </PanGestureHandler>
-          <AnimatedContent style={animatedContentStyle}>
-            <Content gestureHandler={gestureHandlerContent} isScrollingCard={isScrollingCard}>
-              {contentComponent}
-            </Content>
-          </AnimatedContent>
+        <Animated.View ref={measureRef} onLayout={onLayout} style={animatedBottomSheetStyle}>
+          <SmoothAppearance>
+            <GestureHandlerRootView>
+              <PanGestureHandler
+                enabled={!isBottomSheetInactive}
+                ref={panGestureOuterRef}
+                onGestureEvent={gestureHandlerHeader}
+              >
+                <Animated.View style={animatedStyleHeader}>
+                  <Header
+                    scrollY={outerScrollEvent?.scrollY}
+                    snapPointBottom={snapPointBottom}
+                    onPress={(): void | undefined =>
+                      isBottomSheetInactive ? undefined : actionRequestCloseOrOpenCard()
+                    }
+                  />
+                </Animated.View>
+              </PanGestureHandler>
+              <AnimatedContent style={animatedContentStyle}>
+                <Content gestureHandler={gestureHandlerContent} isScrollingCard={isScrollingCard}>
+                  {contentComponent}
+                </Content>
+              </AnimatedContent>
+            </GestureHandlerRootView>
+          </SmoothAppearance>
         </Animated.View>
       </View>
       <Footer isCardCollapsed={isCardCollapsed} />

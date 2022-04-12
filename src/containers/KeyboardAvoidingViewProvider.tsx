@@ -10,7 +10,6 @@ export const { Provider } = KeyboardAvoidingViewContext;
 const KeyboardAvoidingViewProvider: React.FC<KeyboardAvoidingViewProviderProps> = ({
   contentHeight,
   keyboardAvoidBottomMargin,
-  contentResizeHeightTriggerOnFocusedInputField,
   translationYValues,
   isFocusInputFieldAnimationRunning,
   isInputFieldFocused,
@@ -40,11 +39,9 @@ const KeyboardAvoidingViewProvider: React.FC<KeyboardAvoidingViewProviderProps> 
           isKeyboardVisible,
           isInputFieldFocused,
           isFocusInputFieldAnimationRunning,
-          contentResizeHeightTriggerOnFocusedInputField,
           translationYValues,
           keyboardHeight,
           keyboardDuration,
-          contentHeight,
           onIsInputFieldFocusedRequest,
         });
       }

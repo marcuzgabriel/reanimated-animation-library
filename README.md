@@ -1,61 +1,63 @@
 ![TypeScript](https://badges.aleen42.com/src/typescript.svg)![React](https://badges.aleen42.com/src/react.svg)![Javascript](https://badges.aleen42.com/src/javascript.svg)
 
-# [WIP] Reanimated-animation-library
-This library provides some nice animation features with the latest reanimated 2+ (hooks) approach. The library is suitable for all platforms: Web, Android and iOS. Maximum performance is achieved by using animation reactions and eliminating useState events. This library consists of a BottomSheet, an Appear animation, a Slider and a Morphing SVG Graph component.
-
-An example of the BottomSheet can be found here: https://marcuzgabriel.github.io/reanimated-bottom-sheet/
+## Reanimated-animation-library with react-native-reanimated, react-native-gesture-handler and react-native-redash
+This library provide multiple components but most importantly the BottomSheet. The BottomSheet is highly customizable. Visit the homepage for example: https://marcuzgabriel.github.io/reanimated-bottom-sheet/
 
 <details>
   <summary>Gifs</summary>
 
   ## BottomSheet
-![Alt Text](https://media.giphy.com/media/Ik9LNWjdCMrvGg5ToJ/giphy.gif)
-![Alt Text](https://media.giphy.com/media/HF6U0tvtuE7UQra27j/giphy.gif)
-![Alt Text](https://media.giphy.com/media/z386AcY2dPdthZLJKz/giphy.gif)
+  ![Alt Text](https://media.giphy.com/media/Ik9LNWjdCMrvGg5ToJ/giphy.gif)
+  ![Alt Text](https://media.giphy.com/media/HF6U0tvtuE7UQra27j/giphy.gif)
+  ![Alt Text](https://media.giphy.com/media/z386AcY2dPdthZLJKz/giphy.gif)
 </details>
 <details>
   <summary>Props</summary>
 
   ## BottomSheet
-
-  | Prop | Type | Description |
-| :--- | :---: | :---:|
-  | isBottomSheetInactive | boolean | Set the bottom to an inactive state. Can be used for async handling og UX requirements
-  | initializeBottomSheetAsClosed | boolean | In some cases it might be relevant to show the background content before showing the bottomSheet
-  | contentResizeHeightTriggerOnFocusedInputField | number | At which content height should a resize in content height occour when the input field is focused?
-  | contentResizeHeightOnFocusedInputField | number | If contentResizeHeightTriggerOnFocusedInputField is met what should be the new content height size when input field is focused?
-  | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information
-  | snapPointBottom* | number | This prop is required for the BottomSheet to work
-  | extraOffset | number | If you need some extra offset when it comes to the panning event hitting the footer
-  | borderTopRightRadius and borderTopLeftRadius | number | Sets the border top radius'
-  | backgroundColor | string | Sets the background color
-  | contentComponent | node | Content component
-  | footerComponent | node | Footer component
-  | headerComponent | node | Header component
-  | hideFooterOnCardCollapse | object | { isEnabled: boolean, offset: number }
-  | hideContentOnCardCollapse | object | { isEnabled: boolean, offset: number }
-  | scrollArrowTopComponent (currently disabled) | node | Scroll arrow top component
-  | scrollArrowBottomComponent (currently disabled) | node | Scroll arrow bottom component
-  | scrollArrows = { isEnabled: boolean, fill: string, dimensions: number, topArrowOffset: number, bottomArrowOffset: number } | object | When there is no scrollArrowBottom- or top component then this object can be used for styling the scroll arrows.
-  | extraSnapPointBottomOffset | number | Minor differences occours depending on the Platform. This prop helps to get the perfect snap point on all platforms
-  | keyboardAvoidBottomMargin (currently disabled) | number | An extra margin wrapper is implemented instead. The prop was used to create extra spacings when an input field is focused
-  | maxHeight | number | max height of the bottom sheet
-  | header = { height: number } | object | If there is no header component then this object can be used to style the header
-  | morphingArrow = { isEnabled: boolean, offset: number, fill: string } | object | As there currently is a bug on web when interpolating SVG's with reanimated, then the morphing arrow can be disabled for specific platforms using this prop
-  | fadingScrollEdges = { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: { from: string to: string}, webBackgroundColorBottom: { from: string, to: string } | object | This prop ensures that there is a scrolling edge when the content is scrollable
-  | outerScrollEvent = { isEnabled?: boolean, scrollY?: Animated.SharedValue<number>, autoScrollTriggerLength?: number } | object | Connect an outer scrolling event that the bottom sheet should react to
-  | testID | string | add testID to the bottomSheet
-  | openBottomSheetRequest & closeBottomSheetRequest | { isEnabled: boolean; callback: ((cb) => void) => void } | Custom trigger functions to make the bottom sheet go to bottom or top
-  | getCurrentConfigRequest(config) | function with callback | This function will provide the current configuration
-  | onLayoutRequest(cardHeight) | function with callback | In some use cases the card height of the BottomSheet might become useful
-
+  | Prop | Type | Description | is required |
+  | :--- | :---: | :---:| :---: |
+  | backgroundColor | string | Sets the background color | false
+  | borderTopLeftRadius | number | Sets the border top left radius | false
+  | borderTopRightRadius | number | Sets the border top right radius | false
+  | closeBottomSheetRequest | object: { isEnabled: boolean; callback: ((cb) => void) => void } | Custom trigger function to make the bottom sheet go to bottom onPress | false
+  | contentComponent | node | Content component | true
+  | contentHeightWhenKeyboardIsVisible | object: { takeUpAllAvailableSpace?: boolean; resizeHeightTrigger?: number; resizeHeight?: number; offset?: number, closeIcon?: { topOffset?: number, rightOffset?: number, icon: () => React.ReactNode }} | manipulate the content height when keyboard is visible and add a close icon | false
+  | extraOffset | number | If you need some extra offset when it comes to the panning event hitting the footer | false
+  | extraSnapPointBottomOffset | number | Minor differences occours depending on the Platform. This prop helps to get the perfect snap point on all platforms | false
+  | fadingScrollEdges | object: { isEnabled: boolean, androidFadingEdgeLength: number, iOSAndWebFadingEdgeHeight: number, nativeBackgroundColor: string, webBackgroundColorTop: { from: string to: string}, webBackgroundColorBottom: { from: string, to: string } | This prop ensures that there is a scrolling edge when the content is scrollable | false
+  | footerComponent | node | Footer component | false
+  | getCurrentConfigRequest | function with callback | This function will provide the current configuration | false
+  | header | object: { height: number } | If there is no header component then this object can be used to style the header | false
+  | headerComponent | node | Header component | false
+  | hideContentOnCardCollapse | object: { isEnabled: boolean, offset: number } | Hides content when gesturing down | false
+  | hideFooterOnCardCollapse | object: { isEnabled: boolean, offset: number } | Hides footer when gesturing down | false
+  | initializeBottomSheetAsClosed | boolean | In some cases it might be relevant to show the background content before showing the bottomSheet | false
+  | isBottomSheetInactive | boolean | Set the bottom to an inactive state. Can be used for async handling og UX requirements | false
+  | keyboardAvoidBottomMargin (currently disabled) | number | An extra margin wrapper is implemented instead. The prop was used to create extra spacings when an input field is focused | false
+  | maxHeightRatio | float | max height of the bottom sheet in 0.1 - 0.9 ratio | false
+  | morphingArrow | object: { isEnabled: boolean, offset: number, fill: string } | As there currently is a bug on web when interpolating SVG's with reanimated, then the morphing arrow can be disabled for specific platforms using this prop | false
+  | offsetAddition | number | Used to have extra offset for the snap effect | false
+  | onLayoutRequest | function with callback | In some cases the card height of the BottomSheet might come in handy. This prop returns the height | false
+  | openBottomSheetRequest | object: { isEnabled: boolean; callback: ((cb) => void) => void } | Custom trigger functions to make the bottom sheet go to top | false
+  | outerScrollEvent | object: { isEnabled?: boolean, scrollY?: Animated.SharedValue<number>, autoScrollTriggerLength?: number } | Connect an outer scrolling event that the bottom sheet should react to | false
+  | pressableSafeAreaToContent | number | Stronger handling for controlling safe area to content so a press event on the BottomSheet do not interfer with the content within the BottomSheet | false
+  | scrollArrowBottomComponent (currently disabled) | node | Scroll arrow bottom component | false
+  | scrollArrows | object: { isEnabled: boolean, fill: string, dimensions: number, topArrowOffset: number, bottomArrowOffset: number } | When there is no scrollArrowBottom- or top component then this object can be used for styling the scroll arrows. | false
+  | scrollArrowTopComponent (currently disabled) | node | Scroll arrow top component | false
+  | smoothAppearance | object: { waitForContent: boolean, emptyContentHeight?: number } | Ensures a smooth appearance animation of the BottomSheet to eliminate flickering | false
+  | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information | false
+  | snapPointBottom | number | This prop is required for the BottomSheet to work | true
+  | testID | string | add testID to the bottomSheet | false
+  | webBoxShadow | object: { offset: number; opacity: number } | Set a box shadow for web | false
 </details>
 <details>
   <summary>Progress</summary>
 
   ## Current progress
 
-- [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Secondly it changes the height of the content container so a nice scroll-to-focused-input gets triggered. Works out of the box. Where animations happens automatically on the native side. Multiple examples can be found in the project Example folder. Remember on Android you might need to change the keyboardAdjust settings so it works the same way as on iOS. I have examples from work on how to easily manipulate the android keyboardAdjust settings - just ping me.
+- [x] ScrollViewKeyboardAvoid. Personally I have had troubles using the KeyboardAvoidView from react-native where I am limited to only use one behaviour. This approach uses two behaviours at the same time with reanimated. First it manipulates the translationY position so the content container floats above the keyboard. Secondly it changes the height of the content container so a nice scroll-to-focused-input gets triggered. A minimum requirement for this approach to work is to use this library's ```<InputField />```. Multiple examples can be found in the project Example folder.
+- [x] InputField. This is a component that is connected to the above ScrollViewKeyboardAvoid. When focused and the minimum requirements for ScrollViewKeyboardAvoid is met, then a smooth scroll-to-focused-input field event will trigger.
 - [x] BottomSheet
   - [x] Static event: When background content is not scrollable then the background content should not be snappable
   - [x] Scroll arrows that appear / dissapear
@@ -76,6 +78,12 @@ An example of the BottomSheet can be found here: https://marcuzgabriel.github.io
 - [ ] Slider
 - [ ] Morphing SVG Graph
 - [ ] Unit tests
+</details>
+<details>
+  <summary>Examples</summary>
+
+  ## Examples
+  Different examples can be found at the location src/components/Examples
 </details>
 <details>
   <summary>Integration</summary>

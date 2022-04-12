@@ -18,6 +18,12 @@ interface Props {
   type: string;
 }
 
+interface ReturnFunctionTypes {
+  onStart: (_: Record<string, number>, ctx: Record<string, number>) => void;
+  onActive: (event: Record<string, number>, ctx: Record<string, number>) => void;
+  onEnd: (event: Record<string, number>) => void;
+}
+
 export const onGestureHandlerCard = ({
   isInputFieldFocused,
   isPanning,
@@ -31,18 +37,17 @@ export const onGestureHandlerCard = ({
   snapPointBottom,
   innerScrollY,
   type,
-}: Props): Record<string, unknown> => ({
-  onStart: (_: Record<string, number>, ctx: Record<string, number>): void => {
+}: Props): ReturnFunctionTypes => ({
+  onStart: (_, ctx): void => {
     'worklet';
 
     ctx.startY = type === 'content' ? translationY.value - innerScrollY.value : translationY.value;
-    isPanningDown.value = false;
   },
-  onActive: (event: Record<string, number>, ctx: Record<string, number>): void => {
+  onActive: (event, ctx): void => {
     'worklet';
 
     if (!isInputFieldFocused.value) {
-      isPanning.value = true;
+      isPanning.value = prevDragY.value !== translationY.value;
       prevDragY.value = translationY.value;
       dragY.value = ctx.startY + event.translationY;
 
@@ -61,14 +66,18 @@ export const onGestureHandlerCard = ({
       }
     }
   },
-  onEnd: (): void => {
+  onEnd: (event): void => {
     'worklet';
 
+    const isPanningDownWithFastRelease = prevDragY.value < dragY.value;
+    const isPanningDownWithSlowRelease = prevDragY.value <= dragY.value && event.translationY > 0;
+
+    isPanningDown.value = isPanningDownWithFastRelease || isPanningDownWithSlowRelease;
     isCardCollapsed.value = isPanningDown.value;
     isAnimationRunning.value = true;
     isPanning.value = false;
 
-    if (isInputFieldFocused && innerScrollY.value === 0) {
+    if (isInputFieldFocused.value && innerScrollY.value === 0) {
       runOnJS(Keyboard.dismiss)();
     }
 

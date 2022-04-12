@@ -7,6 +7,7 @@ import Animated, {
   useAnimatedRef,
 } from 'react-native-reanimated';
 import Content from './components/Content';
+import Footer from './components/Footer';
 import BottomSheet from '../../components/BottomSheet';
 import SnapEffect from '../SnapEffect';
 
@@ -87,8 +88,10 @@ const ScrollViewWithSnapEffect: React.FC = () => {
           scrollY,
           autoScrollTriggerLength: 16,
         }}
-        contentResizeHeightTriggerOnFocusedInputField={270}
-        contentResizeHeightOnFocusedInputField={200}
+        contentHeightWhenKeyboardIsVisible={{
+          resizeHeightTrigger: 270,
+          resizeHeight: 200,
+        }}
         hideContentOnCardCollapse={{
           isEnabled: true,
           offset: 5,
@@ -98,7 +101,7 @@ const ScrollViewWithSnapEffect: React.FC = () => {
           offset: 30,
         }}
         fadingScrollEdges={{ isEnabled: false }}
-        morphingArrow={{ isEnabled: true, offset: 20 }}
+        morphingArrow={{ isEnabled: Platform.OS !== 'web', offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}
         snapPointBottom={HEADER_HEIGHT}
@@ -106,6 +109,7 @@ const ScrollViewWithSnapEffect: React.FC = () => {
           cardHeight.value = height;
         }}
         contentComponent={<Content />}
+        footerComponent={<Footer />}
       />
     </Wrapper>
   );

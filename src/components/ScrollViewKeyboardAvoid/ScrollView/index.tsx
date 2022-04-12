@@ -1,8 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import { LayoutChangeEvent, ViewStyle, Platform } from 'react-native';
+import { LayoutChangeEvent, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
-  AnimatedStyleProp,
   useAnimatedStyle,
   useAnimatedScrollHandler,
   useSharedValue,
@@ -34,14 +33,13 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
     isKeyboardAvoidDisabled,
     scrollArrows,
     translationYValues,
-    contentResizeHeightTriggerOnFocusedInputField,
     scrollTo,
     onContentSizeChange,
     onIsInputFieldFocusedRequest,
     children,
   } = props;
 
-  const { isKeyboardVisible } = React.useContext(KeyboardContext);
+  const { isKeyboardVisible, keyboardHeight } = React.useContext(KeyboardContext);
 
   const {
     isEnabled: isFadingScrollEdgeEnabled,
@@ -69,16 +67,14 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
     },
   });
 
-  const animatedStyle = useAnimatedStyle(
-    (): AnimatedStyleProp<ViewStyle> => ({
-      flex: isWeb ? 1 : 0,
-      transform: [
-        {
-          translateY: translationY.value,
-        },
-      ],
-    }),
-  );
+  const animatedStyle = useAnimatedStyle(() => ({
+    flex: isWeb ? 1 : 0,
+    transform: [
+      {
+        translateY: translationY.value,
+      },
+    ],
+  }));
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent): void => {
@@ -90,22 +86,11 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
     [scrollViewHeight, scrollViewWidth],
   );
 
-  const fadingEdgeAndroid = useMemo(
-    () => androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH,
-    [androidFadingEdgeLength],
-  );
-  const fadingEdgeNativeBackgroundColor = useMemo(
-    () => nativeBackgroundColor ?? FADING_EDGE_COLOR_NATIVE,
-    [nativeBackgroundColor],
-  );
-  const fadingEdgeWebBackgroundColorTop = useMemo(
-    () => webBackgroundColorTop ?? FADING_EDGE_COLOR_WEB_TOP,
-    [webBackgroundColorTop],
-  );
-  const fadingEdgeWebBackgroundColorBottom = useMemo(
-    () => webBackgroundColorBottom ?? FADING_EDGE_COLOR_WEB_BOTTOM,
-    [webBackgroundColorBottom],
-  );
+  const fadingEdgeAndroid = androidFadingEdgeLength ?? ANDROID_FADING_EDGE_LENGTH;
+  const fadingEdgeNativeBackgroundColor = nativeBackgroundColor ?? FADING_EDGE_COLOR_NATIVE;
+  const fadingEdgeWebBackgroundColorTop = webBackgroundColorTop ?? FADING_EDGE_COLOR_WEB_TOP;
+  const fadingEdgeWebBackgroundColorBottom =
+    webBackgroundColorBottom ?? FADING_EDGE_COLOR_WEB_BOTTOM;
 
   const connectionProps: Record<
     string,
@@ -115,10 +100,18 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
       scrollY,
       scrollViewHeight,
       contentHeight,
+      keyboardHeight,
       isKeyboardVisible,
       isInputFieldFocused,
     }),
-    [scrollY, scrollViewHeight, contentHeight, isKeyboardVisible, isInputFieldFocused],
+    [
+      scrollY,
+      scrollViewHeight,
+      contentHeight,
+      keyboardHeight,
+      isKeyboardVisible,
+      isInputFieldFocused,
+    ],
   );
 
   const scrollArrowProps = useMemo(
@@ -237,9 +230,6 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
           translationYValues={translationYValues}
           isKeyboardAvoidDisabled={isKeyboardAvoidDisabled}
           isFocusInputFieldAnimationRunning={isFocusInputFieldAnimationRunning}
-          contentResizeHeightTriggerOnFocusedInputField={
-            contentResizeHeightTriggerOnFocusedInputField
-          }
           contentHeight={contentHeight}
           keyboardAvoidBottomMargin={keyboardAvoidBottomMargin}
           onIsInputFieldFocusedRequest={onIsInputFieldFocusedRequest}

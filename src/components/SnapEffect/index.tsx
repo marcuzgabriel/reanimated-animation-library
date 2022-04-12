@@ -7,7 +7,11 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import { onGestureHandlerSnapEffect, onSnappableReaction } from '../../worklets';
 
 interface Props {
@@ -16,6 +20,7 @@ interface Props {
   snapEffectDirection: Animated.SharedValue<string>;
   isScrollableOffset?: number;
   isStaticOffset?: number;
+  disableSnapEffect?: boolean;
 }
 
 interface AnimatedGHContext {
@@ -30,6 +35,7 @@ const SnapEffect: React.FC<Props> = ({
   cardHeight,
   isScrollableOffset,
   isStaticOffset,
+  disableSnapEffect,
   snapEffectDirection,
   children,
 }) => {
@@ -71,8 +77,6 @@ const SnapEffect: React.FC<Props> = ({
         const isCardOverlappingContent = result.contentHeight.value > availableAreaBeforeOverlap;
 
         return onSnappableReaction({
-          result,
-          previous,
           windowHeight,
           contentHeight,
           isSnapEffectActiveState,
@@ -101,9 +105,14 @@ const SnapEffect: React.FC<Props> = ({
 
   return (
     <View onLayout={onLayout}>
-      <PanGestureHandler enabled={isSnapEffectActiveState} onGestureEvent={gestureHandler}>
-        <Animated.View style={animatedStyle}>{children}</Animated.View>
-      </PanGestureHandler>
+      <GestureHandlerRootView>
+        <PanGestureHandler
+          enabled={disableSnapEffect ? false : isSnapEffectActiveState}
+          onGestureEvent={gestureHandler}
+        >
+          <Animated.View style={animatedStyle}>{children}</Animated.View>
+        </PanGestureHandler>
+      </GestureHandlerRootView>
     </View>
   );
 };

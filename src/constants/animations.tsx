@@ -13,6 +13,7 @@ export const DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM = 50;
 export const OFFSET_START_SNAP_TO_BOTTOM = 40;
 export const OFFSET_SNAP_POINT_BOTTOM = 30;
 export const IS_SCROLLABLE_OFFSET = 1;
+export const DEFAULT_SPRING_VALUE_OUTCOME = 20;
 export const KEYBOARD_TIMING_EASING = {
   easing: Easing.bezier(0.17, 0.59, 0.4, 0.77),
 };

@@ -4,4 +4,5 @@ export { default as ScrollViewKeyboardAvoid } from './components/ScrollViewKeybo
 export { default as SnapEffect } from './components/SnapEffect';
 export { default as ScrollViewWithSnapEffect } from './components/Examples/ScrollViewWithSnapEffect';
 export { scrollToPosition } from './helpers/scrollToPosition';
+/* eslint-disable-next-line import/no-unresolved */
 export type { BottomSheetConfiguration } from './types';
