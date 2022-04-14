@@ -5,7 +5,6 @@ import {
   Gesture,
   GestureDetector,
   PanGestureHandlerEventPayload,
-  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
