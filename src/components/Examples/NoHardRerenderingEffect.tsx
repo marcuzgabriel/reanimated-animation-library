@@ -202,7 +202,7 @@ const NoHardRerenderingEffect: React.FC = () => {
           offset: 30,
         }}
         fadingScrollEdges={{ isEnabled: true }}
-        morphingArrow={{ isEnabled: Platform.OS !== 'web', offset: 20 }}
+        morphingArrow={{ isEnabled: true, offset: 20 }}
         keyboardAvoidBottomMargin={isAndroid ? 16 : 0}
         snapEffectDirection={snapEffectDirection}
         snapPointBottom={HEADER_HEIGHT}
