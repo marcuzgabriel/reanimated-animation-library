@@ -13,6 +13,7 @@ export declare interface GestureConfigReference {
   firstExecution: boolean;
   useReanimatedHook: boolean;
 }
+
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
   children?: React.ReactNode;
