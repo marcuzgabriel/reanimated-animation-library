@@ -8,11 +8,11 @@ import {
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
-import { withSpring, runOnJS } from 'react-native-reanimated';
-import { scrollToPosition } from '../helpers';
+import { withSpring, runOnJS, cancelAnimation } from 'react-native-reanimated';
 import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from '../constants/animations';
 
 const isWeb = Platform.OS === 'web';
+const isIOS = Platform.OS === 'ios';
 
 export const getGestures = (
   gestureHandlerProps: any,
@@ -31,7 +31,6 @@ export const getGestures = (
     dragY,
     translationY,
     scrollOffset,
-    scrollViewRef,
     startY,
     snapPointBottom,
     innerScrollY,
@@ -40,6 +39,7 @@ export const getGestures = (
   const panGestureOnBegin = (): void => {
     'worklet';
 
+    cancelAnimation(translationY);
     startY.value = translationY.value;
   };
 
@@ -55,8 +55,11 @@ export const getGestures = (
       dragY.value = startY.value + e.translationY;
 
       if (dragY.value > 0) {
+        /* NOTE: Transition from scroll to pan */
         if (!isHeader && isScrollable.value && e.translationY && innerScrollY.value === 0) {
-          translationY.value = dragY.value - prevDragY.value - scrollOffset.value;
+          translationY.value = isIOS
+            ? dragY.value - scrollOffset.value
+            : dragY.value - prevDragY.value - scrollOffset.value;
         } else if (!isScrollable.value || isHeader) {
           translationY.value = dragY.value;
         }
@@ -80,10 +83,6 @@ export const getGestures = (
     }
 
     if (!isInputFieldFocused.value) {
-      if (innerScrollY.value !== 0) {
-        runOnJS(scrollToPosition)({ ref: scrollViewRef, to: 'top' });
-      }
-
       translationY.value = withSpring(
         isPanningDown.value ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
         DEFAULT_SPRING_CONFIG,
