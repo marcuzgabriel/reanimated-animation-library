@@ -8,7 +8,7 @@ import {
   GestureStateChangeEvent,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
-import { withSpring, runOnJS, cancelAnimation } from 'react-native-reanimated';
+import { withSpring, runOnJS } from 'react-native-reanimated';
 import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from '../constants/animations';
 
 const isWeb = Platform.OS === 'web';
@@ -39,7 +39,6 @@ export const getGestures = (
   const panGestureOnBegin = (): void => {
     'worklet';
 
-    cancelAnimation(translationY);
     startY.value = translationY.value;
   };
 
