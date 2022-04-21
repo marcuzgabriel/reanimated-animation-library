@@ -1,5 +1,5 @@
 import React, { useContext, useCallback } from 'react';
-import { useWindowDimensions, StyleSheet } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { SimultaneousGesture } from 'react-native-gesture-handler';
 import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
