@@ -1,12 +1,18 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import type { EventHandlersProps } from '../worklets/__tests__/getGestures.test';
+import styled from 'styled-components/native';
+import {
+  PanGesture,
+  TapGesture,
+  NativeGesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 
-const PanGestureTestComponent: React.FC<EventHandlersProps & { gesture: any }> = ({
-  eventHandlers,
-  gesture,
-}) => (
+const Text = styled.Text``;
+
+const PanGestureTestComponent: React.FC<{
+  gesture: PanGesture | TapGesture | NativeGesture;
+}> = ({ gesture }) => (
   <GestureHandlerRootView>
     <GestureDetector gesture={gesture}>
       <Text>RNGH v2.0 API test</Text>

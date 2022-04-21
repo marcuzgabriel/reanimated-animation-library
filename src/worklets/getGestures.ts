@@ -11,14 +11,14 @@ import {
 import { withSpring, runOnJS } from 'react-native-reanimated';
 import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from '../constants/animations';
 
-const isWeb = Platform.OS === 'web';
-const isIOS = Platform.OS === 'ios';
-
 export const getGestures = (
   gestureHandlerProps: any,
   isBottomSheetInactive?: boolean,
 ): Record<string, PanGesture | NativeGesture | TapGesture> => {
   'worklet';
+
+  const isWeb = Platform.OS === 'web';
+  const isIOS = Platform.OS === 'ios';
 
   const {
     isInputFieldFocused,
@@ -98,13 +98,15 @@ export const getGestures = (
     .enabled(!isBottomSheetInactive)
     .onBegin(panGestureOnBegin)
     .onUpdate(e => panGestureOnUpdate(e, true))
-    .onEnd(panGestureOnEnd);
+    .onEnd(panGestureOnEnd)
+    .withTestId('panGestureHeader');
 
   const panGestureContent = Gesture.Pan()
     .enabled(!isWeb || !isBottomSheetInactive)
     .onBegin(panGestureOnBegin)
     .onUpdate(panGestureOnUpdate)
-    .onEnd(panGestureOnEnd);
+    .onEnd(panGestureOnEnd)
+    .withTestId('panGestureContent');
 
   const scrollViewNativeGesture = Gesture.Native().enabled(!isWeb);
 
