@@ -1,7 +1,15 @@
 import React from 'react';
 import { ScrollViewProps as ScrollViewNativeProps } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { GestureEvent, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
+import { SimultaneousGesture } from 'react-native-gesture-handler';
+
+
+interface Children {
+  children?: React.ReactNode;
+}
+declare module 'react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector.d.ts' {
+  export interface GestureDetector extends any
+}
 
 export interface ScrollArrows {
   isEnabled: boolean;
@@ -168,6 +176,7 @@ interface ScrollViewProps extends ScrollViewNativeProps {
   onContentSizeChange?: (width: number, height: number) => void;
   onIsInputFieldFocusedRequest?: (status: boolean, availableHeight: number) => void;
   children: React.ReactNode;
+  gesture?: SimultaneousGesture;
   isKeyboardAvoidDisabled?: boolean;
   keyboardAvoidBottomMargin?: number;
   connectScrollViewMeasuresToAnimationValues?: Record<

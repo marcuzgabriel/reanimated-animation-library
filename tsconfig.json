@@ -1,14 +1,11 @@
 {
   "root": true,
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
   "compilerOptions": {
     "baseUrl": "./",
     "declaration": true,
     "preserveSymlinks": true,
-    "target": "es6",
-    "module": "es6",
+    "target": "esnext",
+    "module": "esnext",
     "jsx": "react-native",
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
@@ -18,11 +15,12 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "lib",
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./src/types/index.d.ts",
     "reanimated-animation-library.d.ts"
   ]
 }

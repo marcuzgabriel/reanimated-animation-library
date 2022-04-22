@@ -1,12 +1,7 @@
-import React, { useRef, useContext, useCallback } from 'react';
-import { Platform, useWindowDimensions } from 'react-native';
+import React, { useContext, useCallback } from 'react';
+import { useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import {
-  GestureEvent,
-  PanGestureHandler,
-  PanGestureHandlerEventPayload,
-  NativeViewGestureHandler,
-} from 'react-native-gesture-handler';
+import { SimultaneousGesture } from 'react-native-gesture-handler';
 import ScrollViewKeyboardAvoid from '../../ScrollViewKeyboardAvoid';
 import {
   MAX_HEIGHT_RATIO,
@@ -22,14 +17,19 @@ import { scrollToPosition } from '../../../helpers';
 
 interface Props {
   isScrollingCard: Animated.SharedValue<boolean>;
-  gestureHandler: (event: GestureEvent<PanGestureHandlerEventPayload>) => void;
+  isScrollable: Animated.SharedValue<boolean>;
+  scrollOffset: Animated.SharedValue<number>;
+  contentGesture: SimultaneousGesture;
   children: React.ReactNode;
 }
 
-const Content: React.FC<Props> = ({ isScrollingCard, gestureHandler, children }) => {
-  const panGestureInnerRef = useRef<PanGestureHandler>();
-  const nativeViewGestureRef = useRef<NativeViewGestureHandler>();
-
+const Content: React.FC<Props> = ({
+  isScrollingCard,
+  isScrollable,
+  scrollOffset,
+  contentGesture,
+  children,
+}) => {
   const windowHeight = useWindowDimensions().height;
 
   const {
@@ -106,50 +106,41 @@ const Content: React.FC<Props> = ({ isScrollingCard, gestureHandler, children })
   );
 
   return (
-    <PanGestureHandler
-      enabled={Platform.OS !== 'web'}
-      ref={panGestureInnerRef}
-      shouldCancelWhenOutside={false}
-      simultaneousHandlers={nativeViewGestureRef}
-      onGestureEvent={gestureHandler}
-    >
-      <Animated.View style={animatedStyle}>
-        <NativeViewGestureHandler
-          ref={nativeViewGestureRef}
-          shouldCancelWhenOutside={false}
-          simultaneousHandlers={panGestureInnerRef}
-        >
-          <ScrollViewKeyboardAvoid
-            ref={scrollViewRef}
-            bounces={false}
-            scrollTo={scrollTo}
-            translationYValues={[translationY, footerTranslationY]}
-            alwaysBounceVertical={false}
-            directionalLockEnabled={true}
-            connectScrollViewMeasuresToAnimationValues={{
-              scrollY,
-              scrollViewHeight,
-              contentHeight,
-              keyboardHeight,
-              isKeyboardVisible,
-              isInputFieldFocused,
-            }}
-            fadingEdgeLength={isFadingScrollEdgeEnabled ? fadingEdgeAndroid : 0}
-            fadingScrollEdges={fadingScrollEdges ?? DEFAULT_FADING_SCROLL_EDGES}
-            scrollArrows={scrollArrows ?? DEFAULT_SCROLL_ARROWS}
-            scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-            onTouchMove={(): void => {
-              isScrollingCard.value = true;
-            }}
-            onTouchEnd={(): void => {
-              isScrollingCard.value = false;
-            }}
-          >
-            {children}
-          </ScrollViewKeyboardAvoid>
-        </NativeViewGestureHandler>
-      </Animated.View>
-    </PanGestureHandler>
+    <Animated.View style={animatedStyle}>
+      <ScrollViewKeyboardAvoid
+        ref={scrollViewRef}
+        bounces={false}
+        gesture={contentGesture}
+        scrollTo={scrollTo}
+        translationYValues={[translationY, footerTranslationY]}
+        alwaysBounceVertical={false}
+        directionalLockEnabled={true}
+        connectScrollViewMeasuresToAnimationValues={{
+          scrollY,
+          scrollViewHeight,
+          contentHeight,
+          keyboardHeight,
+          isKeyboardVisible,
+          isInputFieldFocused,
+          isScrollable,
+        }}
+        fadingEdgeLength={isFadingScrollEdgeEnabled ? fadingEdgeAndroid : 0}
+        fadingScrollEdges={fadingScrollEdges ?? DEFAULT_FADING_SCROLL_EDGES}
+        scrollArrows={scrollArrows ?? DEFAULT_SCROLL_ARROWS}
+        scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+        onScrollBeginDrag={(e): void => {
+          scrollOffset.value = e.nativeEvent.contentOffset.y;
+        }}
+        onTouchMove={(): void => {
+          isScrollingCard.value = true;
+        }}
+        onTouchEnd={(): void => {
+          isScrollingCard.value = false;
+        }}
+      >
+        {children}
+      </ScrollViewKeyboardAvoid>
+    </Animated.View>
   );
 };
 

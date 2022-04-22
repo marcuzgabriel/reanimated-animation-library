@@ -24,5 +24,9 @@ export const onScrollGetScrollingMeasures = ({
   scrollingLength.value = contentHeight.value - scrollViewHeight.value;
   isScrollable.value = contentHeight.value > scrollViewHeight.value;
   isScrolledToTop.value = scrollY.value === 0;
-  isScrolledToEnd.value = Math.floor(scrollY.value) === Math.floor(scrollingLength.value);
+
+  const isScrolledToEndByLowest = Math.floor(scrollY.value) === Math.floor(scrollingLength.value);
+  const isScrolledToEndByHighest = Math.ceil(scrollY.value) === Math.ceil(scrollingLength.value);
+
+  isScrolledToEnd.value = isScrolledToEndByLowest || isScrolledToEndByHighest;
 };

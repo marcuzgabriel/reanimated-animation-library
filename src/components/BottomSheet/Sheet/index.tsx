@@ -7,23 +7,23 @@ import Animated, {
   useAnimatedReaction,
   useDerivedValue,
   useAnimatedRef,
-  useAnimatedGestureHandler,
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
 import {
-  PanGestureHandlerGestureEvent,
   PanGestureHandler,
   GestureHandlerRootView,
+  GestureDetector,
+  Gesture,
 } from 'react-native-gesture-handler';
 import { DEFAULT_BORDER_RADIUS } from '../../../constants/styles';
 import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import {
   getAnimatedCardStyles,
+  getGestures,
   onInitializationCloseRequest,
   onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
-  onGestureHandlerCard,
   onGestureHideContentOrFooterReaction,
 } from '../../../worklets';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
@@ -33,12 +33,6 @@ import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
 import SmoothAppearance from '../SmoothAppearance';
-
-interface AnimatedGHContext {
-  [key: string]: number;
-  startX: number;
-  startY: number;
-}
 
 const View = styled.View`
   position: absolute;
@@ -56,6 +50,7 @@ const Sheet: React.FC = () => {
 
   const {
     scrollY: innerScrollY,
+    scrollViewRef,
     cardHeight,
     translationY,
     isInputFieldFocused,
@@ -93,12 +88,15 @@ const Sheet: React.FC = () => {
   const isPanning = useSharedValue(false);
   const isPanningDown = useSharedValue(false);
   const isAnimationRunning = useSharedValue(false);
+  const isScrollable = useSharedValue(false);
   const isScrollingUp = useSharedValue(false);
   const isScrollingDown = useSharedValue(false);
   const isScrollingCard = useSharedValue(false);
   const isCardCollapsed = useSharedValue(false);
   const isInitializedAsClosed = useSharedValue(false);
+  const scrollOffset = useSharedValue(0);
   const hideContentInterpolation = useSharedValue(0);
+  const startY = useSharedValue(0);
   const prevDragY = useSharedValue(0);
   const dragY = useSharedValue(0);
 
@@ -167,6 +165,7 @@ const Sheet: React.FC = () => {
 
   const gestureHandlerProps = {
     isInputFieldFocused,
+    isScrollable,
     isScrollingCard,
     isPanning,
     isPanningDown,
@@ -175,31 +174,12 @@ const Sheet: React.FC = () => {
     prevDragY,
     dragY,
     translationY,
+    scrollOffset,
+    scrollViewRef,
     snapPointBottom,
+    startY,
     innerScrollY,
   };
-
-  const gestureHandlerHeader = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    AnimatedGHContext
-  >(
-    onGestureHandlerCard({
-      ...gestureHandlerProps,
-      type: 'header',
-    }),
-    [cardHeight],
-  );
-
-  const gestureHandlerContent = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    AnimatedGHContext
-  >(
-    onGestureHandlerCard({
-      ...gestureHandlerProps,
-      type: 'content',
-    }),
-    [cardHeight],
-  );
 
   /* Panning direction reaction */
   useAnimatedReaction(
@@ -325,17 +305,18 @@ const Sheet: React.FC = () => {
     isAnimationRunning,
   });
 
+  const { panGestureHeader, panGestureContent, scrollViewNativeGesture } = getGestures(
+    gestureHandlerProps,
+    isBottomSheetInactive,
+  );
+
   return (
     <>
       <View testID={testID} pointerEvents="box-none">
         <Animated.View ref={measureRef} onLayout={onLayout} style={animatedBottomSheetStyle}>
           <SmoothAppearance>
             <GestureHandlerRootView>
-              <PanGestureHandler
-                enabled={!isBottomSheetInactive}
-                ref={panGestureOuterRef}
-                onGestureEvent={gestureHandlerHeader}
-              >
+              <GestureDetector gesture={panGestureHeader}>
                 <Animated.View style={animatedStyleHeader}>
                   <Header
                     scrollY={outerScrollEvent?.scrollY}
@@ -345,9 +326,14 @@ const Sheet: React.FC = () => {
                     }
                   />
                 </Animated.View>
-              </PanGestureHandler>
+              </GestureDetector>
               <AnimatedContent style={animatedContentStyle}>
-                <Content gestureHandler={gestureHandlerContent} isScrollingCard={isScrollingCard}>
+                <Content
+                  isScrollable={isScrollable}
+                  isScrollingCard={isScrollingCard}
+                  scrollOffset={scrollOffset}
+                  contentGesture={Gesture.Simultaneous(panGestureContent, scrollViewNativeGesture)}
+                >
                   {contentComponent}
                 </Content>
               </AnimatedContent>

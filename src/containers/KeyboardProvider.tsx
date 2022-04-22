@@ -21,7 +21,7 @@ const KeyboardProvider: React.FC<Props> = ({ children }) => {
   const show = isIOS ? 'keyboardWillShow' : 'keyboardDidShow';
 
   const handleShow = useCallback(
-    e => {
+    (e: Record<string, any>) => {
       isKeyboardVisible.value = true;
       keyboardHeight.value = e.endCoordinates.height;
       keyboardDuration.value = e.duration;
@@ -30,7 +30,7 @@ const KeyboardProvider: React.FC<Props> = ({ children }) => {
   );
 
   const handleHide = useCallback(
-    e => {
+    (e: Record<string, any>) => {
       isKeyboardVisible.value = false;
       keyboardHeight.value = 0;
       keyboardDuration.value = e.duration;
