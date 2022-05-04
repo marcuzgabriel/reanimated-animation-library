@@ -8,6 +8,7 @@ import Animated, {
 import styled from 'styled-components/native';
 import InputField from '../InputField';
 import Regular from '../InputField/Regular';
+import InputAnimationWrapper from '../InputField/InputAnimationWrapper';
 import ScrollViewKeyboardAvoid from '../ScrollViewKeyboardAvoid';
 import { SCROLL_EVENT_THROTTLE } from '../../constants/configs';
 
@@ -39,6 +40,7 @@ const Wrapper = styled.View<{ windowHeight: number }>`
 const FakeContentWrapper = styled.View`
   height: 100%;
   width: 100%;
+  border: 2px solid black;
   padding: 32px 16px;
 `;
 
@@ -49,7 +51,25 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const windowHeight = useWindowDimensions().height;
   const translationY = useSharedValue(0);
+
+  const scrollY = useSharedValue(0);
+  const scrollViewHeight = useSharedValue(0);
+  const contentHeight = useSharedValue(0);
+  const keyboardHeight = useSharedValue(0);
+  const isInputFieldFocused = useSharedValue(false);
+  const isScrollable = useSharedValue(false);
   const isKeyboardVisible = useSharedValue(false);
+
+  const animationScrollValues = {
+    scrollY,
+    scrollViewHeight,
+    contentHeight,
+    keyboardHeight,
+    isInputFieldFocused,
+    isScrollable,
+    isKeyboardVisible,
+  };
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -67,9 +87,7 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
         bounces={false}
         alwaysBounceVertical={false}
         keyboardAvoidBottomMargin={isIOS ? 64 : 100}
-        connectScrollViewMeasuresToAnimationValues={{
-          isKeyboardVisible,
-        }}
+        connectScrollViewMeasuresToAnimationValues={animationScrollValues}
         fadingScrollEdges={{
           isEnabled: true,
           iOSandWebFadingEdgeHeight: 150,
@@ -94,9 +112,9 @@ const ScrollViewKeyboardAvoidExample: React.FC = () => {
       >
         <FakeContentWrapper>
           <Text>{text}</Text>
-          <Animated.View style={animatedStyle}>
+          <InputAnimationWrapper {...animationScrollValues}>
             <Regular placeholder="Testing inputfield" />
-          </Animated.View>
+          </InputAnimationWrapper>
         </FakeContentWrapper>
       </ScrollViewKeyboardAvoid>
     </Wrapper>
