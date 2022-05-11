@@ -1,6 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import Animated, { withSpring, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  withSpring,
+  useSharedValue,
+  useAnimatedStyle,
+  cancelAnimation,
+} from 'react-native-reanimated';
 import {
   GestureDetector,
   GestureHandlerRootView,
@@ -57,11 +62,18 @@ const Toggle: React.FC = () => {
   const translationX = useSharedValue(0);
   const prevDragX = useSharedValue(0);
   const dragX = useSharedValue(0);
+  const isAnimationRunning = useSharedValue(false);
   const isPanGestureActive = useSharedValue(true);
+  const isToggleActive = useSharedValue(false);
   const startXAbsolute = useSharedValue<Number | undefined>(undefined);
+  const diff = WIDTH / 2;
 
   const panGestureOnBegin = (e): void => {
     'worklet';
+
+    // if (isAnimationRunning.value) {
+    //   cancelAnimation(translationX);
+    // }
 
     startX.value = translationX.value;
   };
@@ -69,26 +81,35 @@ const Toggle: React.FC = () => {
   const panGestureOnUpdate = (e: GestureUpdateEvent<PanGestureHandlerEventPayload>): void => {
     'worklet';
 
-    if (!startXAbsolute.value) {
-      startXAbsolute.value = e.absoluteX;
-    }
-
-    if (translationX.value >= 0) {
-      translationX.value = startX.value + e.translationX;
+    if (!isToggleActive.value) {
+      translationX.value = e.translationX >= 0 ? startX.value + e.translationX : 0;
+    } else {
+      translationX.value = e.translationX <= diff - 16 ? startX.value + e.translationX : 0;
     }
   };
 
   const panGestureOnEnd = (e: GestureStateChangeEvent<PanGestureHandlerEventPayload>): void => {
     'worklet';
 
-    translationX.value = withSpring(WIDTH / 2 - 16, DEFAULT_SPRING_CONFIG);
+    isToggleActive.value = !isToggleActive.value;
+    isAnimationRunning.value = true;
+
+    translationX.value = withSpring(
+      isToggleActive.value ? diff - 16 : 0,
+      DEFAULT_SPRING_CONFIG,
+      isAnimationComplete => {
+        if (isAnimationComplete) {
+          isAnimationRunning.value = false;
+        }
+      },
+    );
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    flex: 1,
+    width: '100%',
     height: '100%',
     borderRadius: 7,
-    border: '1px solid red',
+    backgroundColor: 'yellow',
     boxShadow: '3px 7px 10px rgba(0, 0, 0, 0.25)',
     transform: [
       {
@@ -108,9 +129,22 @@ const Toggle: React.FC = () => {
         <ToggleWrapper>
           <RowWrapper>
             <TouchableOpacity
+              activeOpacity={1}
               onPress={() => {
                 'worklet';
-                translationX.value = withSpring(WIDTH / 2 - 16, DEFAULT_SPRING_CONFIG);
+
+                if (isAnimationRunning.value) {
+                  cancelAnimation(translationX);
+                  isAnimationRunning.value = false;
+                }
+
+                if (!isAnimationRunning.value) {
+                  isToggleActive.value = !isToggleActive.value;
+                  translationX.value = withSpring(
+                    isToggleActive.value ? diff - 16 : 0,
+                    DEFAULT_SPRING_CONFIG,
+                  );
+                }
               }}
             >
               <GestureDetector gesture={panGestureHandler}>
