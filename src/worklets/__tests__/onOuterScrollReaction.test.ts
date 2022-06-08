@@ -1,8 +1,10 @@
-import { renderHook } from '@testing-library/react-hooks';
 import Animated from 'react-native-reanimated';
 import { onOuterScrollReaction } from '../onOuterScrollReaction';
 import { onScrollRequestCloseOrOpenCard } from '../onScrollRequestCloseOrOpenCard';
-import { DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM } from '../../constants/animations';
+import {
+  DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM,
+  DEFAULT_SPRING_CONFIG,
+} from '../../constants/animations';
 
 const PARAMS = {
   result: 0 as number,
@@ -13,6 +15,7 @@ const PARAMS = {
   isAnimationRunning: { value: false } as Animated.SharedValue<boolean>,
   translationY: { value: 0 } as Animated.SharedValue<number>,
   snapPointBottom: { value: 0 } as Animated.SharedValue<number>,
+  springConfig: DEFAULT_SPRING_CONFIG,
   outerScrollEvent: {
     isEnabled: false as boolean,
     scrollY: { value: 0 } as Animated.SharedValue<number>,

@@ -1,5 +1,6 @@
 import Animated, { withSpring } from 'react-native-reanimated';
-import { DEFAULT_SNAP_POINT_TOP, DEFAULT_SPRING_CONFIG } from '../constants/animations';
+import { DEFAULT_SNAP_POINT_TOP } from '../constants/animations';
+import type { BottomSheetConfiguration } from '../types';
 
 interface Props {
   result: number;
@@ -10,6 +11,7 @@ interface Props {
   isCardCollapsed: Animated.SharedValue<boolean>;
   translationY: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
+  springConfig: BottomSheetConfiguration['springConfig'];
 }
 
 export const onScrollRequestCloseOrOpenCard = ({
@@ -19,6 +21,7 @@ export const onScrollRequestCloseOrOpenCard = ({
   isScrollingUp,
   isCardCollapsed,
   snapPointBottom,
+  springConfig,
   result,
   translationY,
 }: Props): void => {
@@ -35,7 +38,7 @@ export const onScrollRequestCloseOrOpenCard = ({
     isCardCollapsed.value = shouldCardCollapse;
     translationY.value = withSpring(
       shouldCardCollapse ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-      DEFAULT_SPRING_CONFIG,
+      springConfig,
       isAnimationComplete => {
         if (isAnimationComplete) {
           isAnimationRunning.value = false;

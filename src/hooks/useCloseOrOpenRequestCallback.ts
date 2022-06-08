@@ -1,11 +1,20 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Animated from 'react-native-reanimated';
-import { UserConfigurationContext } from '../containers/UserConfigurationProvider';
-import { ReusablePropsContext } from '../containers/ReusablePropsProvider';
 import { getAnimatedMeasures } from '../helpers';
 import { onOpenOrCloseCardRequest } from '../worklets';
+import type { BottomSheetConfiguration, ContextPropsBottomSheet } from '../types';
 
-interface UseCloseOrOpenRequestCallbackProps {
+interface UseCloseOrOpenRequestCallbackParams
+  extends Pick<
+      BottomSheetConfiguration,
+      | 'extraSnapPointBottomOffset'
+      | 'springConfig'
+      | 'snapPointBottom'
+      | 'snapEffectDirection'
+      | 'openBottomSheetRequest'
+      | 'closeBottomSheetRequest'
+    >,
+    Pick<ContextPropsBottomSheet, 'scrollViewRef' | 'scrollY' | 'translationY'> {
   measureRef: React.RefObject<Animated.View> | any;
   isMounted: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
@@ -19,17 +28,16 @@ export const useCloseOrOpenRequestCallback = ({
   isMounted,
   isCardCollapsed,
   isAnimationRunning,
-}: UseCloseOrOpenRequestCallbackProps): void => {
-  const {
-    snapPointBottom: configSnapPointBottom,
-    extraSnapPointBottomOffset,
-    snapEffectDirection,
-    openBottomSheetRequest,
-    closeBottomSheetRequest,
-  } = useContext(UserConfigurationContext);
-
-  const { scrollViewRef, scrollY, translationY } = useContext(ReusablePropsContext.bottomSheet);
-
+  snapPointBottom,
+  extraSnapPointBottomOffset,
+  snapEffectDirection,
+  springConfig,
+  openBottomSheetRequest,
+  closeBottomSheetRequest,
+  scrollViewRef,
+  scrollY,
+  translationY,
+}: UseCloseOrOpenRequestCallbackParams): void => {
   useEffect(() => {
     if (!hasCloseOrOpenRequest) {
       return undefined;
@@ -39,8 +47,8 @@ export const useCloseOrOpenRequestCallback = ({
       getAnimatedMeasures({
         ref: measureRef,
         callback: ({ height }) => {
-          const snapPointBottom =
-            height > 0 ? height - configSnapPointBottom - (extraSnapPointBottomOffset ?? 0) : 0;
+          const derivedSnapPointBottom =
+            height > 0 ? height - snapPointBottom - (extraSnapPointBottomOffset ?? 0) : 0;
 
           onOpenOrCloseCardRequest({
             closeBottomSheetRequest,
@@ -49,9 +57,10 @@ export const useCloseOrOpenRequestCallback = ({
             snapEffectDirection,
             scrollViewRef,
             scrollY,
+            springConfig,
             isAnimationRunning,
             translationY,
-            snapPointBottom,
+            snapPointBottom: derivedSnapPointBottom,
           });
         },
       });
@@ -62,7 +71,6 @@ export const useCloseOrOpenRequestCallback = ({
     isCardCollapsed,
     isAnimationRunning,
     hasCloseOrOpenRequest,
-    configSnapPointBottom,
     extraSnapPointBottomOffset,
     scrollY,
     scrollViewRef,
@@ -70,5 +78,7 @@ export const useCloseOrOpenRequestCallback = ({
     translationY,
     closeBottomSheetRequest,
     openBottomSheetRequest,
+    snapPointBottom,
+    springConfig,
   ]);
 };

@@ -9,11 +9,7 @@ module.exports = {
   testEnvironment: 'node',
   testResultsProcessor: 'jest-sonar-reporter',
   collectCoverageFrom: ['./src/**/worklets/*.{ts,tsx}', './src/**/helpers/*.{ts,tsx}'],
-  coverageReporters: [
-    "cobertura",
-    "html",
-    "lcov"
-  ],
+  coverageReporters: ['cobertura', 'html', 'lcov'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
   transformIgnorePatterns: [],

@@ -153,8 +153,8 @@ const NoHardRerenderingEffect: React.FC = () => {
       </ScrollViewKeyboardAvoid>
       <BottomSheet
         testID="test"
-        isBottomSheetInactive={currentScreen === -1}
         initializeBottomSheetAsClosed={currentScreen === -1}
+        springConfig={{ stiffness: 150 }}
         openBottomSheetRequest={{
           isEnabled: true,
           callback: (cb): void => {

@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useCallback } from 'react';
+import React, { useMemo, useContext, useCallback } from 'react';
 import { LayoutChangeEvent, Keyboard } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, {
@@ -10,14 +10,9 @@ import Animated, {
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  GestureHandlerRootView,
-  GestureDetector,
-  Gesture,
-} from 'react-native-gesture-handler';
+import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { DEFAULT_BORDER_RADIUS } from '../../../constants/styles';
-import { HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
+import { DEFAULT_SPRING_CONFIG, HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import {
   getAnimatedCardStyles,
   getGestures,
@@ -46,8 +41,6 @@ const View = styled.View`
 const AnimatedContent = Animated.View;
 
 const Sheet: React.FC = () => {
-  const panGestureOuterRef = useRef<PanGestureHandler>();
-
   const {
     scrollY: innerScrollY,
     scrollViewRef,
@@ -71,6 +64,7 @@ const Sheet: React.FC = () => {
     extraSnapPointBottomOffset,
     backgroundColor,
     snapEffectDirection,
+    springConfig,
     contentComponent,
     initializeBottomSheetAsClosed,
     isBottomSheetInactive,
@@ -105,6 +99,10 @@ const Sheet: React.FC = () => {
   const derivedBackgroundColor = backgroundColor ?? 'lightgrey';
   const hasSmoothAppearance = typeof smoothAppearance?.waitForContent === 'boolean';
   const { emptyContentHeight } = smoothAppearance ?? {};
+  const derivedSpringConfig = useMemo(
+    () => ({ ...DEFAULT_SPRING_CONFIG, ...(springConfig ?? {}) }),
+    [springConfig],
+  );
 
   const snapPointBottom = useDerivedValue(() => {
     const extraSnapPointOffset = extraSnapPointBottomOffset ?? 0;
@@ -130,6 +128,7 @@ const Sheet: React.FC = () => {
           isAnimationRunning,
           isCardCollapsed,
           snapPointBottom,
+          springConfig: derivedSpringConfig,
           direction,
         });
       }
@@ -140,6 +139,7 @@ const Sheet: React.FC = () => {
       isCardCollapsed,
       isAnimationRunning,
       snapPointBottom,
+      derivedSpringConfig,
       translationY,
     ],
   );
@@ -163,7 +163,7 @@ const Sheet: React.FC = () => {
     [cardHeight, isMounted, onLayoutRequest],
   );
 
-  const gestureHandlerProps = {
+  const gestureHandlerParams = {
     isInputFieldFocused,
     isScrollable,
     isScrollingCard,
@@ -177,8 +177,26 @@ const Sheet: React.FC = () => {
     scrollOffset,
     scrollViewRef,
     snapPointBottom,
+    springConfig: derivedSpringConfig,
     startY,
     innerScrollY,
+  };
+
+  const closeOrOpenRequestCallbackParams = {
+    hasCloseOrOpenRequest,
+    measureRef,
+    isMounted,
+    isCardCollapsed,
+    isAnimationRunning,
+    extraSnapPointBottomOffset,
+    snapEffectDirection,
+    openBottomSheetRequest,
+    closeBottomSheetRequest,
+    scrollViewRef,
+    translationY,
+    snapPointBottom: configSnapPointBottom,
+    springConfig: derivedSpringConfig,
+    scrollY: innerScrollY,
   };
 
   /* Panning direction reaction */
@@ -239,6 +257,7 @@ const Sheet: React.FC = () => {
           isAnimationRunning,
           translationY,
           snapPointBottom,
+          springConfig: derivedSpringConfig,
           outerScrollEvent,
         });
       }
@@ -256,6 +275,7 @@ const Sheet: React.FC = () => {
           isAnimationRunning,
           isInitializedAsClosed,
           snapEffectDirection,
+          springConfig: derivedSpringConfig,
           translationY,
           snapPointBottom,
         });
@@ -293,22 +313,17 @@ const Sheet: React.FC = () => {
         ),
       };
     }
+
     return {};
   }, [hideContentInterpolation]);
 
   /* NOTE: Handler for open and close request */
-  useCloseOrOpenRequestCallback({
-    hasCloseOrOpenRequest,
-    measureRef,
-    isMounted,
-    isCardCollapsed,
-    isAnimationRunning,
-  });
+  useCloseOrOpenRequestCallback(closeOrOpenRequestCallbackParams);
 
-  const { panGestureHeader, panGestureContent, scrollViewNativeGesture } = getGestures(
-    gestureHandlerProps,
+  const { panGestureHeader, panGestureContent, scrollViewNativeGesture } = getGestures({
+    gestureHandlerParams,
     isBottomSheetInactive,
-  );
+  });
 
   return (
     <>

@@ -5,19 +5,14 @@ import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-han
 import { render, cleanup } from '@testing-library/react-native';
 import { renderHook } from '@testing-library/react-hooks';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import PanGestureTestComponent from '../../utils/PanGestureTestComponent';
 import { getGestures } from '../getGestures';
+import PanGestureTestComponent from '../../utils/PanGestureTestComponent';
+import { DEFAULT_SPRING_CONFIG } from '../../constants/animations';
 
 const {
   withReanimatedTimer,
   advanceAnimationByTime,
 } = require('react-native-reanimated/lib/reanimated2/jestUtils');
-
-/* Test issues and solutions:
-  https://github.com/software-mansion/react-native-gesture-handler/issues/2007
-  https://github.com/software-mansion/react-native-gesture-handler/blob/main/src/__tests__/Events.test.tsx
-  https://github.com/software-mansion/react-native-reanimated/issues/3087
-*/
 
 beforeEach(cleanup);
 
@@ -38,18 +33,23 @@ const PARAMS = {
   scrollOffset: { value: 0 } as Animated.SharedValue<number>,
   startY: { value: 0 } as Animated.SharedValue<number>,
   snapPointBottom: { value: 0 } as Animated.SharedValue<number>,
+  springConfig: DEFAULT_SPRING_CONFIG,
   innerScrollY: { value: 0 } as Animated.SharedValue<number>,
 };
 
 const mockRunOnJSDismissKeyboard = jest.fn();
 
-interface runGestureHandlerParams {
-  isHeader: boolean;
+interface RunGestureHandlerParams {
+  isHeader?: boolean;
+  isBottomSheetInactive?: boolean;
 }
 
-const runGestureHandler = (param?: runGestureHandlerParams): void => {
-  const { isHeader } = param ?? {};
-  const { panGestureHeader, panGestureContent } = getGestures(PARAMS);
+const runGestureHandler = (param?: RunGestureHandlerParams): void => {
+  const { isHeader, isBottomSheetInactive } = param ?? {};
+  const { panGestureHeader, panGestureContent } = getGestures({
+    gestureHandlerParams: PARAMS,
+    isBottomSheetInactive,
+  });
 
   render(<PanGestureTestComponent gesture={isHeader ? panGestureHeader : panGestureContent} />);
 
@@ -78,6 +78,14 @@ describe('src/worklets/getGestures', () => {
   afterEach(() => {
     jest.useRealTimers();
     jest.clearAllMocks();
+  });
+
+  describe('bottomSheet is inactive', () => {
+    it('should not update translationY', () => {
+      runGestureHandler({ isBottomSheetInactive: true });
+
+      expect(PARAMS.translationY.value).toBe(0);
+    });
   });
 
   describe('onBegin', () => {
@@ -114,17 +122,19 @@ describe('src/worklets/getGestures', () => {
       });
 
       describe('pan gesture is content', () => {
+        const useResetParams = (): void => {
+          PARAMS.isScrollable = useSharedValue(true);
+          PARAMS.innerScrollY = useSharedValue(0);
+          PARAMS.translationY = useSharedValue(0);
+          PARAMS.scrollOffset = useSharedValue(100);
+          PARAMS.dragY = useSharedValue(20);
+        };
+
         it(`should update translationY.value to PARAMS.dragY.value - PARAMS.scrollOffset.value
         when platform is iOS`, () => {
           Platform.OS = 'ios';
 
-          renderHook(() => {
-            PARAMS.isScrollable = useSharedValue(true);
-            PARAMS.innerScrollY = useSharedValue(0);
-            PARAMS.translationY = useSharedValue(0);
-            PARAMS.scrollOffset = useSharedValue(100);
-            PARAMS.dragY = useSharedValue(20);
-          });
+          renderHook(() => useResetParams());
 
           runGestureHandler();
 
@@ -135,13 +145,7 @@ describe('src/worklets/getGestures', () => {
         when platform is android`, () => {
           Platform.OS = 'android';
 
-          renderHook(() => {
-            PARAMS.isScrollable = useSharedValue(true);
-            PARAMS.innerScrollY = useSharedValue(0);
-            PARAMS.translationY = useSharedValue(0);
-            PARAMS.scrollOffset = useSharedValue(100);
-            PARAMS.dragY = useSharedValue(20);
-          });
+          renderHook(() => useResetParams());
 
           runGestureHandler();
 
@@ -207,15 +211,17 @@ describe('src/worklets/getGestures', () => {
     });
 
     describe('Input field is not focused', () => {
+      const useResetParams = (): void => {
+        PARAMS.snapPointBottom = useSharedValue(200);
+        PARAMS.isInputFieldFocused = useSharedValue(false);
+        PARAMS.translationY = useSharedValue(50);
+      };
+
       it('should open card if user is panning up so that the translationY.value updates to 0', () => {
         withReanimatedTimer(() => {
           EVENT.translationY = -1;
 
-          renderHook(() => {
-            PARAMS.snapPointBottom = useSharedValue(200);
-            PARAMS.isInputFieldFocused = useSharedValue(false);
-            PARAMS.translationY = useSharedValue(50);
-          });
+          renderHook(() => useResetParams());
 
           runGestureHandler();
 
@@ -232,11 +238,7 @@ describe('src/worklets/getGestures', () => {
         withReanimatedTimer(() => {
           EVENT.translationY = 20;
 
-          renderHook(() => {
-            PARAMS.snapPointBottom = useSharedValue(200);
-            PARAMS.isInputFieldFocused = useSharedValue(false);
-            PARAMS.translationY = useSharedValue(50);
-          });
+          renderHook(() => useResetParams());
 
           runGestureHandler();
 

@@ -1,13 +1,12 @@
 import Animated, { withSpring } from 'react-native-reanimated';
 import { scrollToPosition } from '../helpers';
-import { DEFAULT_SPRING_CONFIG } from '../constants/animations';
 import type { ContextPropsBottomSheet, BottomSheetConfiguration } from '../types';
 
 type ResetCardAndSlideToTopOrBottomParams = Pick<
   ContextPropsBottomSheet,
   'scrollViewRef' | 'scrollY' | 'translationY'
 > &
-  Pick<BottomSheetConfiguration, 'snapEffectDirection'> & {
+  Pick<BottomSheetConfiguration, 'snapEffectDirection' | 'springConfig'> & {
     snapPointBottom: number;
     slideDirection: string;
     isAnimationRunning: Animated.SharedValue<boolean>;
@@ -19,6 +18,7 @@ export const onResetCardAndSlideToTopOrBottom = ({
   scrollViewRef,
   scrollY,
   slideDirection,
+  springConfig,
   isAnimationRunning,
   isCardCollapsed,
   translationY,
@@ -39,7 +39,7 @@ export const onResetCardAndSlideToTopOrBottom = ({
 
   translationY.value = withSpring(
     slideDirection === 'bottom' ? snapPointBottom : 0,
-    DEFAULT_SPRING_CONFIG,
+    springConfig,
     isAnimationDone => {
       if (isAnimationDone) {
         isAnimationRunning.value = false;

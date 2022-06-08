@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { onScrollRequestCloseOrOpenCard } from '../onScrollRequestCloseOrOpenCard';
+import { DEFAULT_SPRING_CONFIG } from '../../constants/animations';
 
 const {
   withReanimatedTimer,
@@ -17,6 +18,7 @@ const PARAMS = {
   isCardCollapsed: { value: false } as Animated.SharedValue<boolean>,
   translationY: { value: 0 } as Animated.SharedValue<number>,
   snapPointBottom: { value: 0 } as Animated.SharedValue<number>,
+  springConfig: DEFAULT_SPRING_CONFIG,
 };
 
 describe('src/worklets/onScrollRequestCloseOrOpenCard', () => {

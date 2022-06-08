@@ -2,10 +2,10 @@
   "root": true,
   "compilerOptions": {
     "baseUrl": "./",
-    "declaration": true,
+    "declaration": false,
     "preserveSymlinks": true,
-    "target": "esnext",
-    "module": "esnext",
+    "target": "es6",
+    "module": "es6",
     "jsx": "react-native",
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
@@ -20,7 +20,7 @@
   "include": [
     "./src/**/*.ts",
     "./src/**/*.tsx",
-    "./src/types/index.d.ts",
+    "./src/**/*.d.ts",
     "reanimated-animation-library.d.ts"
   ]
 }

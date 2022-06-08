@@ -48,6 +48,14 @@ declare module '@marcuzgabriel/reanimated-animation-library' {
     };
     snapEffectDirection?: Animated.SharedValue<string>;
     snapPointBottom: number;
+    springConfig?: {
+      damping?: number;
+      mass?: number;
+      stiffness?: number;
+      overshootClamping?: boolean;
+      restSpeedThreshold?: number;
+      restDisplacementThreshold?: number;
+    };
     extraOffset?: number;
     borderTopRightRadius?: number;
     borderTopLeftRadius?: number;

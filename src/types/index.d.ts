@@ -2,14 +2,17 @@ import React from 'react';
 import { ScrollViewProps as ScrollViewNativeProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SimultaneousGesture } from 'react-native-gesture-handler';
-
+import { GProps, LinearGradientProps } from 'react-native-svg';
 
 interface Children {
   children?: React.ReactNode;
 }
-declare module 'react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector.d.ts' {
-  export interface GestureDetector extends any
-}
+
+/* NOTE: Typescript fix for react-native-svg */
+export type GWithChildrenProps = GProps & { children?: React.ReactNode };
+export type LinearGradientWithChildrenProps = LinearGradientProps & {
+  children?: React.ReactNode;
+};
 
 export interface ScrollArrows {
   isEnabled: boolean;
@@ -71,6 +74,14 @@ export interface BottomSheetConfiguration {
   scrollArrowTopComponent?: React.ReactNode;
   scrollArrowBottomComponent?: React.ReactNode;
   scrollArrows?: ScrollArrows;
+  springConfig?: {
+    damping?: number;
+    mass?: number;
+    stiffness?: number;
+    overshootClamping?: boolean;
+    restSpeedThreshold?: number;
+    restDisplacementThreshold?: number;
+  };
   extraSnapPointBottomOffset?: number;
   keyboardAvoidBottomMargin?: number;
   maxHeightRatio?: number;

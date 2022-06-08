@@ -1,6 +1,7 @@
 import Animated from 'react-native-reanimated';
-import { DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM } from '../constants/animations';
 import { onScrollRequestCloseOrOpenCard } from './onScrollRequestCloseOrOpenCard';
+import { DEFAULT_SNAP_POINT_AUTO_SCROLL_TO_BOTTOM } from '../constants/animations';
+import type { BottomSheetConfiguration } from '../types';
 
 interface OuterScrollEventProps {
   isEnabled?: boolean;
@@ -17,6 +18,7 @@ interface Props {
   isAnimationRunning: Animated.SharedValue<boolean>;
   translationY: Animated.SharedValue<number>;
   snapPointBottom: Animated.SharedValue<number>;
+  springConfig: BottomSheetConfiguration['springConfig'];
   outerScrollEvent?: OuterScrollEventProps;
 }
 
@@ -30,6 +32,7 @@ export const onOuterScrollReaction = ({
   outerScrollEvent,
   translationY,
   snapPointBottom,
+  springConfig,
 }: Props): void => {
   'worklet';
 
@@ -59,6 +62,7 @@ export const onOuterScrollReaction = ({
       isCardCollapsed,
       translationY,
       snapPointBottom,
+      springConfig,
       result,
     });
   }

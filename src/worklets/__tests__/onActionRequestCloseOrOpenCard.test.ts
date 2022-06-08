@@ -1,6 +1,7 @@
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { onActionRequestCloseOrOpenCard } from '../onActionRequestCloseOrOpenCard';
 import { renderHook } from '@testing-library/react-hooks';
+import { DEFAULT_SPRING_CONFIG } from '../../constants/animations';
 
 const {
   withReanimatedTimer,
@@ -11,6 +12,7 @@ const ADVANCE_ANIMATION_BY_TIME_SPRING = 800;
 const PARAMS = {
   translationY: { value: 0 } as Animated.SharedValue<number>,
   snapPointBottom: { value: 0 } as Animated.SharedValue<number>,
+  springConfig: DEFAULT_SPRING_CONFIG,
   isCardCollapsed: { value: false } as Animated.SharedValue<boolean>,
   isAnimationRunning: { value: false } as Animated.SharedValue<boolean>,
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, createContext, useCallback } from 'react';
-import { Platform, Keyboard } from 'react-native';
+import { Platform, Keyboard, KeyboardEvent } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import type { ContextPropsKeyboard } from '../types';
 
@@ -21,7 +21,7 @@ const KeyboardProvider: React.FC<Props> = ({ children }) => {
   const show = isIOS ? 'keyboardWillShow' : 'keyboardDidShow';
 
   const handleShow = useCallback(
-    (e: Record<string, any>) => {
+    (e: KeyboardEvent) => {
       isKeyboardVisible.value = true;
       keyboardHeight.value = e.endCoordinates.height;
       keyboardDuration.value = e.duration;
@@ -30,7 +30,7 @@ const KeyboardProvider: React.FC<Props> = ({ children }) => {
   );
 
   const handleHide = useCallback(
-    (e: Record<string, any>) => {
+    (e: KeyboardEvent) => {
       isKeyboardVisible.value = false;
       keyboardHeight.value = 0;
       keyboardDuration.value = e.duration;

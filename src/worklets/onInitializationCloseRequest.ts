@@ -1,5 +1,4 @@
 import Animated, { withSpring } from 'react-native-reanimated';
-import { DEFAULT_SPRING_CONFIG } from '../constants/animations';
 import type { BottomSheetConfiguration, ContextPropsBottomSheet } from '../types';
 
 interface OnInitializationCloseRequestProps
@@ -9,6 +8,7 @@ interface OnInitializationCloseRequestProps
   isAnimationRunning: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
   snapPointBottom: Animated.SharedValue<number>;
+  springConfig: BottomSheetConfiguration['springConfig'];
 }
 
 export const onInitializationCloseRequest = ({
@@ -18,6 +18,7 @@ export const onInitializationCloseRequest = ({
   snapEffectDirection,
   translationY,
   snapPointBottom,
+  springConfig,
 }: OnInitializationCloseRequestProps): void => {
   'worklet';
 
@@ -29,15 +30,11 @@ export const onInitializationCloseRequest = ({
 
   if (snapPointBottom.value > 0 && translationY.value !== snapPointBottom.value) {
     isAnimationRunning.value = true;
-    translationY.value = withSpring(
-      snapPointBottom.value,
-      DEFAULT_SPRING_CONFIG,
-      isAnimationDone => {
-        if (isAnimationDone) {
-          isInitializedAsClosed.value = true;
-          isAnimationRunning.value = false;
-        }
-      },
-    );
+    translationY.value = withSpring(snapPointBottom.value, springConfig, isAnimationDone => {
+      if (isAnimationDone) {
+        isInitializedAsClosed.value = true;
+        isAnimationRunning.value = false;
+      }
+    });
   }
 };

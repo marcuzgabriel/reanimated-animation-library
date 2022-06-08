@@ -1,15 +1,13 @@
 import Animated, { cancelAnimation, withSpring } from 'react-native-reanimated';
-import {
-  DEFAULT_SNAP_POINT_TOP,
-  DEFAULT_SPRING_CONFIG,
-  SPRING_OFFSET,
-} from '../constants/animations';
+import { DEFAULT_SNAP_POINT_TOP, SPRING_OFFSET } from '../constants/animations';
+import type { BottomSheetConfiguration } from '../types';
 
 interface Props {
   snapPointBottom: Animated.SharedValue<number>;
   isAnimationRunning: Animated.SharedValue<boolean>;
   isCardCollapsed: Animated.SharedValue<boolean>;
   translationY: Animated.SharedValue<number>;
+  springConfig: BottomSheetConfiguration['springConfig'];
   direction?: string | undefined;
 }
 
@@ -17,6 +15,7 @@ export const onActionRequestCloseOrOpenCard = ({
   translationY,
   isAnimationRunning,
   snapPointBottom,
+  springConfig,
   isCardCollapsed,
   direction,
 }: Props): void => {
@@ -30,7 +29,7 @@ export const onActionRequestCloseOrOpenCard = ({
   if (isSnapping) {
     translationY.value = withSpring(
       direction === 'up' ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-      DEFAULT_SPRING_CONFIG,
+      springConfig,
       isAnimationComplete => {
         if (isAnimationComplete) {
           isAnimationRunning.value = false;
@@ -40,7 +39,7 @@ export const onActionRequestCloseOrOpenCard = ({
   } else {
     translationY.value = withSpring(
       translationY.value <= SPRING_OFFSET ? snapPointBottom.value : DEFAULT_SNAP_POINT_TOP,
-      DEFAULT_SPRING_CONFIG,
+      springConfig,
       isAnimationComplete => {
         if (isAnimationComplete) {
           isAnimationRunning.value = false;

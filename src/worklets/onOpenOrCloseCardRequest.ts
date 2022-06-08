@@ -5,6 +5,7 @@ import type { ContextPropsBottomSheet, BottomSheetConfiguration } from '../types
 type UnionContextPropsBottomSheetTypes = 'scrollViewRef' | 'scrollY' | 'translationY';
 type UnionBottomSheetConfigurationTypes =
   | 'snapEffectDirection'
+  | 'springConfig'
   | 'closeBottomSheetRequest'
   | 'openBottomSheetRequest';
 

@@ -1,6 +1,10 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import Svg, { G, Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
+import type { GWithChildrenProps, LinearGradientWithChildrenProps } from '../../../types';
+
+const SvgG: React.ComponentClass<GWithChildrenProps> = G;
+const SvgLinearGradient: React.ComponentClass<LinearGradientWithChildrenProps> = LinearGradient;
 
 interface Props {
   height: number;
@@ -14,17 +18,17 @@ const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 but will always be defined in the default config: containers/UserConfigurationProvider.tsx */
 const svgConfig = (stopColor?: string): Record<string, React.ReactElement> => ({
   svg: (
-    <G>
+    <SvgG>
       <Defs>
-        <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <SvgLinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
           <Stop offset="0%" stopColor={stopColor} stopOpacity="0" />
           <Stop offset="50%" stopColor={stopColor} stopOpacity="0.65" />
           <Stop offset="75%" stopColor={stopColor} stopOpacity="0.8" />
           <Stop offset="100%" stopColor={stopColor} stopOpacity="1" />
-        </LinearGradient>
+        </SvgLinearGradient>
       </Defs>
       <Rect fill="url(#gradient)" x="0" y="0" width="100%" height="100%" />
-    </G>
+    </SvgG>
   ),
 });
 

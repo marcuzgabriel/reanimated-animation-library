@@ -3,6 +3,7 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { onResetCardAndSlideToTopOrBottom } from '../onResetCardAndSlideToTopOrBottom';
 import { scrollToPosition } from '../../helpers';
+import { DEFAULT_SPRING_CONFIG } from '../../constants/animations';
 
 const {
   withReanimatedTimer,
@@ -18,6 +19,7 @@ const PARAMS = {
   snapEffectDirection: { value: '' } as Animated.SharedValue<string> | undefined,
   scrollViewRef: { current: {} } as React.RefObject<Animated.ScrollView>,
   slideDirection: '' as string,
+  springConfig: DEFAULT_SPRING_CONFIG,
   snapPointBottom: 0 as number,
 };
 
