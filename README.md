@@ -48,7 +48,7 @@ This library provide multiple components but most importantly the BottomSheet. T
   | smoothAppearance | object: { waitForContent: boolean, emptyContentHeight?: number } | Ensures a smooth appearance animation of the BottomSheet to eliminate flickering | false
   | snapEffectDirection | Animated.SharedValue<string> | Used together with SnapEffect component. It tells the BottomSheet how to react to the effect. Please look in examples for more information | false
   | snapPointBottom | number | This prop is required for the BottomSheet to work | true
-  | springConfig | object { damping?: number; mass?: number; stiffness?: number; overshootClamping?: boolean; restSpeedThreshold?: number;   restDisplacementThreshold?: number; } | Overrule default spring config with custom configuration
+  | springConfig | object { damping?: number; mass?: number; stiffness?: number; overshootClamping?: boolean; restSpeedThreshold?: number; restDisplacementThreshold?: number; } | Overrule default spring config with custom configuration
   | testID | string | add testID to the bottomSheet | false
   | webBoxShadow | object: { offset: number; opacity: number } | Set a box shadow for web | false
 </details>
