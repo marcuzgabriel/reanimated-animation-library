@@ -32,8 +32,6 @@ export const getGestures = ({
   gestureHandlerParams,
   isBottomSheetInactive = false,
 }: GetGesturesParams): Record<string, PanGesture | NativeGesture | TapGesture> => {
-  'worklet';
-
   const isWeb = Platform.OS === 'web';
   const isIOS = Platform.OS === 'ios';
 
