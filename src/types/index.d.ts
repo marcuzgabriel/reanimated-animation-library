@@ -187,7 +187,6 @@ interface ScrollViewProps extends ScrollViewNativeProps {
   onContentSizeChange?: (width: number, height: number) => void;
   onIsInputFieldFocusedRequest?: (status: boolean, availableHeight: number) => void;
   children: React.ReactNode;
-  gesture?: SimultaneousGesture;
   isKeyboardAvoidDisabled?: boolean;
   keyboardAvoidBottomMargin?: number;
   connectScrollViewMeasuresToAnimationValues?: Record<

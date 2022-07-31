@@ -7,19 +7,24 @@ import Animated, {
   useAnimatedReaction,
   useDerivedValue,
   useAnimatedRef,
+  useAnimatedGestureHandler,
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
-import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
+import {
+  PanGestureHandlerGestureEvent,
+  PanGestureHandler,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import { DEFAULT_BORDER_RADIUS } from '../../../constants/styles';
 import { DEFAULT_SPRING_CONFIG, HIDE_CONTENT_OUTPUT_RANGE } from '../../../constants/animations';
 import {
   getAnimatedCardStyles,
-  getGestures,
   onInitializationCloseRequest,
   onOuterScrollReaction,
   onActionRequestCloseOrOpenCard,
   onGestureHideContentOrFooterReaction,
+  onGestureHandlerCard,
 } from '../../../worklets';
 import { ReusablePropsContext } from '../../../containers/ReusablePropsProvider';
 import { UserConfigurationContext } from '../../../containers/UserConfigurationProvider';
@@ -28,6 +33,12 @@ import Content from '../Content';
 import Header from '../Header';
 import Footer from '../Footer';
 import SmoothAppearance from '../SmoothAppearance';
+
+interface AnimatedGHContext {
+  [key: string]: number;
+  startX: number;
+  startY: number;
+}
 
 const View = styled.View`
   position: absolute;
@@ -199,6 +210,28 @@ const Sheet: React.FC = () => {
     scrollY: innerScrollY,
   };
 
+  const gestureHandlerHeader = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    AnimatedGHContext
+  >(
+    onGestureHandlerCard({
+      ...gestureHandlerParams,
+      type: 'header',
+    }),
+    [cardHeight],
+  );
+
+  const gestureHandlerContent = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    AnimatedGHContext
+  >(
+    onGestureHandlerCard({
+      ...gestureHandlerParams,
+      type: 'content',
+    }),
+    [cardHeight],
+  );
+
   /* Panning direction reaction */
   useAnimatedReaction(
     () => translationY.value,
@@ -320,18 +353,16 @@ const Sheet: React.FC = () => {
   /* NOTE: Handler for open and close request */
   useCloseOrOpenRequestCallback(closeOrOpenRequestCallbackParams);
 
-  const { panGestureHeader, panGestureContent, scrollViewNativeGesture } = getGestures({
-    gestureHandlerParams,
-    isBottomSheetInactive,
-  });
-
   return (
     <>
       <View testID={testID} pointerEvents="box-none">
         <Animated.View ref={measureRef} onLayout={onLayout} style={animatedBottomSheetStyle}>
           <SmoothAppearance>
             <GestureHandlerRootView>
-              <GestureDetector gesture={panGestureHeader}>
+              <PanGestureHandler
+                enabled={!isBottomSheetInactive}
+                onGestureEvent={gestureHandlerHeader}
+              >
                 <Animated.View style={animatedStyleHeader}>
                   <Header
                     scrollY={outerScrollEvent?.scrollY}
@@ -341,13 +372,13 @@ const Sheet: React.FC = () => {
                     }
                   />
                 </Animated.View>
-              </GestureDetector>
+              </PanGestureHandler>
               <AnimatedContent style={animatedContentStyle}>
                 <Content
                   isScrollable={isScrollable}
                   isScrollingCard={isScrollingCard}
                   scrollOffset={scrollOffset}
-                  contentGesture={Gesture.Simultaneous(panGestureContent, scrollViewNativeGesture)}
+                  gestureHandler={gestureHandlerContent}
                 >
                   {contentComponent}
                 </Content>

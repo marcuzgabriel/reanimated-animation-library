@@ -19,6 +19,8 @@ export const getPanGestureOnEnd =
     innerScrollY,
   }: GestureParams): ((e: GestureUpdateEvent<PanGestureHandlerEventPayload>) => void) =>
   (e: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+    'worklet';
+
     const isPanningDownWithFastRelease = prevDragY.value < dragY.value;
     const isPanningDownWithSlowRelease = prevDragY.value <= dragY.value && e.translationY > 0;
 
