@@ -18,6 +18,8 @@ export const getPanGestureOnUpdate =
     isHeader?: boolean,
   ) => void) =>
   (e: GestureUpdateEvent<PanGestureHandlerEventPayload>, isHeader?: boolean) => {
+    'worklet';
+
     if (!isInputFieldFocused.value) {
       prevDragY.value = translationY.value;
       isPanning.value = prevDragY.value !== e.translationY;

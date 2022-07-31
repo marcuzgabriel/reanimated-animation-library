@@ -20,7 +20,6 @@ import { ANDROID_FADING_EDGE_LENGTH } from '../../../constants/configs';
 import KeyboardAvoidingViewProvider from '../../../containers/KeyboardAvoidingViewProvider';
 import { KeyboardContext } from '../../../containers/KeyboardProvider';
 import type { ScrollViewProps } from '../../../types';
-import { GestureDetector } from 'react-native-gesture-handler';
 
 const AnimatedWrapper = Animated.createAnimatedComponent(styled.View``);
 const isWeb = Platform.OS === 'web';
@@ -34,7 +33,6 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
     isKeyboardAvoidDisabled,
     scrollArrows,
     translationYValues,
-    gesture,
     scrollTo,
     onContentSizeChange,
     onIsInputFieldFocusedRequest,
@@ -215,34 +213,34 @@ const ScrollView: React.FC<ScrollViewProps> = props => {
         />
       )}
       {scrollArrows?.isEnabled && <ScrollArrow {...scrollArrowProps} position="top" />}
-      <GestureDetector gesture={gesture}>
-        <Animated.ScrollView
-          {...props}
-          ref={scrollViewRef}
-          fadingEdgeLength={isFadingScrollEdgeEnabled ? fadingEdgeAndroid : 0}
-          onLayout={onLayout}
-          onScroll={onScrollHandler}
-          onContentSizeChange={(width, height): void => {
-            if (typeof onContentSizeChange === 'function') {
-              onContentSizeChange(width, height);
-            }
 
-            contentHeight.value = height;
-          }}
+      <Animated.ScrollView
+        {...props}
+        ref={scrollViewRef}
+        fadingEdgeLength={isFadingScrollEdgeEnabled ? fadingEdgeAndroid : 0}
+        onLayout={onLayout}
+        onScroll={onScrollHandler}
+        onContentSizeChange={(width, height): void => {
+          if (typeof onContentSizeChange === 'function') {
+            onContentSizeChange(width, height);
+          }
+
+          contentHeight.value = height;
+        }}
+      >
+        <KeyboardAvoidingViewProvider
+          isInputFieldFocused={isInputFieldFocused}
+          translationYValues={translationYValues}
+          isKeyboardAvoidDisabled={isKeyboardAvoidDisabled}
+          isFocusInputFieldAnimationRunning={isFocusInputFieldAnimationRunning}
+          contentHeight={contentHeight}
+          keyboardAvoidBottomMargin={keyboardAvoidBottomMargin}
+          onIsInputFieldFocusedRequest={onIsInputFieldFocusedRequest}
         >
-          <KeyboardAvoidingViewProvider
-            isInputFieldFocused={isInputFieldFocused}
-            translationYValues={translationYValues}
-            isKeyboardAvoidDisabled={isKeyboardAvoidDisabled}
-            isFocusInputFieldAnimationRunning={isFocusInputFieldAnimationRunning}
-            contentHeight={contentHeight}
-            keyboardAvoidBottomMargin={keyboardAvoidBottomMargin}
-            onIsInputFieldFocusedRequest={onIsInputFieldFocusedRequest}
-          >
-            {children}
-          </KeyboardAvoidingViewProvider>
-        </Animated.ScrollView>
-      </GestureDetector>
+          {children}
+        </KeyboardAvoidingViewProvider>
+      </Animated.ScrollView>
+
       {scrollArrows?.isEnabled && <ScrollArrow {...scrollArrowProps} position="bottom" />}
       {isFadingScrollEdgeEnabled && (
         <FadingEdge

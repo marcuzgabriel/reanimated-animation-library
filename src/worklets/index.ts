@@ -2,7 +2,7 @@ export { onActionRequestCloseOrOpenCard } from './onActionRequestCloseOrOpenCard
 export { onOuterScrollReaction } from './onOuterScrollReaction';
 export { onScrollRequestCloseOrOpenCard } from './onScrollRequestCloseOrOpenCard';
 export { getAnimatedCardStyles } from './getAnimatedCardStyles';
-export { getGestures } from './getGestures';
+export { onGestureHandlerCard } from './onGestureHandlerCard';
 export { onGestureHandlerSnapEffect } from './onGestureHandlerSnapEffect';
 export { onSnappableReaction } from './onSnappableReaction';
 export { onResetCardAndSlideToTopOrBottom } from './onResetCardAndSlideToTopOrBottom';
