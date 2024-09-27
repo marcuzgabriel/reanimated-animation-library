@@ -376,7 +376,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (12.2.0):
+  - RNSVG (12.3.0):
     - React-Core
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
@@ -577,7 +577,7 @@ SPEC CHECKSUMS:
   ReactCommon: bf2888a826ceedf54b99ad1b6182d1bc4a8a3984
   RNGestureHandler: 50e6ffee79932d14ea747d4ea4cc99aac0f24e86
   RNReanimated: e42de406edd11350af29016cf6802ef16ee364d0
-  RNSVG: 4ecc2e8f38b6ebe7889909570c26f3abe8059767
+  RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
